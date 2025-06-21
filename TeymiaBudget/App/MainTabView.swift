@@ -15,11 +15,11 @@ struct MainTabView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $selectedTab) {
-                // Home tab
-                HomeView()
+                // Wallet tab
+                WalletView()
                     .tabItem {
-                        Image(systemName: "house.fill")
-                        Text("Home")
+                        Image(systemName: "wallet.bifold.fill")
+                        Text("Wallets")
                     }
                     .tag(0)
                 
@@ -93,29 +93,39 @@ struct MainTabView: View {
 // MARK: - Quick Action Sheet
 struct QuickActionSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var showingIncomeForm = false
+    @State private var showingExpenseForm = false
+    @State private var showingTransferForm = false
     
     var body: some View {
-        VStack(spacing: 24) {
-            // Handle indicator (опционально, уже есть системный)
+        VStack(spacing: 32) {
+            // Handle indicator
             RoundedRectangle(cornerRadius: 3)
                 .frame(width: 40, height: 6)
                 .foregroundColor(.secondary.opacity(0.3))
                 .padding(.top, 8)
             
-            Text("Add Transaction")
+            Text("Quick Actions")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.top, 8)
             
-            // Action buttons
+            // Main action buttons (Income, Transfer, Expense)
             HStack(spacing: 32) {
                 QuickActionButton(
                     title: "Income",
                     icon: "arrow.down.circle.fill",
                     color: .green
                 ) {
-                    // Handle income action
-                    dismiss()
+                    showingIncomeForm = true
+                }
+                
+                QuickActionButton(
+                    title: "Transfer",
+                    icon: "arrow.left.arrow.right.circle.fill",
+                    color: .blue
+                ) {
+                    showingTransferForm = true
                 }
                 
                 QuickActionButton(
@@ -123,23 +133,95 @@ struct QuickActionSheet: View {
                     icon: "arrow.up.circle.fill",
                     color: .red
                 ) {
-                    // Handle expense action
-                    dismiss()
+                    showingExpenseForm = true
                 }
-                
-                QuickActionButton(
-                    title: "Scan",
-                    icon: "camera.circle.fill",
-                    color: .blue
-                ) {
-                    // Handle scan action
+            }
+            
+            // Divider
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.secondary.opacity(0.2))
+                .padding(.horizontal, 32)
+            
+            // Pro Feature - Scan
+            VStack(spacing: 12) {
+                Button {
+                    // TODO: Handle scan action (Pro feature)
                     dismiss()
+                } label: {
+                    HStack(spacing: 16) {
+                        Image(systemName: "camera.fill")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .frame(width: 48, height: 48)
+                            .background(
+                                Circle()
+                                    .fill(.purple.gradient)
+                                    .shadow(color: .purple.opacity(0.3), radius: 4, x: 0, y: 2)
+                            )
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Text("Scan Receipt")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                
+                                // Pro badge
+                                Text("PRO")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        Capsule()
+                                            .fill(.orange.gradient)
+                                    )
+                            }
+                            
+                            Text("Automatically extract transaction details")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(.gray.opacity(0.05))
+                            .stroke(.gray.opacity(0.1), lineWidth: 1)
+                    )
                 }
+                .buttonStyle(.plain)
             }
             
             Spacer()
         }
         .padding(.horizontal, 24)
+        .sheet(isPresented: $showingIncomeForm) {
+            AddIncomeView()
+        }
+        .sheet(isPresented: $showingExpenseForm) {
+            AddExpenseView()
+        }
+        .sheet(isPresented: $showingTransferForm) {
+            AddTransferView()
+        }
+        .onChange(of: showingIncomeForm) { _, newValue in
+            if !newValue { dismiss() }
+        }
+        .onChange(of: showingExpenseForm) { _, newValue in
+            if !newValue { dismiss() }
+        }
+        .onChange(of: showingTransferForm) { _, newValue in
+            if !newValue { dismiss() }
+        }
     }
 }
 
@@ -173,7 +255,7 @@ struct QuickActionButton: View {
 }
 
 // MARK: - Placeholder Views
-struct HomeView: View {
+struct WalletView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var accounts: [Account]
     @Query private var transactions: [Transaction]
