@@ -3,6 +3,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var accounts: [Account]
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
     
     @State private var showingAddTransaction = false
@@ -12,18 +13,14 @@ struct HomeView: View {
             NavigationStack {
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Balance Section
-                        balanceSection
+                        // Account Cards Section (horizontal scroll)
+                        accountCardsSection
                         
-                        // Today's Summary
-                        todaySection
-                        
-                        // Recent Transactions
-                        recentTransactionsSection
+                        // Transaction List
+                        transactionsSection
                         
                         Spacer(minLength: 120) // Space for FAB + tab bar
                     }
-                    .padding(.horizontal, 20)
                     .padding(.top, 8)
                 }
                 .navigationTitle("Teymia Budget")
@@ -34,119 +31,64 @@ struct HomeView: View {
             }
             
             // Floating Action Button
-            Button {
+            FloatingAddButton {
                 showingAddTransaction = true
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(.blue.gradient)
-                        .frame(width: 56, height: 56)
-                        .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
-                    
-                    Image("icon_add")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.white)
-                        .frame(width: 24, height: 24)
-                }
             }
-            .padding(.trailing, 20)
-            .padding(.bottom, 120) // Above tab bar
         }
-        .fullScreenCover(isPresented: $showingAddTransaction) {
+        .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
         }
     }
     
-    // MARK: - Balance Section
-    private var balanceSection: some View {
-        VStack(spacing: 8) {
-            Text("Current Balance")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            Text(formatCurrency(totalBalance))
-                .font(.system(size: 36, weight: .bold, design: .rounded))
-                .foregroundColor(totalBalance >= 0 ? .primary : .red)
-                .contentTransition(.numericText())
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 32)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-        )
-    }
-    
-    // MARK: - Today Section
-    private var todaySection: some View {
+    // MARK: - Account Cards Section
+    private var accountCardsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Today")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            HStack(spacing: 20) {
-                // Income
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Image("icon_income")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.green)
-                            .frame(width: 16, height: 16)
-                        
-                        Text("Income")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text(formatCurrency(todayIncome))
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.green)
-                }
+            HStack {
+                Text("Accounts")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.leading, 20)
                 
                 Spacer()
                 
-                // Expenses
-                VStack(alignment: .trailing, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Text("Expenses")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        Image("icon_expense")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.red)
-                            .frame(width: 16, height: 16)
+                Button {
+                    // TODO: Add account action
+                } label: {
+                    Image("icon_add")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.blue)
+                        .frame(width: 20, height: 20)
+                }
+                .padding(.trailing, 20)
+            }
+            
+            if accounts.isEmpty {
+                emptyAccountsView
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(accounts) { account in
+                            AccountCardView(account: account)
+                        }
                     }
-                    
-                    Text(formatCurrency(todayExpenses))
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.red)
+                    .padding(.horizontal, 20)
                 }
             }
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-        )
     }
     
-    // MARK: - Recent Transactions
-    private var recentTransactionsSection: some View {
+    // MARK: - Transactions Section
+    private var transactionsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Recent")
+                Text("Transactions")
                     .font(.title2)
                     .fontWeight(.bold)
                 
                 Spacer()
                 
-                if !recentTransactions.isEmpty {
+                if !transactions.isEmpty {
                     NavigationLink("See All") {
                         TransactionHistoryView()
                     }
@@ -154,33 +96,63 @@ struct HomeView: View {
                     .foregroundColor(.blue)
                 }
             }
+            .padding(.horizontal, 20)
             
-            if recentTransactions.isEmpty {
-                emptyStateView
+            if transactions.isEmpty {
+                emptyTransactionsView
             } else {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(recentTransactions.enumerated()), id: \.element.id) { index, transaction in
+                    ForEach(Array(transactions.enumerated()), id: \.element.id) { index, transaction in
                         TransactionRowView(transaction: transaction)
                         
-                        if index < recentTransactions.count - 1 {
+                        if index < transactions.count - 1 {
                             Divider()
-                                .padding(.leading, 60)
+                                .padding(.leading, 76) // Account for icon + padding
                         }
                     }
                 }
-                .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(.ultraThinMaterial)
+                        .fill(Color(.systemBackground).opacity(0.6))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(.separator, lineWidth: 0.15)
+                        )
                 )
+                .padding(.horizontal, 20)
             }
         }
     }
     
-    // MARK: - Empty State
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
+    // MARK: - Empty States
+    private var emptyAccountsView: some View {
+        VStack(spacing: 12) {
             Image("icon_empty_wallet")
+                .resizable()
+                .renderingMode(.template)
+                .foregroundColor(.secondary)
+                .frame(width: 32, height: 32)
+            
+            Text("Add your first account")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 140)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground).opacity(0.6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(.separator, lineWidth: 0.15)
+                )
+        )
+        .padding(.horizontal, 20)
+    }
+    
+    private var emptyTransactionsView: some View {
+        VStack(spacing: 16) {
+            Image("icon_empty_transactions")
                 .resizable()
                 .renderingMode(.template)
                 .foregroundColor(.secondary)
@@ -201,57 +173,110 @@ struct HomeView: View {
         .padding(.vertical, 48)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
+                .fill(Color(.systemBackground).opacity(0.6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(.separator, lineWidth: 0.15)
+                )
         )
-    }
-    
-    // MARK: - Computed Properties
-    private var totalBalance: Decimal {
-        transactions.reduce(0) { total, transaction in
-            transaction.type == .expense ? total - transaction.amount.magnitude : total + transaction.amount
-        }
-    }
-    
-    private var todayTransactions: [Transaction] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
-        
-        return transactions.filter { transaction in
-            transaction.date >= today && transaction.date < tomorrow
-        }
-    }
-    
-    private var todayIncome: Decimal {
-        todayTransactions
-            .filter { $0.type == .income }
-            .reduce(0) { $0 + $1.amount }
-    }
-    
-    private var todayExpenses: Decimal {
-        todayTransactions
-            .filter { $0.type == .expense }
-            .reduce(0) { $0 + $1.amount.magnitude }
-    }
-    
-    private var recentTransactions: [Transaction] {
-        Array(transactions.prefix(5))
+        .padding(.horizontal, 20)
     }
     
     // MARK: - Helper Methods
-    private func formatCurrency(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        formatter.maximumFractionDigits = 2
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
-    }
-    
     private func createSampleDataIfNeeded() {
         // Create sample data if needed - implement this later
-        guard transactions.isEmpty else { return }
+        guard accounts.isEmpty && transactions.isEmpty else { return }
         
         // TODO: Add sample data creation logic here when models are ready
+    }
+}
+
+// MARK: - Account Card View
+struct AccountCardView: View {
+    let account: Account
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with icon and type
+            HStack {
+                Image("icon_account_\(account.type.rawValue)")
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.white)
+                    .frame(width: 28, height: 28)
+                    .padding(12)
+                    .background(
+                        Circle()
+                            .fill(colorForAccountType(account.type).gradient)
+                    )
+                
+                Spacer()
+                
+                Text(account.type.displayName)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(.secondary.opacity(0.1))
+                    )
+            }
+            
+            Spacer()
+            
+            // Account info
+            VStack(alignment: .leading, spacing: 4) {
+                Text(account.name)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text(formatCurrency(account.balance, currency: account.currency))
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(account.balance >= 0 ? .primary : .red)
+            }
+        }
+        .padding(20)
+        .frame(width: 200, height: 140)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(.systemBackground).opacity(0.8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(.separator, lineWidth: 0.15)
+                )
+        )
+    }
+    
+    private func colorForAccountType(_ type: AccountType) -> Color {
+        switch type {
+        case .cash: return .green
+        case .bankAccount: return .blue
+        case .creditCard: return .orange
+        case .savings: return .purple
+        }
+    }
+    
+    private func formatCurrency(_ amount: Decimal, currency: Currency) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency.code
+        formatter.currencySymbol = currency.symbol
+        return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency.symbol)0.00"
+    }
+}
+
+// MARK: - AccountType Extension
+extension AccountType {
+    var displayName: String {
+        switch self {
+        case .cash: return "Cash"
+        case .bankAccount: return "Bank"
+        case .creditCard: return "Credit"
+        case .savings: return "Savings"
+        }
     }
 }
 
