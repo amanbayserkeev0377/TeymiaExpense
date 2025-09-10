@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct OverviewVIew: View {
+struct OverviewView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var accounts: [Account]
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
