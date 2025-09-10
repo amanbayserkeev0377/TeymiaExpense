@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "falkland-islands.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

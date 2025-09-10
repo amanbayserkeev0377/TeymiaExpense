@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "saint-kitts-and-nevis.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

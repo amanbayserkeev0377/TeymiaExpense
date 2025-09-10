@@ -4,9 +4,10 @@ import SwiftData
 // MARK: - Currency
 @Model
 final class Currency {
-    var code: String // USD, EUR, KGS, etc.
-    var symbol: String // $, €, сом, etc.
-    var name: String // US Dollar, Euro, etc.
+    var code: String // USD, EUR, KGS, BTC, ETH, etc.
+    var symbol: String // $, €, сом, ₿, Ξ, etc.
+    var name: String // US Dollar, Euro, Bitcoin, etc.
+    var type: CurrencyType // fiat or crypto
     var isDefault: Bool
     var createdAt: Date
     
@@ -14,10 +15,11 @@ final class Currency {
     @Relationship(deleteRule: .nullify, inverse: \Account.currency)
     var accounts: [Account] = []
     
-    init(code: String, symbol: String, name: String, isDefault: Bool = false) {
+    init(code: String, symbol: String, name: String, type: CurrencyType, isDefault: Bool = false) {
         self.code = code
         self.symbol = symbol
         self.name = name
+        self.type = type
         self.isDefault = isDefault
         self.createdAt = Date()
     }
@@ -27,8 +29,7 @@ final class Currency {
 @Model
 final class Category {
     var name: String
-    var iconName: String
-    var colorHex: String
+    var iconName: String // Имя кастомной иконки из Assets
     var type: CategoryType
     var isDefault: Bool // Системные категории vs пользовательские
     var createdAt: Date
@@ -40,10 +41,9 @@ final class Category {
     @Relationship(deleteRule: .cascade, inverse: \Budget.category)
     var budgets: [Budget] = []
     
-    init(name: String, iconName: String, colorHex: String, type: CategoryType, isDefault: Bool = false) {
+    init(name: String, iconName: String, type: CategoryType, isDefault: Bool = false) {
         self.name = name
         self.iconName = iconName
-        self.colorHex = colorHex
         self.type = type
         self.isDefault = isDefault
         self.createdAt = Date()
@@ -169,4 +169,9 @@ enum BudgetPeriod: String, CaseIterable, Codable {
     case weekly = "weekly"
     case monthly = "monthly"
     case yearly = "yearly"
+}
+
+enum CurrencyType: String, CaseIterable, Codable {
+    case fiat = "fiat"
+    case crypto = "crypto"
 }

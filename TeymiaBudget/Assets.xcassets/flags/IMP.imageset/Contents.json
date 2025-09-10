@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "isle-of-man.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

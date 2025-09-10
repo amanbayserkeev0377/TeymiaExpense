@@ -20,7 +20,12 @@ struct TeymiaBudgetApp: App {
         )
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            
+            // Create default data on first launch
+            createDefaultDataIfNeeded(context: container.mainContext)
+            
+            return container
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -32,4 +37,23 @@ struct TeymiaBudgetApp: App {
         }
         .modelContainer(sharedModelContainer)
     }
+}
+
+// MARK: - Default Data Creation
+private func createDefaultDataIfNeeded(context: ModelContext) {
+    // Check if we already have data
+    let accountDescriptor = FetchDescriptor<Account>()
+    let existingAccounts = (try? context.fetch(accountDescriptor)) ?? []
+    
+    if !existingAccounts.isEmpty {
+        return // Data already exists
+    }
+    
+    // Create defaults in order (currencies first, then categories, then accounts)
+    Currency.createDefaults(context: context)
+    Category.createDefaults(context: context)
+    Account.createDefault(context: context)
+    
+    // Save all default data
+    try? context.save()
 }
