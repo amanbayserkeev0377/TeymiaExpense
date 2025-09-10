@@ -24,9 +24,9 @@ struct AddTransactionView: View {
         
         var iconName: String {
             switch self {
-            case .expense: return "wallet-expense"
-            case .transfer: return "money-transfer"
-            case .income: return "wallet-income"
+            case .expense: return "expense"
+            case .transfer: return "transfer"
+            case .income: return "income"
             }
         }
     }
@@ -107,8 +107,8 @@ struct AddTransactionView: View {
                         }
                     } label: {
                         Image(option.iconName)
-                            .renderingMode(.template)
-                            .frame(width: 28, height: 28)
+                            .resizable()
+                            .frame(width: 24, height: 24)
                             .foregroundColor(selectedType == option ? .white : option.color)
                             .frame(maxWidth: .infinity)
                             .frame(height: 60)
@@ -122,8 +122,8 @@ struct AddTransactionView: View {
             }
             .padding(4)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.gray.opacity(0.1))
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.secondary.opacity(0.1))
             )
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
@@ -131,9 +131,9 @@ struct AddTransactionView: View {
             // Divider
             Rectangle()
                 .fill(.separator)
-                .frame(height: 0.5)
+                .frame(height: 0.4)
         }
-        .background(.regularMaterial)
+        .background(Color(.systemBackground).opacity(0.8))
     }
     
     // MARK: - Amount Section
@@ -186,7 +186,7 @@ struct AddTransactionView: View {
                         Text("Add")
                             .font(.caption)
                     }
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.accent)
                 }
             }
             
@@ -412,9 +412,9 @@ struct AddTransactionView: View {
                 } label: {
                     HStack {
                         Image(selectedType.iconName)
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(.white)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(.white)
                         
                         Text("Add \(selectedType.rawValue)")
                             .fontWeight(.semibold)

@@ -9,13 +9,13 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case 0:
-                    OverviewView()
+                    DashboardView()
                 case 1:
                     BudgetView()
                 case 2:
                     SettingsView()
                 default:
-                    OverviewView()
+                    DashboardView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -25,9 +25,8 @@ struct MainTabView: View {
                 HStack(spacing: 0) {
                     // Overview Tab
                     CustomTabButton(
-                        title: "Home",
-                        iconName: "home",
-                        filledIconName: "home.fill",
+                        title: "Dashboard",
+                        iconName: "home.fill",
                         isSelected: selectedTab == 0
                     ) {
                         selectedTab = 0
@@ -36,8 +35,7 @@ struct MainTabView: View {
                     // Budget Tab
                     CustomTabButton(
                         title: "Budget",
-                        iconName: "budget",
-                        filledIconName: "budget.fill",
+                        iconName: "budget.fill",
                         isSelected: selectedTab == 1
                     ) {
                         selectedTab = 1
@@ -46,8 +44,7 @@ struct MainTabView: View {
                     // Settings Tab
                     CustomTabButton(
                         title: "Settings",
-                        iconName: "settings",
-                        filledIconName: "settings.fill",
+                        iconName: "settings.fill",
                         isSelected: selectedTab == 2
                     ) {
                         selectedTab = 2
@@ -56,7 +53,7 @@ struct MainTabView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 6)
                 .padding(.bottom, 34)
-                .background(Color(.systemBackground).opacity(0.95))
+                .background(.ultraThinMaterial)
                 .clipShape(
                     UnevenRoundedRectangle(
                         topLeadingRadius: 24,
@@ -72,7 +69,7 @@ struct MainTabView: View {
                         bottomTrailingRadius: 0,
                         topTrailingRadius: 24
                     )
-                    .stroke(.separator, lineWidth: 0.4)
+                    .stroke(.separator, lineWidth: 0.3)
                 )
             }
         }
@@ -84,22 +81,21 @@ struct MainTabView: View {
 struct CustomTabButton: View {
     let title: String
     let iconName: String
-    let filledIconName: String
     let isSelected: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             VStack(spacing: 2) {
-                Image(isSelected ? filledIconName : iconName)
+                Image(iconName)
                     .resizable()
-                    .foregroundStyle(isSelected ? .accent : .secondary)
+                    .foregroundStyle(isSelected ? .app : .secondary)
                     .frame(width: 24, height: 24)
                 
                 Text(title)
                     .font(.caption2)
                     .fontWeight(isSelected ? .semibold : .medium)
-                    .foregroundStyle(isSelected ? .accent : .secondary)
+                    .foregroundStyle(isSelected ? .app : .secondary)
             }
             .frame(maxWidth: .infinity)
         }
