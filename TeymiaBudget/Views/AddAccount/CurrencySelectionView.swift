@@ -1,6 +1,45 @@
 import SwiftUI
 import SwiftData
 
+struct CurrencySelectionRow: View {
+    let selectedCurrency: Currency?
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            HStack {
+                if let currency = selectedCurrency {
+                    Image(CurrencyService.shared.getCurrencyIcon(for: currency))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 24, height: 24)
+                        .clipShape(Circle())
+                    
+                    Text("\(currency.code) - \(currency.name)")
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                } else {
+                    Image(systemName: "dollarsign.circle")
+                        .foregroundColor(.secondary)
+                        .frame(width: 24, height: 24)
+                    
+                    Text("Select Currency")
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Currency Selection View
 struct CurrencySelectionView: View {
     @Environment(\.dismiss) private var dismiss
