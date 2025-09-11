@@ -8,36 +8,40 @@ struct DashboardView: View {
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
     
     @State private var showingAddTransaction = false
+    @State private var showingAddAccount = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             NavigationStack {
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Account Cards Section (horizontal scroll)
+                        // Account Cards Carousel
                         accountCardsSection
                         
                         // Transaction List
                         transactionsSection
                         
-                        Spacer(minLength: 120) // Space for FAB + tab bar
+                        Spacer(minLength: 120)
                     }
                     .padding(.top, 8)
                 }
                 .navigationTitle("Overview")
                 .navigationBarTitleDisplayMode(.large)
-                .onAppear {
-                    createSampleDataIfNeeded()
-                }
             }
             
-            // Floating Action Button
             FloatingAddButton {
                 showingAddTransaction = true
             }
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
+                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                .presentationDetents([.fraction(0.99)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
+        }
+        .sheet(isPresented: $showingAddAccount) {
+            AddAccountView()
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDetents([.fraction(0.99)])
                 .presentationDragIndicator(.visible)
@@ -57,7 +61,7 @@ struct DashboardView: View {
                 Spacer()
                 
                 Button {
-                    // TODO: Add account action
+                    showingAddAccount = true
                 } label: {
                     Image(systemName: "plus")
                         .foregroundStyle(.accent)
@@ -69,14 +73,7 @@ struct DashboardView: View {
             if accounts.isEmpty {
                 emptyAccountsView
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(accounts) { account in
-                            AccountCardView(account: account)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                }
+                AccountCarouselView(accounts: accounts)
             }
         }
     }
@@ -110,7 +107,7 @@ struct DashboardView: View {
                         
                         if index < transactions.count - 1 {
                             Divider()
-                                .padding(.leading, 76) // Account for icon + padding
+                                .padding(.leading, 76)
                         }
                     }
                 }
@@ -129,31 +126,36 @@ struct DashboardView: View {
     
     // MARK: - Empty States
     private var emptyAccountsView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "wallet.bifold")
-                .foregroundStyle(.secondary)
-                .frame(width: 32, height: 32)
-            
-            Text("Add your first account")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        Button {
+            showingAddAccount = true
+        } label: {
+            VStack(spacing: 12) {
+                Image(systemName: "plus.circle")
+                    .foregroundStyle(.blue)
+                    .frame(width: 32, height: 32)
+                
+                Text("Add your first account")
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 140)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.systemBackground).opacity(0.6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.blue.opacity(0.3), lineWidth: 1)
+                    )
+            )
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 140)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground).opacity(0.6))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(.separator, lineWidth: 0.15)
-                )
-        )
+        .buttonStyle(.plain)
         .padding(.horizontal, 20)
     }
     
     private var emptyTransactionsView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "list.bullet")
+            Image(systemName: "plus.circle.dashed")
                 .foregroundColor(.secondary)
                 .frame(width: 48, height: 48)
             
@@ -180,31 +182,57 @@ struct DashboardView: View {
         )
         .padding(.horizontal, 20)
     }
+}
+
+// MARK: - Account Carousel
+struct AccountCarouselView: View {
+    let accounts: [Account]
+    @State private var currentIndex = 0
     
-    // MARK: - Helper Methods
-    private func createSampleDataIfNeeded() {
-        // Create sample data if needed - implement this later
-        guard accounts.isEmpty && transactions.isEmpty else { return }
-        
-        // TODO: Add sample data creation logic here when models are ready
+    var body: some View {
+        VStack(spacing: 12) {
+            TabView(selection: $currentIndex) {
+                ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
+                    AccountCardView(account: account)
+                        .padding(.horizontal, 30)
+                        .tag(index)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 140)
+            
+            if accounts.count > 1 {
+                HStack(spacing: 8) {
+                    ForEach(0..<accounts.count, id: \.self) { index in
+                        Circle()
+                            .fill(index == currentIndex ? .accent : .accent.opacity(0.3))
+                            .frame(width: 8, height: 8)
+                            .scaleEffect(index == currentIndex ? 1.2 : 1.0)
+                            .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                    }
+                }
+                .padding(.bottom, 8)
+            }
+        }
     }
 }
 
-// MARK: - Account Card View
+// MARK: - Account Card
 struct AccountCardView: View {
     let account: Account
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header with icon and type
             HStack {
-                Image(systemName: sfSymbolForAccountType(account.type))
-                    .foregroundStyle(.white)
+                Image(account.type.iconName) 
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
                     .frame(width: 28, height: 28)
+                    .foregroundStyle(.white)
                     .padding(12)
                     .background(
                         Circle()
-                            .fill(colorForAccountType(account.type).gradient)
+                            .fill(account.type.color.gradient)
                     )
                 
                 Spacer()
@@ -222,21 +250,21 @@ struct AccountCardView: View {
             
             Spacer()
             
-            // Account info
             VStack(alignment: .leading, spacing: 4) {
                 Text(account.name)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                 
-                Text(formatCurrency(account.balance, currency: account.currency))
+                Text(account.formattedBalance)
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(account.balance >= 0 ? .primary : .red)
             }
         }
         .padding(20)
-        .frame(width: 200, height: 140)
+        .frame(maxWidth: .infinity)
+        .frame(height: 140)
         .background(
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color(.systemBackground).opacity(0.8))
@@ -244,20 +272,29 @@ struct AccountCardView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(.separator, lineWidth: 0.15)
                 )
+                .shadow(
+                    color: .black.opacity(0.05),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
         )
     }
-    
-    private func sfSymbolForAccountType(_ type: AccountType) -> String {
-        switch type {
-        case .cash: return "banknote"
-        case .bankAccount: return "building.columns"
-        case .creditCard: return "creditcard"
-        case .savings: return "piggybank"
+}
+
+// MARK: - Extensions
+extension AccountType {
+    var iconName: String {
+        switch self {
+        case .cash: return "cash"
+        case .bankAccount: return "bank"
+        case .creditCard: return "credit_card"
+        case .savings: return "savings"
         }
     }
     
-    private func colorForAccountType(_ type: AccountType) -> Color {
-        switch type {
+    var color: Color {
+        switch self {
         case .cash: return .green
         case .bankAccount: return .blue
         case .creditCard: return .orange
@@ -265,11 +302,22 @@ struct AccountCardView: View {
         }
     }
     
-    private func formatCurrency(_ amount: Decimal, currency: Currency) -> String {
+    var displayName: String {
+        switch self {
+        case .cash: return "Cash"
+        case .bankAccount: return "Bank"
+        case .creditCard: return "Card"
+        case .savings: return "Savings"
+        }
+    }
+}
+
+extension Account {
+    var formattedBalance: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currency.code
         formatter.currencySymbol = currency.symbol
-        return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency.symbol)0.00"
+        return formatter.string(from: balance as NSDecimalNumber) ?? "\(currency.symbol)0.00"
     }
 }

@@ -1,9 +1,10 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Simple Currency Selection View
+// MARK: - Currency Selection View
 struct CurrencySelectionView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @Binding var selectedCurrency: Currency?
     
     @State private var selectedType: CurrencyType = .fiat
@@ -20,28 +21,27 @@ struct CurrencySelectionView: View {
                 // Currency Type Picker
                 currencyTypePicker
                 
-                // Currency List
-                List(filteredCurrencies, id: \.code) { currency in
-                    CurrencyRowView(
-                        currency: currency,
-                        isSelected: selectedCurrency?.code == currency.code
-                    ) {
-                        selectedCurrency = currency
-                        dismiss()
+                // Currency List with grouped style
+                List {
+                    Section {
+                        ForEach(filteredCurrencies, id: \.code) { currency in
+                            CurrencyRowView(
+                                currency: currency,
+                                isSelected: selectedCurrency?.code == currency.code
+                            ) {
+                                selectedCurrency = currency
+                                dismiss()
+                            }
+                        }
                     }
+                    .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
                 .searchable(text: $searchText)
             }
             .navigationTitle("Select Currency")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
         }
     }
     
@@ -54,7 +54,6 @@ struct CurrencySelectionView: View {
         .pickerStyle(.segmented)
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(.regularMaterial)
         .onChange(of: selectedType) { oldValue, newValue in
             searchText = "" // Clear search when switching types
         }
@@ -74,7 +73,7 @@ struct CurrencyRowView: View {
                 Image(CurrencyService.shared.getCurrencyIcon(for: currency))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 32, height: 32)
                     .clipShape(Circle())
                     .overlay(
                         Circle()
@@ -82,10 +81,10 @@ struct CurrencyRowView: View {
                     )
                 
                 // Currency info
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(currency.code)
-                            .font(.headline)
+                            .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                         
@@ -95,7 +94,7 @@ struct CurrencyRowView: View {
                     }
                     
                     Text(currency.name)
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
@@ -104,14 +103,13 @@ struct CurrencyRowView: View {
                 
                 // Selection indicator
                 if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(systemName: "checkmark")
                         .foregroundColor(.accent)
-                        .font(.title2)
+                        .fontWeight(.semibold)
                 }
             }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.vertical, 4)
     }
 }

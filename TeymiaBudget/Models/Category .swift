@@ -3,41 +3,41 @@ import SwiftData
 
 extension Category {
     static func createDefaults(context: ModelContext) {
-        // Default expense categories with SF Symbols
+        // Default expense categories - кастомные иконки из Assets
         let expenseCategories = [
-            ("Food", "fork.knife"),
-            ("Transport", "car"),
-            ("Entertainment", "gamecontroller"),
-            ("Shopping", "bag"),
-            ("Health", "cross.case"),
-            ("Education", "book"),
-            ("Bills", "doc.text"),
-            ("Other", "ellipsis.circle")
+            ("Food", "food"),
+            ("Transport", "transport"),
+            ("Entertainment", "entertainment"),
+            ("Shopping", "shopping"),
+            ("Health", "health"),
+            ("Education", "education"),
+            ("Bills", "bills"),
+            ("Other", "other")
         ]
         
-        for (name, sfSymbol) in expenseCategories {
+        for (name, iconName) in expenseCategories {
             let category = Category(
                 name: name,
-                iconName: sfSymbol,
+                iconName: iconName,
                 type: .expense,
                 isDefault: true
             )
             context.insert(category)
         }
         
-        // Default income categories with SF Symbols
+        // Default income categories
         let incomeCategories = [
-            ("Salary", "banknote"),
-            ("Business", "building.2"),
-            ("Investment", "chart.line.uptrend.xyaxis"),
+            ("Salary", "salary"),
+            ("Business", "business"),
+            ("Investment", "investment"),
             ("Gift", "gift"),
-            ("Other", "ellipsis.circle")
+            ("Other", "other")
         ]
         
-        for (name, sfSymbol) in incomeCategories {
+        for (name, iconName) in incomeCategories {
             let category = Category(
                 name: name,
-                iconName: sfSymbol,
+                iconName: iconName,
                 type: .income,
                 isDefault: true
             )

@@ -39,14 +39,15 @@ struct TransactionRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Category icon with SF Symbol
-            Image(systemName: sfSymbolForCategory(transaction.category))
-                .foregroundStyle(.white)
-                .frame(width: 32, height: 32)
-                .background(
-                    Circle()
-                        .fill(colorForTransaction(transaction))
-                )
+            Group {
+                if let category = transaction.category {
+                    Image(category.iconName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    Image(systemName: "arrow.left.arrow.right")
+                }
+            }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(transaction.category?.name ?? "Transfer")
@@ -81,28 +82,6 @@ struct TransactionRowView: View {
             }
         }
         .padding(.vertical, 4)
-    }
-    
-    private func sfSymbolForCategory(_ category: Category?) -> String {
-        guard let category = category else {
-            return "arrow.left.arrow.right" // Transfer icon
-        }
-        
-        // Map category names to SF Symbols
-        switch category.name.lowercased() {
-        case "food": return "fork.knife"
-        case "transport": return "car"
-        case "entertainment": return "gamecontroller"
-        case "shopping": return "bag"
-        case "health": return "cross.case"
-        case "education": return "book"
-        case "bills": return "doc.text"
-        case "salary": return "banknote"
-        case "business": return "building.2"
-        case "investment": return "chart.line.uptrend.xyaxis"
-        case "gift": return "gift"
-        default: return "ellipsis.circle"
-        }
     }
     
     private func colorForTransaction(_ transaction: Transaction) -> Color {
