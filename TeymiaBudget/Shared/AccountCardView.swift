@@ -242,7 +242,6 @@ struct AccountCarouselView: View {
             TabView(selection: $currentIndex) {
                 ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
                     AccountCardView(account: account)
-                        .padding(.horizontal, 16)
                         .tag(index)
                 }
             }

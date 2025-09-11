@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Add Account View с preview карточки
+// MARK: - Add Account View с компактным Form
 struct AddAccountView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -24,26 +24,156 @@ struct AddAccountView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Card Preview
-                    cardPreviewSection
-                    
-                    // Form sections
-                    VStack(spacing: 20) {
-                        accountNameSection
-                        colorSelectionSection
-                        iconSelectionSection
-                        accountTypeSection
-                        currencySection
-                        balanceSection
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    Spacer(minLength: 40)
+            Form {
+                Section {
+                    AccountCardPreview(
+                        name: accountName,
+                        balance: initialBalance,
+                        accountType: selectedAccountType,
+                        color: selectedColor,
+                        icon: selectedIcon,
+                        currencyCode: selectedCurrency?.code ?? "USD"
+                    )
                 }
-                .padding(.top, 0)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+                
+                // Account Name
+                Section("Name") {
+                    TextField("Enter account name", text: $accountName)
+                        .autocorrectionDisabled()
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
+                // Color Selection
+                Section("Color") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(0..<AccountColors.colors.count, id: \.self) { index in
+                                colorButton(index: index)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .padding(.horizontal, -20)
+                    .padding(.vertical, 8)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+                
+                // Icon Selection
+                Section("Icon") {
+                    Button {
+                        showingIconSelection = true
+                    } label: {
+                        HStack {
+                            Image(selectedIcon)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(selectedColor)
+                            
+                            Text(selectedIcon.capitalized)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
+                // Account Type
+                Section("Type") {
+                    Menu {
+                        ForEach(AccountType.allCases, id: \.self) { type in
+                            Button {
+                                selectedAccountType = type
+                                selectedIcon = iconForAccountType(type)
+                            } label: {
+                                HStack {
+                                    Image(iconForAccountType(type))
+                                    Text(type.displayName)
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(iconForAccountType(selectedAccountType))
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(selectedColor)
+                            
+                            Text(selectedAccountType.displayName)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.up.chevron.down")
+                                .foregroundColor(.secondary)
+                                .font(.caption2)
+                        }
+                    }
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
+                // Currency
+                Section("Currency") {
+                    Button {
+                        showingCurrencySelection = true
+                    } label: {
+                        HStack {
+                            if let currency = selectedCurrency {
+                                Image(CurrencyService.shared.getCurrencyIcon(for: currency))
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 24, height: 24)
+                                    .clipShape(Circle())
+                                
+                                Text("\(currency.code) - \(currency.name)")
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                            } else {
+                                Image(systemName: "dollarsign.circle")
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 24, height: 24)
+                                
+                                Text("Select Currency")
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
+                // Initial Balance
+                Section("Initial Balance") {
+                    HStack {
+                        Text(selectedCurrency?.symbol ?? "$")
+                            .foregroundStyle(.secondary)
+                            .font(.body)
+                        
+                        TextField("0.00", text: $initialBalance)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .font(.body)
+                    }
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
             }
+            .scrollContentBackground(.hidden)
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -71,218 +201,6 @@ struct AddAccountView: View {
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(40)
-        }
-    }
-    
-    // MARK: - Card Preview Section
-    private var cardPreviewSection: some View {
-        VStack {
-            AccountCardPreview(
-                name: accountName,
-                balance: initialBalance,
-                accountType: selectedAccountType,
-                color: selectedColor,
-                icon: selectedIcon,
-                currencyCode: selectedCurrency?.code ?? "USD"
-            )
-            .padding(.horizontal, 16)
-        }
-    }
-    
-    // MARK: - Account Name Section
-    private var accountNameSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Account Name")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            TextField("Enter account name", text: $accountName)
-                .textFieldStyle(.roundedBorder)
-                .autocorrectionDisabled()
-        }
-    }
-    
-    // MARK: - Color Selection Section
-    private var colorSelectionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Select Color")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(0..<AccountColors.colors.count, id: \.self) { index in
-                        colorButton(index: index)
-                    }
-                }
-                .padding(.horizontal, 20)
-            }
-            .padding(.horizontal, -20)
-        }
-    }
-    
-    // MARK: - Icon Selection Section
-    private var iconSelectionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Select Icon")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            Button {
-                showingIconSelection = true
-            } label: {
-                HStack {
-                    Image(selectedIcon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(selectedColor)
-                    
-                    Text("Tap to change icon")
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.gray.opacity(0.1))
-                )
-            }
-            .buttonStyle(.plain)
-        }
-    }
-    
-    // MARK: - Account Type Section
-    private var accountTypeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Account Type")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            Menu {
-                ForEach(AccountType.allCases, id: \.self) { type in
-                    Button {
-                        selectedAccountType = type
-                        selectedIcon = iconForAccountType(type)
-                    } label: {
-                        HStack {
-                            Image(iconForAccountType(type))
-                            Text(type.displayName)
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Image(iconForAccountType(selectedAccountType))
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(selectedColor)
-                    
-                    Text(selectedAccountType.displayName)
-                        .foregroundColor(.primary)
-                    
-                    Spacer()
-                    
-                    Image("chevron.up.down")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.gray.opacity(0.1))
-                )
-            }
-        }
-    }
-    
-    // MARK: - Currency Section
-    private var currencySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Currency")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            Button {
-                showingCurrencySelection = true
-            } label: {
-                HStack {
-                    if let currency = selectedCurrency {
-                        Image(CurrencyService.shared.getCurrencyIcon(for: currency))
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 24, height: 24)
-                            .clipShape(Circle())
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(currency.code) - \(currency.name)")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.primary)
-                            
-                            Text("Symbol: \(currency.symbol)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    } else {
-                        Image(systemName: "dollarsign.circle")
-                            .foregroundColor(.secondary)
-                            .frame(width: 24, height: 24)
-                        
-                        Text("Select Currency")
-                            .foregroundColor(.secondary)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.gray.opacity(0.1))
-                )
-            }
-            .buttonStyle(.plain)
-        }
-    }
-    
-    // MARK: - Balance Section
-    private var balanceSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Initial Balance")
-                .font(.headline)
-                .foregroundColor(.primary)
-            
-            HStack {
-                Text(selectedCurrency?.symbol ?? "$")
-                    .foregroundStyle(.secondary)
-                    .font(.title3)
-                
-                TextField("0.00", text: $initialBalance)
-                    .font(.title3)
-                    .keyboardType(.decimalPad)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.gray.opacity(0.1))
-            )
         }
     }
     
@@ -361,7 +279,6 @@ struct IconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var selectedIcon: String
     
-    // Доступные иконки для аккаунтов
     private let availableIcons = [
         "cash", "bank", "credit_card", "savings",
         "wallet", "card", "coins", "banknote",

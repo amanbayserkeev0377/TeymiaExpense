@@ -168,7 +168,7 @@ enum TransactionType: String, CaseIterable, Codable {
 enum AccountType: String, CaseIterable, Codable {
     case cash = "cash"
     case bankAccount = "bank_account"
-    case creditCard = "credit_card"
+    case creditCard = "credit.card"
     case savings = "savings"
 }
 

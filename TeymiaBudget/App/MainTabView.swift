@@ -65,17 +65,17 @@ struct TabBar: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(
-            .ultraThinMaterial
-                .shadow(.drop(color: .black.opacity(0.15), radius: 10, x: 0, y: 5))
+            Color.white.opacity(colorScheme == .light ? 0.6 : 0)
+            .background(.ultraThinMaterial)
         )
         .clipShape(RoundedRectangle(cornerRadius: 30))
         .overlay(
             RoundedRectangle(cornerRadius: 30)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
+                .stroke(Color.gray.opacity(0.4), lineWidth: 0.2)
         )
         .shadow(
             color: Color.black.opacity(0.1),
-            radius: 10,
+            radius: 4,
             x: 0,
             y: 5
         )

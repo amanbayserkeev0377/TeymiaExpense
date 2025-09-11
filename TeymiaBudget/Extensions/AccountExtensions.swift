@@ -49,7 +49,7 @@ extension AccountType {
         switch self {
         case .cash: return "cash"
         case .bankAccount: return "bank"
-        case .creditCard: return "credit_card"
+        case .creditCard: return "credit.card"
         case .savings: return "savings"
         }
     }
