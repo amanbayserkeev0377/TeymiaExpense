@@ -3,6 +3,7 @@ import SwiftData
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) var colorScheme
     @Query private var accounts: [Account]
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
     
@@ -37,6 +38,10 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
+                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                .presentationDetents([.fraction(0.99)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
     }
     

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -20,85 +21,99 @@ struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            // Custom Tab Bar
-            VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    // Overview Tab
-                    CustomTabButton(
-                        title: "Dashboard",
-                        iconName: "home.fill",
-                        isSelected: selectedTab == 0
-                    ) {
-                        selectedTab = 0
-                    }
-                    
-                    // Budget Tab
-                    CustomTabButton(
-                        title: "Budget",
-                        iconName: "budget.fill",
-                        isSelected: selectedTab == 1
-                    ) {
-                        selectedTab = 1
-                    }
-                    
-                    // Settings Tab
-                    CustomTabButton(
-                        title: "Settings",
-                        iconName: "settings.fill",
-                        isSelected: selectedTab == 2
-                    ) {
-                        selectedTab = 2
-                    }
-                }
+            TabBar(selectedTab: $selectedTab)
                 .padding(.horizontal, 20)
-                .padding(.top, 6)
-                .padding(.bottom, 34)
-                .background(.ultraThinMaterial)
-                .clipShape(
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 24,
-                        bottomLeadingRadius: 0,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 24
-                    )
-                )
-                .overlay(
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 24,
-                        bottomLeadingRadius: 0,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 24
-                    )
-                    .stroke(.separator, lineWidth: 0.3)
-                )
-            }
+                .padding(.bottom, 20)
         }
         .edgesIgnoringSafeArea(.bottom)
     }
 }
 
-// MARK: - Custom Tab Button
+struct TabBar: View {
+    @Binding var selectedTab: Int
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            // Overview Tab
+            CustomTabButton(
+                title: "Dashboard",
+                iconName: "home.fill",
+                isSelected: selectedTab == 0
+            ) {
+                selectedTab = 0
+            }
+            
+            // Budget Tab
+            CustomTabButton(
+                title: "Budget",
+                iconName: "budget.fill",
+                isSelected: selectedTab == 1
+            ) {
+                selectedTab = 1
+            }
+            
+            // Settings Tab
+            CustomTabButton(
+                title: "Settings",
+                iconName: "settings.fill",
+                isSelected: selectedTab == 2
+            ) {
+                selectedTab = 2
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            .ultraThinMaterial
+                .shadow(.drop(color: .black.opacity(0.15), radius: 10, x: 0, y: 5))
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 30))
+        .overlay(
+            RoundedRectangle(cornerRadius: 30)
+                .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
+        )
+        .shadow(
+            color: Color.black.opacity(0.1),
+            radius: 10,
+            x: 0,
+            y: 5
+        )
+    }
+}
+
 struct CustomTabButton: View {
     let title: String
     let iconName: String
     let isSelected: Bool
     let action: () -> Void
+    @State private var animateTap = false
     
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 2) {
+        Button(action: {
+            action()
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                animateTap = true
+            } completion: {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    animateTap = false
+                }
+            }
+        }) {
+            VStack(spacing: 4) {
                 Image(iconName)
                     .resizable()
                     .foregroundStyle(isSelected ? .app : .secondary)
                     .frame(width: 24, height: 24)
+                    .scaleEffect(animateTap ? 1.1 : 1.0)
                 
                 Text(title)
-                    .font(.caption2)
-                    .fontWeight(isSelected ? .semibold : .medium)
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(isSelected ? .app : .secondary)
             }
             .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PlainButtonStyle())
     }
 }
