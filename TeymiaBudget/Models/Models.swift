@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import SwiftData
 
 // MARK: - Currency
@@ -29,9 +30,9 @@ final class Currency {
 @Model
 final class Category {
     var name: String
-    var iconName: String // Имя кастомной иконки из Assets
+    var iconName: String
     var type: CategoryType
-    var isDefault: Bool // Системные категории vs пользовательские
+    var isDefault: Bool
     var createdAt: Date
     
     // Relationships
@@ -55,9 +56,13 @@ final class Category {
 final class Account {
     var name: String
     var type: AccountType
-    var balance: Decimal // КРИТИЧНО: Decimal для финансов!
+    var balance: Decimal
     var isDefault: Bool
     var createdAt: Date
+    
+    // Кастомизация карточки
+    var customColorHex: String?
+    var customIcon: String?
     
     // Relationships
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
@@ -65,12 +70,14 @@ final class Account {
     
     var currency: Currency
     
-    init(name: String, type: AccountType, balance: Decimal, currency: Currency, isDefault: Bool = false) {
+    init(name: String, type: AccountType, balance: Decimal, currency: Currency, isDefault: Bool = false, customColorHex: String? = nil, customIcon: String? = nil) {
         self.name = name
         self.type = type
         self.balance = balance
         self.currency = currency
         self.isDefault = isDefault
+        self.customColorHex = customColorHex
+        self.customIcon = customIcon
         self.createdAt = Date()
     }
 }
@@ -78,7 +85,7 @@ final class Account {
 // MARK: - Transaction
 @Model
 final class Transaction {
-    var amount: Decimal // КРИТИЧНО: Decimal!
+    var amount: Decimal
     var note: String?
     var date: Date
     var type: TransactionType
@@ -103,7 +110,7 @@ final class Transaction {
 @Model
 final class Budget {
     var name: String
-    var limitAmount: Decimal // КРИТИЧНО: Decimal!
+    var limitAmount: Decimal
     var spentAmount: Decimal
     var period: BudgetPeriod
     var startDate: Date

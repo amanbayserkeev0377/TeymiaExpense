@@ -30,7 +30,7 @@ struct CustomNumericKeypad: View {
                 }) {
                     Image("chevron.down")
                         .resizable()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 26, height: 26)
                 }
             }
             .padding(.horizontal, 20)

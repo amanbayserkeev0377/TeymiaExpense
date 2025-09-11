@@ -163,7 +163,6 @@ struct AddTransactionView: View {
                 selectedCategory = category
             }
             .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
-            .presentationDetents([.fraction(0.99)])
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(40)
         }

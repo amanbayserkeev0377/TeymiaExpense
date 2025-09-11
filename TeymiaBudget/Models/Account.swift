@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import SwiftData
 
 extension Account {
@@ -17,7 +18,9 @@ extension Account {
             type: .cash,
             balance: 0,
             currency: defaultCurrency,
-            isDefault: true
+            isDefault: true,
+            customColorHex: AccountColors.color(at: 0).toHex(),
+            customIcon: "cash"
         )
         
         context.insert(mainAccount)

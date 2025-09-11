@@ -86,16 +86,16 @@ struct CurrencyRowView: View {
                         Text(currency.code)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                         
                         Text(currency.symbol)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                     
                     Text(currency.name)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
                 
@@ -103,9 +103,9 @@ struct CurrencyRowView: View {
                 
                 // Selection indicator
                 if isSelected {
-                    Image(systemName: "checkmark")
-                        .foregroundColor(.accent)
-                        .fontWeight(.semibold)
+                    Image("check")
+                        .resizable()
+                        .frame(width: 28, height: 28)
                 }
             }
             .contentShape(Rectangle())

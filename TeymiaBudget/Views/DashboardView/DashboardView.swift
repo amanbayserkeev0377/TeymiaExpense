@@ -36,14 +36,12 @@ struct DashboardView: View {
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
-                .presentationDetents([.fraction(0.99)])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(40)
         }
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
-                .presentationDetents([.fraction(0.99)])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(40)
         }
@@ -129,29 +127,36 @@ struct DashboardView: View {
         Button {
             showingAddAccount = true
         } label: {
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
                 Image(systemName: "plus.circle")
                     .foregroundStyle(.blue)
-                    .frame(width: 32, height: 32)
+                    .font(.system(size: 48))
                 
-                Text("Add your first account")
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
+                VStack(spacing: 8) {
+                    Text("Add your first account")
+                        .font(.headline)
+                        .foregroundColor(.blue)
+                    
+                    Text("Create a bank account, cash wallet, or credit card")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 140)
+            .frame(height: 220)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemBackground).opacity(0.6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(.blue.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(
+                        style: StrokeStyle(lineWidth: 2, dash: [8, 6])
                     )
+                    .foregroundStyle(.blue.opacity(0.3))
             )
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 20)
     }
+
     
     private var emptyTransactionsView: some View {
         VStack(spacing: 16) {
@@ -181,143 +186,5 @@ struct DashboardView: View {
                 )
         )
         .padding(.horizontal, 20)
-    }
-}
-
-// MARK: - Account Carousel
-struct AccountCarouselView: View {
-    let accounts: [Account]
-    @State private var currentIndex = 0
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            TabView(selection: $currentIndex) {
-                ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
-                    AccountCardView(account: account)
-                        .padding(.horizontal, 30)
-                        .tag(index)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 140)
-            
-            if accounts.count > 1 {
-                HStack(spacing: 8) {
-                    ForEach(0..<accounts.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == currentIndex ? .accent : .accent.opacity(0.3))
-                            .frame(width: 8, height: 8)
-                            .scaleEffect(index == currentIndex ? 1.2 : 1.0)
-                            .animation(.easeInOut(duration: 0.2), value: currentIndex)
-                    }
-                }
-                .padding(.bottom, 8)
-            }
-        }
-    }
-}
-
-// MARK: - Account Card
-struct AccountCardView: View {
-    let account: Account
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Image(account.type.iconName) 
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28, height: 28)
-                    .foregroundStyle(.white)
-                    .padding(12)
-                    .background(
-                        Circle()
-                            .fill(account.type.color.gradient)
-                    )
-                
-                Spacer()
-                
-                Text(account.type.displayName)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(.secondary.opacity(0.1))
-                    )
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(account.name)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                
-                Text(account.formattedBalance)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(account.balance >= 0 ? .primary : .red)
-            }
-        }
-        .padding(20)
-        .frame(maxWidth: .infinity)
-        .frame(height: 140)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground).opacity(0.8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(.separator, lineWidth: 0.15)
-                )
-                .shadow(
-                    color: .black.opacity(0.05),
-                    radius: 8,
-                    x: 0,
-                    y: 4
-                )
-        )
-    }
-}
-
-// MARK: - Extensions
-extension AccountType {
-    var iconName: String {
-        switch self {
-        case .cash: return "cash"
-        case .bankAccount: return "bank"
-        case .creditCard: return "credit_card"
-        case .savings: return "savings"
-        }
-    }
-    
-    var color: Color {
-        switch self {
-        case .cash: return .green
-        case .bankAccount: return .blue
-        case .creditCard: return .orange
-        case .savings: return .purple
-        }
-    }
-    
-    var displayName: String {
-        switch self {
-        case .cash: return "Cash"
-        case .bankAccount: return "Bank"
-        case .creditCard: return "Card"
-        case .savings: return "Savings"
-        }
-    }
-}
-
-extension Account {
-    var formattedBalance: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency.code
-        formatter.currencySymbol = currency.symbol
-        return formatter.string(from: balance as NSDecimalNumber) ?? "\(currency.symbol)0.00"
     }
 }
