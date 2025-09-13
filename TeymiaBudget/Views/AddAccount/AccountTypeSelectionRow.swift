@@ -26,7 +26,7 @@ struct AccountTypeSelectionRow: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
                 
-                Text("Type")
+                Text("type".localized)
                     .foregroundColor(.primary)
                 
                 Spacer()

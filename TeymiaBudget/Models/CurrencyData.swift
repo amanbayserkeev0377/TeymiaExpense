@@ -4,111 +4,347 @@ import SwiftData
 // MARK: - Currency Data
 struct CurrencyData {
     
-    // MARK: - Top Fiat Currencies with symbols (by trading volume)
-    static let topFiatCurrencies: [(code: String, symbol: String, name: String)] = [
-        ("USD", "$", "US Dollar"),
-        ("EUR", "€", "Euro"),
-        ("JPY", "¥", "Japanese Yen"),
-        ("GBP", "£", "British Pound"),
-        ("CNY", "¥", "Chinese Yuan"),
-        ("AUD", "A$", "Australian Dollar"),
-        ("CAD", "C$", "Canadian Dollar"),
-        ("CHF", "CHF", "Swiss Franc"),
-        ("HKD", "HK$", "Hong Kong Dollar"),
-        ("SGD", "S$", "Singapore Dollar"),
-        ("SEK", "kr", "Swedish Krona"),
-        ("NOK", "kr", "Norwegian Krone"),
-        ("DKK", "kr", "Danish Krone"),
-        ("KRW", "₩", "South Korean Won"),
-        ("INR", "₹", "Indian Rupee"),
-        ("BRL", "R$", "Brazilian Real"),
-        ("MXN", "$", "Mexican Peso"),
-        ("ZAR", "R", "South African Rand"),
-        ("RUB", "₽", "Russian Ruble"),
-        ("KGS", "сом", "Kyrgyzstani Som"),
-        // Additional popular currencies
-        ("NZD", "NZ$", "New Zealand Dollar"),
-        ("PLN", "zł", "Polish Zloty"),
-        ("CZK", "Kč", "Czech Koruna"),
-        ("HUF", "Ft", "Hungarian Forint"),
-        ("ILS", "₪", "Israeli Shekel"),
-        ("TRY", "₺", "Turkish Lira"),
-        ("AED", "AED", "UAE Dirham"),
-        ("SAR", "SR", "Saudi Riyal"),
-        ("THB", "฿", "Thai Baht"),
-        ("MYR", "RM", "Malaysian Ringgit")
-    ]
-    
-    // MARK: - Top Crypto Currencies with symbols (by market cap)
-    static let topCryptoCurrencies: [(code: String, symbol: String, name: String)] = [
-        ("BTC", "₿", "Bitcoin"),
-        ("ETH", "Ξ", "Ethereum"),
-        ("USDT", "₮", "Tether"),
-        ("XRP", "XRP", "XRP"),
-        ("BNB", "BNB", "BNB"),
-        ("SOL", "SOL", "Solana"),
-        ("USDC", "USDC", "USD Coin"),
-        ("DOGE", "Ð", "Dogecoin"),
-        ("ADA", "₳", "Cardano"),
-        ("TRX", "TRX", "TRON"),
-        ("AVAX", "AVAX", "Avalanche"),
-        ("TON", "TON", "Toncoin"),
-        ("LINK", "LINK", "Chainlink"),
-        ("DOT", "DOT", "Polkadot"),
-        ("LTC", "Ł", "Litecoin"),
-        ("UNI", "UNI", "Uniswap"),
-        ("ATOM", "ATOM", "Cosmos"),
-        ("XLM", "XLM", "Stellar"),
-        ("XMR", "XMR", "Monero"),
-        ("SHIB", "SHIB", "Shiba Inu")
-    ]
-    
-    // MARK: - Create Currency Objects
-    static func createDefaultCurrencies() -> [Currency] {
-        var currencies: [Currency] = []
+    // MARK: - Complete Fiat Currencies List
+    static let fiatCurrencies: [Currency] = [
+        // TIER 1: Major global currencies (by trading volume)
+        Currency(code: "USD", symbol: "$", name: "currency_us_dollar".localized, type: .fiat),
+        Currency(code: "EUR", symbol: "€", name: "currency_euro".localized, type: .fiat),
+        Currency(code: "JPY", symbol: "¥", name: "currency_japanese_yen".localized, type: .fiat),
+        Currency(code: "GBP", symbol: "£", name: "currency_british_pound".localized, type: .fiat),
+        Currency(code: "CNY", symbol: "¥", name: "currency_chinese_yuan".localized, type: .fiat),
+        Currency(code: "AUD", symbol: "A$", name: "currency_australian_dollar".localized, type: .fiat),
+        Currency(code: "CAD", symbol: "C$", name: "currency_canadian_dollar".localized, type: .fiat),
+        Currency(code: "CHF", symbol: "CHF", name: "currency_swiss_franc".localized, type: .fiat),
+        Currency(code: "HKD", symbol: "HK$", name: "currency_hong_kong_dollar".localized, type: .fiat),
+        Currency(code: "SGD", symbol: "S$", name: "currency_singapore_dollar".localized, type: .fiat),
         
-        // Add fiat currencies
-        for (index, currencyData) in topFiatCurrencies.enumerated() {
-            let currency = Currency(
-                code: currencyData.code,
-                symbol: currencyData.symbol,
-                name: currencyData.name,
-                type: .fiat,
-                isDefault: index == 0 // USD is default
-            )
-            currencies.append(currency)
+        // TIER 2: Regional powerhouses & popular trading pairs
+        Currency(code: "NZD", symbol: "NZ$", name: "currency_new_zealand_dollar".localized, type: .fiat),
+        Currency(code: "SEK", symbol: "kr", name: "currency_swedish_krona".localized, type: .fiat),
+        Currency(code: "NOK", symbol: "kr", name: "currency_norwegian_krone".localized, type: .fiat),
+        Currency(code: "DKK", symbol: "kr", name: "currency_danish_krone".localized, type: .fiat),
+        Currency(code: "KRW", symbol: "₩", name: "currency_south_korean_won".localized, type: .fiat),
+        Currency(code: "INR", symbol: "₹", name: "currency_indian_rupee".localized, type: .fiat),
+        Currency(code: "BRL", symbol: "R$", name: "currency_brazilian_real".localized, type: .fiat),
+        Currency(code: "MXN", symbol: "$", name: "currency_mexican_peso".localized, type: .fiat),
+        Currency(code: "ZAR", symbol: "R", name: "currency_south_african_rand".localized, type: .fiat),
+        Currency(code: "RUB", symbol: "₽", name: "currency_russian_ruble".localized, type: .fiat),
+        
+        // TIER 3: Rest alphabetically (regional/emerging markets)
+        Currency(code: "AED", symbol: "AED", name: "currency_uae_dirham".localized, type: .fiat),
+        Currency(code: "AFN", symbol: "؋", name: "currency_afghan_afghani".localized, type: .fiat),
+        Currency(code: "ALL", symbol: "L", name: "currency_albanian_lek".localized, type: .fiat),
+        Currency(code: "AMD", symbol: "֏", name: "currency_armenian_dram".localized, type: .fiat),
+        Currency(code: "ANG", symbol: "ƒ", name: "currency_netherlands_antillean_guilder".localized, type: .fiat),
+        Currency(code: "AOA", symbol: "Kz", name: "currency_angolan_kwanza".localized, type: .fiat),
+        Currency(code: "ARS", symbol: "$", name: "currency_argentine_peso".localized, type: .fiat),
+        Currency(code: "AWG", symbol: "ƒ", name: "currency_aruban_florin".localized, type: .fiat),
+        Currency(code: "AZN", symbol: "₼", name: "currency_azerbaijani_manat".localized, type: .fiat),
+        Currency(code: "BAM", symbol: "KM", name: "currency_bosnia_herzegovina_convertible_mark".localized, type: .fiat),
+        Currency(code: "BBD", symbol: "$", name: "currency_barbadian_dollar".localized, type: .fiat),
+        Currency(code: "BDT", symbol: "৳", name: "currency_bangladeshi_taka".localized, type: .fiat),
+        Currency(code: "BGN", symbol: "лв", name: "currency_bulgarian_lev".localized, type: .fiat),
+        Currency(code: "BHD", symbol: "BD", name: "currency_bahraini_dinar".localized, type: .fiat),
+        Currency(code: "BIF", symbol: "FBu", name: "currency_burundian_franc".localized, type: .fiat),
+        Currency(code: "BMD", symbol: "$", name: "currency_bermudian_dollar".localized, type: .fiat),
+        Currency(code: "BND", symbol: "$", name: "currency_brunei_dollar".localized, type: .fiat),
+        Currency(code: "BOB", symbol: "Bs", name: "currency_bolivian_boliviano".localized, type: .fiat),
+        Currency(code: "BSD", symbol: "$", name: "currency_bahamian_dollar".localized, type: .fiat),
+        Currency(code: "BTN", symbol: "Nu", name: "currency_bhutanese_ngultrum".localized, type: .fiat),
+        Currency(code: "BWP", symbol: "P", name: "currency_botswanan_pula".localized, type: .fiat),
+        Currency(code: "BYN", symbol: "Br", name: "currency_belarusian_ruble".localized, type: .fiat),
+        Currency(code: "BZD", symbol: "$", name: "currency_belize_dollar".localized, type: .fiat),
+        Currency(code: "CDF", symbol: "FC", name: "currency_congolese_franc".localized, type: .fiat),
+        Currency(code: "CLP", symbol: "$", name: "currency_chilean_peso".localized, type: .fiat),
+        Currency(code: "COP", symbol: "$", name: "currency_colombian_peso".localized, type: .fiat),
+        Currency(code: "CRC", symbol: "₡", name: "currency_costa_rican_colon".localized, type: .fiat),
+        Currency(code: "CUC", symbol: "$", name: "currency_cuban_convertible_peso".localized, type: .fiat),
+        Currency(code: "CUP", symbol: "$", name: "currency_cuban_peso".localized, type: .fiat),
+        Currency(code: "CVE", symbol: "$", name: "currency_cape_verdean_escudo".localized, type: .fiat),
+        Currency(code: "CZK", symbol: "Kč", name: "currency_czech_koruna".localized, type: .fiat),
+        Currency(code: "DJF", symbol: "Fdj", name: "currency_djiboutian_franc".localized, type: .fiat),
+        Currency(code: "DOP", symbol: "$", name: "currency_dominican_peso".localized, type: .fiat),
+        Currency(code: "DZD", symbol: "DA", name: "currency_algerian_dinar".localized, type: .fiat),
+        Currency(code: "EGP", symbol: "£", name: "currency_egyptian_pound".localized, type: .fiat),
+        Currency(code: "ERN", symbol: "Nfk", name: "currency_eritrean_nakfa".localized, type: .fiat),
+        Currency(code: "ETB", symbol: "Br", name: "currency_ethiopian_birr".localized, type: .fiat),
+        Currency(code: "FJD", symbol: "$", name: "currency_fijian_dollar".localized, type: .fiat),
+        Currency(code: "FKP", symbol: "£", name: "currency_falkland_islands_pound".localized, type: .fiat),
+        Currency(code: "FOK", symbol: "kr", name: "currency_faroese_krona".localized, type: .fiat),
+        Currency(code: "GEL", symbol: "₾", name: "currency_georgian_lari".localized, type: .fiat),
+        Currency(code: "GGP", symbol: "£", name: "currency_guernsey_pound".localized, type: .fiat),
+        Currency(code: "GHS", symbol: "₵", name: "currency_ghanaian_cedi".localized, type: .fiat),
+        Currency(code: "GIP", symbol: "£", name: "currency_gibraltar_pound".localized, type: .fiat),
+        Currency(code: "GMD", symbol: "D", name: "currency_gambian_dalasi".localized, type: .fiat),
+        Currency(code: "GNF", symbol: "FG", name: "currency_guinean_franc".localized, type: .fiat),
+        Currency(code: "GTQ", symbol: "Q", name: "currency_guatemalan_quetzal".localized, type: .fiat),
+        Currency(code: "GYD", symbol: "$", name: "currency_guyanaese_dollar".localized, type: .fiat),
+        Currency(code: "HNL", symbol: "L", name: "currency_honduran_lempira".localized, type: .fiat),
+        Currency(code: "HRK", symbol: "kn", name: "currency_croatian_kuna".localized, type: .fiat),
+        Currency(code: "HTG", symbol: "G", name: "currency_haitian_gourde".localized, type: .fiat),
+        Currency(code: "HUF", symbol: "Ft", name: "currency_hungarian_forint".localized, type: .fiat),
+        Currency(code: "IDR", symbol: "Rp", name: "currency_indonesian_rupiah".localized, type: .fiat),
+        Currency(code: "ILS", symbol: "₪", name: "currency_israeli_shekel".localized, type: .fiat),
+        Currency(code: "IMP", symbol: "£", name: "currency_manx_pound".localized, type: .fiat),
+        Currency(code: "IQD", symbol: "ع.د", name: "currency_iraqi_dinar".localized, type: .fiat),
+        Currency(code: "IRR", symbol: "﷼", name: "currency_iranian_rial".localized, type: .fiat),
+        Currency(code: "ISK", symbol: "kr", name: "currency_icelandic_krona".localized, type: .fiat),
+        Currency(code: "JEP", symbol: "£", name: "currency_jersey_pound".localized, type: .fiat),
+        Currency(code: "JMD", symbol: "$", name: "currency_jamaican_dollar".localized, type: .fiat),
+        Currency(code: "JOD", symbol: "JD", name: "currency_jordanian_dinar".localized, type: .fiat),
+        Currency(code: "KES", symbol: "KSh", name: "currency_kenyan_shilling".localized, type: .fiat),
+        Currency(code: "KGS", symbol: "сом", name: "currency_kyrgyzstani_som".localized, type: .fiat),
+        Currency(code: "KHR", symbol: "៛", name: "currency_cambodian_riel".localized, type: .fiat),
+        Currency(code: "KID", symbol: "$", name: "currency_kiribati_dollar".localized, type: .fiat),
+        Currency(code: "KMF", symbol: "CF", name: "currency_comorian_franc".localized, type: .fiat),
+        Currency(code: "KPW", symbol: "₩", name: "currency_north_korean_won".localized, type: .fiat),
+        Currency(code: "KWD", symbol: "KD", name: "currency_kuwaiti_dinar".localized, type: .fiat),
+        Currency(code: "KYD", symbol: "$", name: "currency_cayman_islands_dollar".localized, type: .fiat),
+        Currency(code: "KZT", symbol: "₸", name: "currency_kazakhstani_tenge".localized, type: .fiat),
+        Currency(code: "LAK", symbol: "₭", name: "currency_laotian_kip".localized, type: .fiat),
+        Currency(code: "LBP", symbol: "£", name: "currency_lebanese_pound".localized, type: .fiat),
+        Currency(code: "LKR", symbol: "Rs", name: "currency_sri_lankan_rupee".localized, type: .fiat),
+        Currency(code: "LRD", symbol: "$", name: "currency_liberian_dollar".localized, type: .fiat),
+        Currency(code: "LSL", symbol: "L", name: "currency_lesotho_loti".localized, type: .fiat),
+        Currency(code: "LTL", symbol: "Lt", name: "currency_lithuanian_litas".localized, type: .fiat),
+        Currency(code: "LVL", symbol: "Ls", name: "currency_latvian_lats".localized, type: .fiat),
+        Currency(code: "LYD", symbol: "LD", name: "currency_libyan_dinar".localized, type: .fiat),
+        Currency(code: "MAD", symbol: "DH", name: "currency_moroccan_dirham".localized, type: .fiat),
+        Currency(code: "MDL", symbol: "L", name: "currency_moldovan_leu".localized, type: .fiat),
+        Currency(code: "MGA", symbol: "Ar", name: "currency_malagasy_ariary".localized, type: .fiat),
+        Currency(code: "MKD", symbol: "ден", name: "currency_macedonian_denar".localized, type: .fiat),
+        Currency(code: "MMK", symbol: "K", name: "currency_myanmar_kyat".localized, type: .fiat),
+        Currency(code: "MNT", symbol: "₮", name: "currency_mongolian_tugrik".localized, type: .fiat),
+        Currency(code: "MOP", symbol: "MOP$", name: "currency_macanese_pataca".localized, type: .fiat),
+        Currency(code: "MRU", symbol: "UM", name: "currency_mauritanian_ouguiya".localized, type: .fiat),
+        Currency(code: "MUR", symbol: "Rs", name: "currency_mauritian_rupee".localized, type: .fiat),
+        Currency(code: "MVR", symbol: "Rf", name: "currency_maldivian_rufiyaa".localized, type: .fiat),
+        Currency(code: "MWK", symbol: "MK", name: "currency_malawian_kwacha".localized, type: .fiat),
+        Currency(code: "MYR", symbol: "RM", name: "currency_malaysian_ringgit".localized, type: .fiat),
+        Currency(code: "MZN", symbol: "MT", name: "currency_mozambican_metical".localized, type: .fiat),
+        Currency(code: "NAD", symbol: "$", name: "currency_namibian_dollar".localized, type: .fiat),
+        Currency(code: "NGN", symbol: "₦", name: "currency_nigerian_naira".localized, type: .fiat),
+        Currency(code: "NIO", symbol: "C$", name: "currency_nicaraguan_cordoba".localized, type: .fiat),
+        Currency(code: "NPR", symbol: "Rs", name: "currency_nepalese_rupee".localized, type: .fiat),
+        Currency(code: "OMR", symbol: "OMR", name: "currency_omani_rial".localized, type: .fiat),
+        Currency(code: "PAB", symbol: "B/.", name: "currency_panamanian_balboa".localized, type: .fiat),
+        Currency(code: "PEN", symbol: "S/", name: "currency_peruvian_sol".localized, type: .fiat),
+        Currency(code: "PGK", symbol: "K", name: "currency_papua_new_guinean_kina".localized, type: .fiat),
+        Currency(code: "PHP", symbol: "₱", name: "currency_philippine_peso".localized, type: .fiat),
+        Currency(code: "PKR", symbol: "Rs", name: "currency_pakistani_rupee".localized, type: .fiat),
+        Currency(code: "PLN", symbol: "zł", name: "currency_polish_zloty".localized, type: .fiat),
+        Currency(code: "PYG", symbol: "₲", name: "currency_paraguayan_guarani".localized, type: .fiat),
+        Currency(code: "QAR", symbol: "QR", name: "currency_qatari_riyal".localized, type: .fiat),
+        Currency(code: "RON", symbol: "lei", name: "currency_romanian_leu".localized, type: .fiat),
+        Currency(code: "RSD", symbol: "дин", name: "currency_serbian_dinar".localized, type: .fiat),
+        Currency(code: "RWF", symbol: "RF", name: "currency_rwandan_franc".localized, type: .fiat),
+        Currency(code: "SAR", symbol: "SR", name: "currency_saudi_riyal".localized, type: .fiat),
+        Currency(code: "SBD", symbol: "$", name: "currency_solomon_islands_dollar".localized, type: .fiat),
+        Currency(code: "SCR", symbol: "Rs", name: "currency_seychellois_rupee".localized, type: .fiat),
+        Currency(code: "SDG", symbol: "SDG", name: "currency_sudanese_pound".localized, type: .fiat),
+        Currency(code: "SHP", symbol: "£", name: "currency_saint_helena_pound".localized, type: .fiat),
+        Currency(code: "SLL", symbol: "Le", name: "currency_sierra_leonean_leone".localized, type: .fiat),
+        Currency(code: "SOS", symbol: "S", name: "currency_somali_shilling".localized, type: .fiat),
+        Currency(code: "SRD", symbol: "$", name: "currency_surinamese_dollar".localized, type: .fiat),
+        Currency(code: "SSP", symbol: "£", name: "currency_south_sudanese_pound".localized, type: .fiat),
+        Currency(code: "STD", symbol: "Db", name: "currency_sao_tome_and_principe_dobra".localized, type: .fiat),
+        Currency(code: "SVC", symbol: "$", name: "currency_salvadoran_colon".localized, type: .fiat),
+        Currency(code: "SYP", symbol: "£", name: "currency_syrian_pound".localized, type: .fiat),
+        Currency(code: "SZL", symbol: "E", name: "currency_swazi_lilangeni".localized, type: .fiat),
+        Currency(code: "THB", symbol: "฿", name: "currency_thai_baht".localized, type: .fiat),
+        Currency(code: "TJS", symbol: "SM", name: "currency_tajikistani_somoni".localized, type: .fiat),
+        Currency(code: "TMT", symbol: "T", name: "currency_turkmenistan_manat".localized, type: .fiat),
+        Currency(code: "TND", symbol: "DT", name: "currency_tunisian_dinar".localized, type: .fiat),
+        Currency(code: "TOP", symbol: "T$", name: "currency_tongan_paanga".localized, type: .fiat),
+        Currency(code: "TRY", symbol: "₺", name: "currency_turkish_lira".localized, type: .fiat),
+        Currency(code: "TTD", symbol: "$", name: "currency_trinidad_and_tobago_dollar".localized, type: .fiat),
+        Currency(code: "TVD", symbol: "$", name: "currency_tuvaluan_dollar".localized, type: .fiat),
+        Currency(code: "TWD", symbol: "NT$", name: "currency_taiwan_new_dollar".localized, type: .fiat),
+        Currency(code: "TZS", symbol: "TSh", name: "currency_tanzanian_shilling".localized, type: .fiat),
+        Currency(code: "UAH", symbol: "₴", name: "currency_ukrainian_hryvnia".localized, type: .fiat),
+        Currency(code: "UGX", symbol: "USh", name: "currency_ugandan_shilling".localized, type: .fiat),
+        Currency(code: "UYU", symbol: "$", name: "currency_uruguayan_peso".localized, type: .fiat),
+        Currency(code: "UZS", symbol: "сум", name: "currency_uzbekistani_som".localized, type: .fiat),
+        Currency(code: "VES", symbol: "Bs", name: "currency_venezuelan_bolivar".localized, type: .fiat),
+        Currency(code: "VND", symbol: "₫", name: "currency_vietnamese_dong".localized, type: .fiat),
+        Currency(code: "VUV", symbol: "VT", name: "currency_vanuatu_vatu".localized, type: .fiat),
+        Currency(code: "WST", symbol: "WS$", name: "currency_samoan_tala".localized, type: .fiat),
+        Currency(code: "XAF", symbol: "FCFA", name: "currency_central_african_cfa_franc".localized, type: .fiat),
+        Currency(code: "XCD", symbol: "$", name: "currency_east_caribbean_dollar".localized, type: .fiat),
+        Currency(code: "XOF", symbol: "CFA", name: "currency_west_african_cfa_franc".localized, type: .fiat),
+        Currency(code: "XPF", symbol: "₣", name: "currency_cfp_franc".localized, type: .fiat),
+        Currency(code: "YER", symbol: "﷼", name: "currency_yemeni_rial".localized, type: .fiat),
+        Currency(code: "ZMK", symbol: "ZK", name: "currency_zambian_kwacha_old".localized, type: .fiat),
+        Currency(code: "ZMW", symbol: "ZK", name: "currency_zambian_kwacha".localized, type: .fiat),
+        Currency(code: "ZWL", symbol: "$", name: "currency_zimbabwean_dollar".localized, type: .fiat)
+    ]
+
+    // MARK: - Complete Crypto Currencies List
+    static let cryptoCurrencies: [Currency] = [
+        // TOP 10: By market cap ranking (January 2025)
+        Currency(code: "BTC", symbol: "₿", name: "Bitcoin", type: .crypto),
+        Currency(code: "ETH", symbol: "Ξ", name: "Ethereum", type: .crypto),
+        Currency(code: "USDT", symbol: "₮", name: "Tether", type: .crypto),
+        Currency(code: "XRP", symbol: "XRP", name: "XRP", type: .crypto),
+        Currency(code: "BNB", symbol: "BNB", name: "BNB", type: .crypto),
+        Currency(code: "SOL", symbol: "SOL", name: "Solana", type: .crypto),
+        Currency(code: "USDC", symbol: "USDC", name: "USD Coin", type: .crypto),
+        Currency(code: "DOGE", symbol: "Ð", name: "Dogecoin", type: .crypto),
+        Currency(code: "ADA", symbol: "₳", name: "Cardano", type: .crypto),
+        Currency(code: "TRX", symbol: "TRX", name: "TRON", type: .crypto),
+        
+        // TIER 2: Major altcoins (Top 11-25)
+        Currency(code: "AVAX", symbol: "AVAX", name: "Avalanche", type: .crypto),
+        Currency(code: "TON", symbol: "TON", name: "Toncoin", type: .crypto),
+        Currency(code: "LINK", symbol: "LINK", name: "Chainlink", type: .crypto),
+        Currency(code: "DOT", symbol: "DOT", name: "Polkadot", type: .crypto),
+        Currency(code: "WBTC", symbol: "WBTC", name: "Wrapped Bitcoin", type: .crypto),
+        Currency(code: "LTC", symbol: "Ł", name: "Litecoin", type: .crypto),
+        Currency(code: "UNI", symbol: "UNI", name: "Uniswap", type: .crypto),
+        Currency(code: "ATOM", symbol: "ATOM", name: "Cosmos", type: .crypto),
+        Currency(code: "ICP", symbol: "ICP", name: "Internet Computer", type: .crypto),
+        Currency(code: "STETH", symbol: "STETH", name: "Lido Staked Ether", type: .crypto),
+        
+        // TIER 3: Rest by popularity/volume (alphabetical)
+        Currency(code: "AAVE", symbol: "AAVE", name: "Aave", type: .crypto),
+        Currency(code: "ALGO", symbol: "ALGO", name: "Algorand", type: .crypto),
+        Currency(code: "APT", symbol: "APT", name: "Aptos", type: .crypto),
+        Currency(code: "ARB", symbol: "ARB", name: "Arbitrum", type: .crypto),
+        Currency(code: "AXS", symbol: "AXS", name: "Axie Infinity", type: .crypto),
+        Currency(code: "BCH", symbol: "BCH", name: "Bitcoin Cash", type: .crypto),
+        Currency(code: "BGB", symbol: "BGB", name: "Bitget Token", type: .crypto),
+        Currency(code: "BUSD", symbol: "BUSD", name: "Binance USD", type: .crypto),
+        Currency(code: "CFX", symbol: "CFX", name: "Conflux", type: .crypto),
+        Currency(code: "CRO", symbol: "CRO", name: "Cronos", type: .crypto),
+        Currency(code: "DAI", symbol: "DAI", name: "Dai", type: .crypto),
+        Currency(code: "EGLD", symbol: "EGLD", name: "MultiversX", type: .crypto),
+        Currency(code: "ETC", symbol: "ETC", name: "Ethereum Classic", type: .crypto),
+        Currency(code: "FIL", symbol: "FIL", name: "Filecoin", type: .crypto),
+        Currency(code: "FLR", symbol: "FLR", name: "Flare", type: .crypto),
+        Currency(code: "GRT", symbol: "GRT", name: "The Graph", type: .crypto),
+        Currency(code: "HBAR", symbol: "HBAR", name: "Hedera", type: .crypto),
+        Currency(code: "INJ", symbol: "INJ", name: "Injective", type: .crypto),
+        Currency(code: "JLP", symbol: "JLP", name: "Jupiter", type: .crypto),
+        Currency(code: "KAS", symbol: "KAS", name: "Kaspa", type: .crypto),
+        Currency(code: "LDO", symbol: "LDO", name: "Lido DAO", type: .crypto),
+        Currency(code: "LEO", symbol: "LEO", name: "UNUS SED LEO", type: .crypto),
+        Currency(code: "LUNC", symbol: "LUNC", name: "Terra Luna Classic", type: .crypto),
+        Currency(code: "METH", symbol: "METH", name: "Mantle Staked Ether", type: .crypto),
+        Currency(code: "NEAR", symbol: "NEAR", name: "NEAR Protocol", type: .crypto),
+        Currency(code: "OP", symbol: "OP", name: "Optimism", type: .crypto),
+        Currency(code: "POL", symbol: "POL", name: "Polygon", type: .crypto),
+        Currency(code: "PYTH", symbol: "PYTH", name: "Pyth Network", type: .crypto),
+        Currency(code: "QNT", symbol: "QNT", name: "Quant", type: .crypto),
+        Currency(code: "RENDER", symbol: "RENDER", name: "Render", type: .crypto),
+        Currency(code: "SEI", symbol: "SEI", name: "Sei", type: .crypto),
+        Currency(code: "SHIB", symbol: "SHIB", name: "Shiba Inu", type: .crypto),
+        Currency(code: "STX", symbol: "STX", name: "Stacks", type: .crypto),
+        Currency(code: "SUI", symbol: "SUI", name: "Sui", type: .crypto),
+        Currency(code: "TAO", symbol: "TAO", name: "Bittensor", type: .crypto),
+        Currency(code: "THETA", symbol: "THETA", name: "Theta Network", type: .crypto),
+        Currency(code: "TIA", symbol: "TIA", name: "Celestia", type: .crypto),
+        Currency(code: "VET", symbol: "VET", name: "VeChain", type: .crypto),
+        Currency(code: "WBT", symbol: "WBT", name: "WhiteBIT Token", type: .crypto),
+        Currency(code: "XLM", symbol: "XLM", name: "Stellar", type: .crypto),
+        Currency(code: "XMR", symbol: "XMR", name: "Monero", type: .crypto),
+        Currency(code: "XTZ", symbol: "XTZ", name: "Tezos", type: .crypto),
+        Currency(code: "ZEC", symbol: "ZEC", name: "Zcash", type: .crypto)
+    ]
+    
+    // MARK: - Auto-Detection Logic
+    static func detectUserCurrency() -> String {
+        // Get user's locale
+        let userLocale = Locale.current
+        
+        // Try to get currency from locale
+        if let currencyCode = userLocale.currency?.identifier {
+            return currencyCode
         }
         
-        // Add crypto currencies
-        for currencyData in topCryptoCurrencies {
-            let currency = Currency(
-                code: currencyData.code,
-                symbol: currencyData.symbol,
-                name: currencyData.name,
-                type: .crypto,
+        // Fallback: map region to currency
+        if let regionCode = userLocale.region?.identifier {
+            let currencyByRegion = getCurrencyForRegion(regionCode)
+            return currencyByRegion
+        }
+        
+        // Ultimate fallback - USD
+        return "USD"
+    }
+    
+    private static func getCurrencyForRegion(_ regionCode: String) -> String {
+        let regionToCurrency: [String: String] = [
+            // Major regions
+            "US": "USD", "CA": "CAD", "GB": "GBP",
+            "AU": "AUD", "JP": "JPY", "CN": "CNY", "IN": "INR",
+            "BR": "BRL", "MX": "MXN", "KR": "KRW", "SG": "SGD",
+            "CH": "CHF", "SE": "SEK", "NO": "NOK", "DK": "DKK",
+            "PL": "PLN", "CZ": "CZK", "HU": "HUF", "IL": "ILS",
+            "TR": "TRY", "AE": "AED", "SA": "SAR", "TH": "THB",
+            "MY": "MYR", "ZA": "ZAR", "RU": "RUB",
+            
+            // CIS countries
+            "KG": "KGS", "KZ": "KZT", "UZ": "UZS", "TJ": "TJS",
+            "AM": "AMD", "AZ": "AZN", "GE": "GEL", "MD": "MDL",
+            "UA": "UAH", "BY": "BYN"
+        ]
+        
+        return regionToCurrency[regionCode] ?? "USD"
+    }
+    
+    // MARK: - Create Default Currencies with Auto-Detection
+    static func createDefaultCurrencies() -> [Currency] {
+        let detectedCurrencyCode = detectUserCurrency()
+        var currencies: [Currency] = []
+        
+        // Check if detected currency exists in our list
+        let hasDetectedCurrency = fiatCurrencies.contains { $0.code == detectedCurrencyCode }
+        let defaultCurrencyCode = hasDetectedCurrency ? detectedCurrencyCode : "USD"
+        
+        // Add fiat currencies with auto-detection
+        for currency in fiatCurrencies {
+            let currencyWithDefault = Currency(
+                code: currency.code,
+                symbol: currency.symbol,
+                name: currency.name,
+                type: currency.type,
+                isDefault: currency.code == defaultCurrencyCode
+            )
+            currencies.append(currencyWithDefault)
+        }
+        
+        // Add crypto currencies (no defaults)
+        for currency in cryptoCurrencies {
+            let currencyWithDefault = Currency(
+                code: currency.code,
+                symbol: currency.symbol,
+                name: currency.name,
+                type: currency.type,
                 isDefault: false
             )
-            currencies.append(currency)
+            currencies.append(currencyWithDefault)
         }
         
         return currencies
     }
     
     // MARK: - Helper Methods
-    static func getAllCurrencies() -> [Currency] {
-        return createDefaultCurrencies()
-    }
     
     static func getCurrencies(for type: CurrencyType) -> [Currency] {
-        return getAllCurrencies().filter { $0.type == type }
+        switch type {
+        case .fiat:
+            return fiatCurrencies
+        case .crypto:
+            return cryptoCurrencies
+        }
     }
-    
+
     static func findCurrency(by code: String) -> Currency? {
-        return getAllCurrencies().first { $0.code == code }
+        let allCurrencies = fiatCurrencies + cryptoCurrencies
+        return allCurrencies.first { $0.code == code }
     }
-    
+
     static func searchCurrencies(query: String, type: CurrencyType? = nil) -> [Currency] {
-        let currencies = type == nil ? getAllCurrencies() : getCurrencies(for: type!)
+        let currencies = type == nil ? (fiatCurrencies + cryptoCurrencies) : getCurrencies(for: type!)
         
         if query.isEmpty {
             return currencies
@@ -117,15 +353,6 @@ struct CurrencyData {
         return currencies.filter { currency in
             currency.code.lowercased().contains(query.lowercased()) ||
             currency.name.lowercased().contains(query.lowercased())
-        }.sorted { lhs, rhs in
-            // Exact code match first
-            let lhsExactMatch = lhs.code.lowercased() == query.lowercased()
-            let rhsExactMatch = rhs.code.lowercased() == query.lowercased()
-            
-            if lhsExactMatch && !rhsExactMatch { return true }
-            if !lhsExactMatch && rhsExactMatch { return false }
-            
-            return lhs.code < rhs.code
         }
     }
 }
@@ -140,18 +367,15 @@ extension Currency {
         }
     }
 }
+
+// MARK: - Currency Service
 class CurrencyService {
     static let shared = CurrencyService()
     private init() {}
     
     // Get icon name for currency (flag for fiat, crypto icon for crypto)
     func getCurrencyIcon(for currency: Currency) -> String {
-        switch currency.type {
-        case .fiat:
-            return getFlagIcon(for: currency.code)
-        case .crypto:
-            return getCryptoIcon(for: currency.code)
-        }
+        return currency.code.uppercased()
     }
     
     private func getFlagIcon(for currencyCode: String) -> String {

@@ -9,7 +9,7 @@ struct AddAccountView: View {
     
     @State private var accountName: String = ""
     @State private var selectedAccountType: AccountType = .cash
-    @State private var initialBalance: String = ""
+    @State private var balance: String = ""
     @State private var selectedCurrency: Currency?
     @State private var selectedColorIndex: Int = 0
     @State private var selectedIcon: String = "cash"
@@ -27,7 +27,7 @@ struct AddAccountView: View {
                 Section {
                     AccountCardPreview(
                         name: accountName,
-                        balance: initialBalance,
+                        balance: balance,
                         accountType: selectedAccountType,
                         color: selectedColor,
                         icon: selectedIcon,
@@ -39,17 +39,18 @@ struct AddAccountView: View {
                 
                 // Account Name
                 Section {
-                    TextField("Enter account name", text: $accountName)
+                    TextField("account_name".localized, text: $accountName)
                         .autocorrectionDisabled()
                     
                     // Initial Balance
                     HStack {
+                        TextField("balance".localized, text: $balance)
+                            .keyboardType(.decimalPad)
+                        
+                        Spacer()
+                        
                         Text(selectedCurrency?.symbol ?? "$")
                             .foregroundStyle(.secondary)
-                        
-                        TextField("0.00", text: $initialBalance)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
                     }
                 }
                 .listRowBackground(Color.gray.opacity(0.1))
@@ -96,6 +97,11 @@ struct AddAccountView: View {
         .onAppear {
             setupDefaults()
         }
+        .onChange(of: currencies) { _, newCurrencies in
+            if !newCurrencies.isEmpty && selectedCurrency == nil {
+                setupDefaults()
+            }
+        }
         .sheet(isPresented: $showingCurrencySelection) {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
@@ -118,7 +124,11 @@ struct AddAccountView: View {
     
     // MARK: - Helper Methods
     private func setupDefaults() {
-        selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
+        guard !currencies.isEmpty else { return }
+        
+        if selectedCurrency == nil {
+            selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
+        }
         selectedIcon = iconForAccountType(selectedAccountType)
     }
     

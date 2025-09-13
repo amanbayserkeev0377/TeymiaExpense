@@ -16,7 +16,7 @@ struct IconSelectionRow: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
                 
-                Text("Icon")
+                Text("icon".localized)
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -34,16 +34,18 @@ struct IconSelectionRow: View {
 
 struct IconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
     
     private let availableIcons = [
         "cash", "bank", "credit.card", "piggy.bank",
         "wallet", "money.wings", "coins", "crypto.coins",
         "nft", "hand.usd", "hand.bill", "hand.revenue",
-        "coins.up", "coins.tax", "shopping.basket", "",
+        "coins.up", "coins.tax", "shopping.basket", "dollar.sack",
+        "dollar.transfer", "scales", "chart.pie", "money.lock",
         "briefcase", "cash.simple", "dollar.plant", "master.card",
-        "visa", "stripe", "apple.pay", "amazon.pay",
-        "bitcoin", "ethereum", "shopify", "paypal"
+        "bitcoin", "ethereum", "shopify", "paypal",
+        "visa", "stripe", "apple.pay", "amazon.pay"
     ]
     
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
@@ -70,11 +72,15 @@ struct IconSelectionView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 32, height: 32)
-                .foregroundStyle(selectedIcon == icon ? .white : .primary)
+                .foregroundStyle(
+                    selectedIcon == icon
+                    ? (colorScheme == .light ? Color.white : Color.black)
+                    : Color.primary
+                )
                 .padding(14)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.8) : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.1))
                 )
         }
         .buttonStyle(.plain)

@@ -17,25 +17,33 @@ struct CurrencySelectionRow: View {
                         .frame(width: 24, height: 24)
                         .clipShape(Circle())
                     
-                    Text("\(currency.code) - \(currency.name)")
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                } else {
-                    Image(systemName: "dollarsign.circle")
-                        .foregroundColor(.secondary)
-                        .frame(width: 24, height: 24)
+                    Text("currency".localized)
+                        .foregroundStyle(.primary)
                     
-                    Text("Select Currency")
-                        .foregroundColor(.secondary)
+                    Spacer()
+                    
+                    Text(currency.code)
+                        .foregroundStyle(.secondary)
+                    
+                } else {
+                    Image("dollar")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 24, height: 24)
+                        .clipShape(Circle())
+                    
+                    Text("select_currency".localized)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
                 }
-                
-                Spacer()
                 
                 Image("chevron.right")
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.tertiary)
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
