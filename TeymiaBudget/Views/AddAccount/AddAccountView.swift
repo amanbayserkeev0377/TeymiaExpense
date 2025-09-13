@@ -9,7 +9,7 @@ struct AddAccountView: View {
     
     @State private var accountName: String = ""
     @State private var selectedAccountType: AccountType = .cash
-    @State private var balance: String = ""
+    @State private var initialBalance: String = ""
     @State private var selectedCurrency: Currency?
     @State private var selectedColorIndex: Int = 0
     @State private var selectedIcon: String = "cash"
@@ -27,7 +27,7 @@ struct AddAccountView: View {
                 Section {
                     AccountCardPreview(
                         name: accountName,
-                        balance: balance,
+                        balance: initialBalance,
                         accountType: selectedAccountType,
                         color: selectedColor,
                         icon: selectedIcon,
@@ -44,7 +44,7 @@ struct AddAccountView: View {
                     
                     // Initial Balance
                     HStack {
-                        TextField("balance".localized, text: $balance)
+                        TextField("balance".localized, text: $initialBalance)
                             .keyboardType(.decimalPad)
                         
                         Spacer()

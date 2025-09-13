@@ -3,16 +3,15 @@ import SwiftData
 
 extension Category {
     static func createDefaults(context: ModelContext) {
-        // Default expense categories - кастомные иконки из Assets
         let expenseCategories = [
-            ("Food", "food"),
-            ("Transport", "transport"),
-            ("Entertainment", "entertainment"),
-            ("Shopping", "shopping"),
-            ("Health", "health"),
-            ("Education", "education"),
-            ("Bills", "bills"),
-            ("Other", "other")
+            ("food".localized, "food"),
+            ("transport".localized, "transport"),
+            ("entertainment".localized, "entertainment"),
+            ("shopping".localized, "shopping"),
+            ("health".localized, "health"),
+            ("education".localized, "education"),
+            ("bills".localized, "bills"),
+            ("other".localized, "other")
         ]
         
         for (name, iconName) in expenseCategories {
@@ -27,11 +26,11 @@ extension Category {
         
         // Default income categories
         let incomeCategories = [
-            ("Salary", "salary"),
-            ("Business", "business"),
-            ("Investment", "investment"),
-            ("Gift", "gift"),
-            ("Other", "other")
+            ("salary".localized, "salary"),
+            ("business".localized, "business"),
+            ("investment".localized, "investment"),
+            ("gift".localized, "gift"),
+            ("other".localized, "other")
         ]
         
         for (name, iconName) in incomeCategories {

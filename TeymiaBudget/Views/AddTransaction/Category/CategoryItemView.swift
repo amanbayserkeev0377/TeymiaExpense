@@ -1,32 +1,6 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Category Grid View (4 columns, reusable)
-struct CategoryGridView: View {
-    let categories: [Category]
-    let selectedCategory: Category?
-    let transactionType: TransactionType
-    let onCategorySelected: (Category) -> Void
-    
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
-    
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(categories) { category in
-                CategoryItemView(
-                    category: category,
-                    isSelected: selectedCategory?.id == category.id,
-                    transactionType: transactionType,
-                    onTap: {
-                        onCategorySelected(category)
-                    }
-                )
-            }
-        }
-        .padding(.horizontal, 20)
-    }
-}
-
 // MARK: - Category Item View (Circle + Label)
 struct CategoryItemView: View {
     let category: Category
@@ -37,7 +11,6 @@ struct CategoryItemView: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 8) {
-                // Circle with icon
                 ZStack {
                     Circle()
                         .fill(circleBackgroundColor)
@@ -67,7 +40,7 @@ struct CategoryItemView: View {
         if isSelected {
             return colorForTransactionType(transactionType)
         } else {
-            return .gray.opacity(0.15)
+            return .secondary.opacity(0.1)
         }
     }
     
