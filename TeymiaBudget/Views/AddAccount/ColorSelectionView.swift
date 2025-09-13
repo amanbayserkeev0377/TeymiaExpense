@@ -28,7 +28,7 @@ struct ColorSelectionView: View {
                 if selectedColorIndex == index {
                     Circle()
                         .stroke(.white, lineWidth: 3)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 32, height: 32)
                     
                     Image(systemName: "checkmark")
                         .foregroundColor(.white)

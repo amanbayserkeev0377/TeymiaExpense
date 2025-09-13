@@ -31,9 +31,10 @@ struct CurrencySelectionRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
-                    .font(.caption)
+                Image("chevron.right")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
             }
         }
         .buttonStyle(.plain)

@@ -14,17 +14,19 @@ struct IconSelectionRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .foregroundColor(selectedColor)
+                    .foregroundStyle(.primary)
                 
-                Text(selectedIcon.capitalized)
+                Text("Icon")
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
-                    .font(.caption)
+                Image("chevron.right")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -35,9 +37,13 @@ struct IconSelectionView: View {
     @Binding var selectedIcon: String
     
     private let availableIcons = [
-        "cash", "bank", "credit_card", "savings",
-        "wallet", "card", "coins", "banknote",
-        "piggy_bank", "safe", "vault", "payment"
+        "cash", "bank", "credit.card", "piggy.bank",
+        "wallet", "money.wings", "coins", "crypto.coins",
+        "nft", "hand.usd", "hand.bill", "hand.revenue",
+        "coins.up", "coins.tax", "shopping.basket", "",
+        "briefcase", "cash.simple", "dollar.plant", "master.card",
+        "visa", "stripe", "apple.pay", "amazon.pay",
+        "bitcoin", "ethereum", "shopify", "paypal"
     ]
     
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
@@ -51,35 +57,25 @@ struct IconSelectionView: View {
                     }
                 }
                 .padding(20)
+                .padding(.top, 20)
             }
-            .navigationTitle("Select Icon")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     private func iconButton(icon: String) -> some View {
         Button {
             selectedIcon = icon
-            dismiss()
         } label: {
-            VStack(spacing: 8) {
-                ZStack {
+            Image(icon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 32, height: 32)
+                .foregroundStyle(selectedIcon == icon ? .white : .primary)
+                .padding(14)
+                .background(
                     Circle()
-                        .fill(selectedIcon == icon ? .blue : .gray.opacity(0.15))
-                        .frame(width: 60, height: 60)
-                    
-                    Image(icon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(selectedIcon == icon ? .white : .primary)
-                }
-                
-                Text(icon.capitalized)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            }
+                        .fill(selectedIcon == icon ? Color.primary.opacity(0.8) : Color.secondary.opacity(0.1))
+                )
         }
         .buttonStyle(.plain)
     }

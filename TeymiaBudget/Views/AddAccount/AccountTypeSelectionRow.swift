@@ -24,17 +24,23 @@ struct AccountTypeSelectionRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(selectedColor)
+                    .foregroundStyle(.primary)
                 
-                Text(selectedAccountType.displayName)
+                Text("Type")
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
-                Image(systemName: "chevron.up.chevron.down")
-                    .foregroundColor(.secondary)
-                    .font(.caption2)
+                Text(selectedAccountType.displayName)
+                    .foregroundStyle(.secondary)
+                
+                Image("chevron.up.down")
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .foregroundStyle(.tertiary)
+                    .padding(.trailing, 4)
             }
+            .contentShape(Rectangle())
         }
     }
     

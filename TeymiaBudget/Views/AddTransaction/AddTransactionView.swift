@@ -73,7 +73,7 @@ struct AddTransactionView: View {
                     
                     Form {
                         // Amount Section
-                        Section("Amount") {
+                        Section {
                             HStack {
                                 Text(currencySymbol)
                                     .foregroundStyle(.secondary)
@@ -92,6 +92,7 @@ struct AddTransactionView: View {
                                     }
                             }
                         }
+                        .listRowBackground(Color.gray.opacity(0.1))
                         
                         // Category Section (only for income/expense)
                         if selectedTransactionType != .transfer {
