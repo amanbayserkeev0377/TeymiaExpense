@@ -138,7 +138,6 @@ struct AddTransactionView: View {
             ) { category in
                 selectedCategory = category
             }
-            .presentationDetents([.medium, .large])
             .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(40)

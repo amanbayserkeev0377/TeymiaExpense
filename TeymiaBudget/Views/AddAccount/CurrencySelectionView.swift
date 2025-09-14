@@ -65,10 +65,7 @@ struct CurrencySelectionView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Currency Type Picker
                 currencyTypePicker
-                
-                // Currency List with grouped style
                 List {
                     Section {
                         ForEach(filteredCurrencies, id: \.code) { currency in

@@ -33,6 +33,7 @@ final class Category {
     var iconName: String
     var type: CategoryType
     var isDefault: Bool
+    var sortOrder: Int
     var createdAt: Date
     
     // Relationships
@@ -42,11 +43,12 @@ final class Category {
     @Relationship(deleteRule: .cascade, inverse: \Budget.category)
     var budgets: [Budget] = []
     
-    init(name: String, iconName: String, type: CategoryType, isDefault: Bool = false) {
+    init(name: String, iconName: String, type: CategoryType, isDefault: Bool = false, sortOrder: Int = 0) {
         self.name = name
         self.iconName = iconName
         self.type = type
         self.isDefault = isDefault
+        self.sortOrder = sortOrder
         self.createdAt = Date()
     }
 }

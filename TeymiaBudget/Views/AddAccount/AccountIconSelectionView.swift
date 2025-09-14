@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct IconSelectionRow: View {
+struct AccountIconSelectionRow: View {
     let selectedIcon: String
     let selectedColor: Color
     let onTap: () -> Void
@@ -32,7 +32,7 @@ struct IconSelectionRow: View {
     }
 }
 
-struct IconSelectionView: View {
+struct AccountIconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
@@ -43,7 +43,7 @@ struct IconSelectionView: View {
         "nft", "hand.usd", "hand.bill", "hand.revenue",
         "coins.up", "coins.tax", "shopping.basket", "dollar.sack",
         "dollar.transfer", "scales", "chart.pie", "money.lock",
-        "briefcase", "cash.simple", "dollar.plant", "master.card",
+        "briefcase", "cash.simple", "investment", "master.card",
         "bitcoin", "ethereum", "shopify", "paypal",
         "visa", "stripe", "apple.pay", "amazon.pay"
     ]

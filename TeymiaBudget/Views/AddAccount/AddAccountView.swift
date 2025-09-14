@@ -60,7 +60,7 @@ struct AddAccountView: View {
                     ColorSelectionView(selectedColorIndex: $selectedColorIndex)
                     
                     // Icon Selection
-                    IconSelectionRow(
+                    AccountIconSelectionRow(
                         selectedIcon: selectedIcon,
                         selectedColor: selectedColor,
                         onTap: { showingIconSelection = true }
@@ -108,7 +108,7 @@ struct AddAccountView: View {
                 .presentationCornerRadius(40)
         }
         .sheet(isPresented: $showingIconSelection) {
-            IconSelectionView(selectedIcon: $selectedIcon)
+            AccountIconSelectionView(selectedIcon: $selectedIcon)
                 .presentationDetents([.medium])
                 .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDragIndicator(.visible)
