@@ -13,7 +13,7 @@ struct ColorSelectionView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
-        .padding(.vertical, 4)
+        .padding(.top, 2)
     }
     
     private func colorButton(index: Int) -> some View {
@@ -22,8 +22,8 @@ struct ColorSelectionView: View {
         } label: {
             ZStack {
                 Circle()
-                    .fill(AccountColors.color(at: index))
-                    .frame(width: 30, height: 30)
+                    .fill(AccountColors.gradient(at: index))
+                    .frame(width: 28, height: 28)
                 
                 if selectedColorIndex == index {
                     Image("check")

@@ -3,24 +3,23 @@ import SwiftUI
 struct AccountTypeSelectionRow: View {
     @Binding var selectedAccountType: AccountType
     @Binding var selectedIcon: String
-    let selectedColor: Color
     
     var body: some View {
         Menu {
             ForEach(AccountType.allCases, id: \.self) { type in
                 Button {
                     selectedAccountType = type
-                    selectedIcon = iconForAccountType(type)
+                    selectedIcon = type.iconName
                 } label: {
                     HStack {
-                        Image(iconForAccountType(type))
+                        Image(type.iconName)
                         Text(type.displayName)
                     }
                 }
             }
         } label: {
             HStack {
-                Image(iconForAccountType(selectedAccountType))
+                Image(selectedAccountType.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 20, height: 20)
@@ -41,15 +40,6 @@ struct AccountTypeSelectionRow: View {
                     .padding(.trailing, 4)
             }
             .contentShape(Rectangle())
-        }
-    }
-    
-    private func iconForAccountType(_ type: AccountType) -> String {
-        switch type {
-        case .cash: return "cash"
-        case .bankAccount: return "bank"
-        case .creditCard: return "credit.card"
-        case .savings: return "piggy.bank"
         }
     }
 }

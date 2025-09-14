@@ -39,7 +39,7 @@ struct IconSelectionView: View {
     
     private let availableIcons = [
         "cash", "bank", "credit.card", "piggy.bank",
-        "wallet", "money.wings", "coins", "crypto.coins",
+        "wallet", "expense", "coins", "crypto.coins",
         "nft", "hand.usd", "hand.bill", "hand.revenue",
         "coins.up", "coins.tax", "shopping.basket", "dollar.sack",
         "dollar.transfer", "scales", "chart.pie", "money.lock",

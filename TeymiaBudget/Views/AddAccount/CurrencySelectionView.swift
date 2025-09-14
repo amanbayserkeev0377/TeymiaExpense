@@ -14,7 +14,7 @@ struct CurrencySelectionRow: View {
                     Image(CurrencyService.shared.getCurrencyIcon(for: currency))
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 22, height: 22)
                         .clipShape(Circle())
                     
                     Text("currency".localized)
@@ -30,7 +30,6 @@ struct CurrencySelectionRow: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 20, height: 20)
-                        .clipShape(Circle())
                     
                     Text("select_currency".localized)
                         .foregroundStyle(.secondary)

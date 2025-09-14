@@ -19,7 +19,7 @@ extension Account {
             balance: 0,
             currency: defaultCurrency,
             isDefault: true,
-            customColorHex: AccountColors.color(at: 0).toHex(),
+            colorIndex: 0,
             customIcon: "cash"
         )
         

@@ -61,7 +61,7 @@ final class Account {
     var createdAt: Date
     
     // Кастомизация карточки
-    var customColorHex: String?
+    var colorIndex: Int
     var customIcon: String?
     
     // Relationships
@@ -70,13 +70,13 @@ final class Account {
     
     var currency: Currency
     
-    init(name: String, type: AccountType, balance: Decimal, currency: Currency, isDefault: Bool = false, customColorHex: String? = nil, customIcon: String? = nil) {
+    init(name: String, type: AccountType, balance: Decimal, currency: Currency, isDefault: Bool = false, colorIndex: Int = 0, customIcon: String? = nil) {
         self.name = name
         self.type = type
         self.balance = balance
         self.currency = currency
         self.isDefault = isDefault
-        self.customColorHex = customColorHex
+        self.colorIndex = colorIndex
         self.customIcon = customIcon
         self.createdAt = Date()
     }

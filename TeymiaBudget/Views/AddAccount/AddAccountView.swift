@@ -29,7 +29,7 @@ struct AddAccountView: View {
                         name: accountName,
                         balance: initialBalance,
                         accountType: selectedAccountType,
-                        color: selectedColor,
+                        colorIndex: selectedColorIndex,
                         icon: selectedIcon,
                         currencyCode: selectedCurrency?.code ?? "USD"
                     )
@@ -69,8 +69,7 @@ struct AddAccountView: View {
                     // Account Type
                     AccountTypeSelectionRow(
                         selectedAccountType: $selectedAccountType,
-                        selectedIcon: $selectedIcon,
-                        selectedColor: selectedColor
+                        selectedIcon: $selectedIcon
                     )
                     
                     // Currency
@@ -129,18 +128,9 @@ struct AddAccountView: View {
         if selectedCurrency == nil {
             selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
         }
-        selectedIcon = iconForAccountType(selectedAccountType)
+        selectedIcon = selectedAccountType.iconName
     }
-    
-    private func iconForAccountType(_ type: AccountType) -> String {
-        switch type {
-        case .cash: return "cash"
-        case .bankAccount: return "bank"
-        case .creditCard: return "credit_card"
-        case .savings: return "savings"
-        }
-    }
-    
+        
     private func saveAccount() {
         guard let currency = selectedCurrency else { return }
         
@@ -152,7 +142,7 @@ struct AddAccountView: View {
             balance: balance,
             currency: currency,
             isDefault: false,
-            customColorHex: selectedColor.toHex(),
+            colorIndex: selectedColorIndex,
             customIcon: selectedIcon
         )
         

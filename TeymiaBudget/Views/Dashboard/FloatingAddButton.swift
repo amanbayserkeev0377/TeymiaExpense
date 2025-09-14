@@ -13,7 +13,7 @@ struct FloatingAddButton: View {
                 Button(action: action) {
                     ZStack {
                         Circle()
-                            .fill(.app.opacity(0.2))
+                            .fill(AccountColors.gradient(at: 0)).opacity(0.2)
                             .frame(width: 64, height: 64)
                         
                         Image(systemName: "plus")
@@ -22,10 +22,10 @@ struct FloatingAddButton: View {
                             .frame(width: 52, height: 52)
                             .background(
                                 Circle()
-                                    .fill(.app.gradient.opacity(0.8))
+                                    .fill(AccountColors.gradient(at: 0)).opacity(0.8)
                                     .frame(width: 52, height: 52)
                                     .shadow(
-                                        color: .app.opacity(0.2),
+                                        color: AccountColors.color(at: 0).opacity(0.2),
                                         radius: 8,
                                         x: 0,
                                         y: 6

@@ -80,42 +80,17 @@ struct AccountCardView: View {
             .padding(.bottom, 24)
             .padding(.horizontal, 24)
         }
-        .frame(height: 220) // Увеличили высоту
+        .frame(height: 220)
         .frame(maxWidth: .infinity)
         .background(
-            // Градиентный фон как у банковских карт
             RoundedRectangle(cornerRadius: 20)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            cardColor,
-                            cardColor.opacity(0.8)
-                        ],
+                        colors: [account.cardDarkColor, account.cardLightColor],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .overlay(
-                    // Subtle pattern overlay
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    .white.opacity(0.1),
-                                    .clear
-                                ],
-                                center: .topTrailing,
-                                startRadius: 50,
-                                endRadius: 200
-                            )
-                        )
-                )
-        )
-        .shadow(
-            color: cardColor.opacity(0.3),
-            radius: 15,
-            x: 0,
-            y: 8
         )
     }
 }
@@ -125,7 +100,7 @@ struct AccountCardPreview: View {
     let name: String
     let balance: String
     let accountType: AccountType
-    let color: Color
+    let colorIndex: Int
     let icon: String
     let currencyCode: String
     
@@ -203,36 +178,19 @@ struct AccountCardPreview: View {
             RoundedRectangle(cornerRadius: 20)
                 .fill(
                     LinearGradient(
-                        colors: [color, color.opacity(0.8)],
+                        colors: [
+                            AccountColors.darkColor(at: colorIndex),
+                            AccountColors.lightColor(at: colorIndex)
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    .white.opacity(0.1),
-                                    .clear
-                                ],
-                                center: .topTrailing,
-                                startRadius: 50,
-                                endRadius: 200
-                            )
-                        )
-                )
-        )
-        .shadow(
-            color: color.opacity(0.3),
-            radius: 15,
-            x: 0,
-            y: 8
         )
     }
 }
 
-// MARK: - Account Carousel (обновленный)
+// MARK: - Account Carousel
 struct AccountCarouselView: View {
     let accounts: [Account]
     @State private var currentIndex = 0

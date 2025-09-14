@@ -103,13 +103,13 @@ struct CustomTabButton: View {
             VStack(spacing: 4) {
                 Image(iconName)
                     .resizable()
-                    .foregroundStyle(isSelected ? .app : .secondary)
+                    .foregroundStyle(isSelected ? AccountColors.color(at: 0) : .secondary)
                     .frame(width: 24, height: 24)
                     .scaleEffect(animateTap ? 1.1 : 1.0)
                 
                 Text(title)
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(isSelected ? .app : .secondary)
+                    .foregroundStyle(isSelected ? AccountColors.color(at: 0) : .secondary)
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
