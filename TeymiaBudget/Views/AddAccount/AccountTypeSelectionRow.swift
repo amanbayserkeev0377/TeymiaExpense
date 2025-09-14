@@ -23,7 +23,7 @@ struct AccountTypeSelectionRow: View {
                 Image(iconForAccountType(selectedAccountType))
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
                     .foregroundStyle(.primary)
                 
                 Text("type".localized)

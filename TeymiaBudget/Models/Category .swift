@@ -10,8 +10,7 @@ extension Category {
             ("shopping".localized, "shopping"),
             ("health".localized, "health"),
             ("education".localized, "education"),
-            ("bills".localized, "bills"),
-            ("other".localized, "other")
+            ("other".localized, "other") // default category
         ]
         
         for (name, iconName) in expenseCategories {
@@ -30,7 +29,7 @@ extension Category {
             ("business".localized, "business"),
             ("investment".localized, "investment"),
             ("gift".localized, "gift"),
-            ("other".localized, "other")
+            ("other".localized, "other") // default category
         ]
         
         for (name, iconName) in incomeCategories {

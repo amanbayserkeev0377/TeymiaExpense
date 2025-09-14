@@ -15,7 +15,7 @@ struct AddTransactionView: View {
         case income = "Income"
         case transfer = "Transfer"
         
-        var color: Color {
+        var darkColor: Color {
             switch self {
             case .expense: return Color(#colorLiteral(red: 0.8, green: 0.1, blue: 0.1, alpha: 1))
             case .income: return Color(#colorLiteral(red: 0.0, green: 0.6431372549, blue: 0.5490196078, alpha: 1))
@@ -33,7 +33,7 @@ struct AddTransactionView: View {
         
         var backgroundGradient: LinearGradient {
             LinearGradient(
-                colors: [color, lightColor],
+                colors: [darkColor, lightColor],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -54,7 +54,6 @@ struct AddTransactionView: View {
     @State private var selectedCategory: Category?
     @State private var note: String = ""
     @State private var date: Date = Date()
-    @State private var showKeypad = false
     @State private var showingCategorySelection = false
     
     // Transfer specific
@@ -63,15 +62,13 @@ struct AddTransactionView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack(spacing: 0) {
-                    // Transaction Type Picker
-                    customTransactionTypePicker
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(.clear)
-                    
                     Form {
+                        Section {
+                            customTransactionTypePicker
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                        
                         // Amount Section
                         Section {
                             HStack {
@@ -79,25 +76,25 @@ struct AddTransactionView: View {
                                     .foregroundStyle(.secondary)
                                     .font(.title2)
                                 
-                                Text(amount.isEmpty ? "0.00" : amount)
-                                    .font(.title2)
+                                TextField("0", text: $amount)
+                                    .font(.title)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(amount.isEmpty ? .secondary : .primary)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            showKeypad = true
-                                        }
-                                    }
+                                    .keyboardType(.decimalPad)
+                                    .multilineTextAlignment(.trailing)
                             }
                         }
                         .listRowBackground(Color.gray.opacity(0.1))
                         
                         // Category Section (only for income/expense)
                         if selectedTransactionType != .transfer {
-                            categorySection
-                        }
+                                Section("Category") {
+                                    CategorySelectionRow(
+                                        selectedCategory: selectedCategory,
+                                        onTap: { showingCategorySelection = true }
+                                    )
+                                }
+                                .listRowBackground(Color.gray.opacity(0.1))
+                            }
                         
                         // Account/Transfer Section
                         if selectedTransactionType == .transfer {
@@ -115,29 +112,6 @@ struct AddTransactionView: View {
                         }
                     }
                     .scrollContentBackground(.hidden)
-                    
-                    if showKeypad {
-                        Spacer()
-                            .frame(height: 280)
-                    }
-                }
-                
-                VStack {
-                    Spacer()
-                    
-                    if showKeypad {
-                        CustomNumericKeypad(
-                            amount: $amount,
-                            onDismiss: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showKeypad = false
-                                }
-                            })
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
-                .background(.clear)
-            }
             .navigationTitle(selectedTransactionType.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -154,10 +128,11 @@ struct AddTransactionView: View {
             setupDefaults()
         }
         .onChange(of: selectedTransactionType) { _, _ in
-            selectedCategory = nil // Reset category when changing type
+            let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
+            selectedCategory = categories.first { $0.name.lowercased() == "other" && $0.type == categoryType }
         }
         .sheet(isPresented: $showingCategorySelection) {
-            CategoryPickerView(
+            CategorySelectionView(
                 transactionType: selectedTransactionType,
                 selectedCategory: selectedCategory
             ) { category in
@@ -196,7 +171,11 @@ struct AddTransactionView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(selectedTransactionType == type ? .white : type.color)
+                    .foregroundStyle(
+                        selectedTransactionType == type
+                        ? .white
+                        : (colorScheme == .light ? type.darkColor : type.lightColor)
+                    )
                 
                 Text(type.rawValue)
                     .font(.subheadline)
@@ -211,51 +190,6 @@ struct AddTransactionView: View {
             )
         }
         .buttonStyle(.plain)
-    }
-    
-    // MARK: - Category Section
-    @ViewBuilder
-    private var categorySection: some View {
-        Section("Category") {
-            Button {
-                showingCategorySelection = true
-            } label: {
-                HStack {
-                    if let category = selectedCategory {
-                        // Selected category
-                        Image(category.iconName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(selectedTransactionType.color)
-                        
-                        Text(category.name)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    } else {
-                        // No category selected
-                        Image(systemName: "folder")
-                            .foregroundColor(.secondary)
-                            .frame(width: 20)
-                        
-                        Text("Select Category")
-                            .foregroundColor(.secondary)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-        }
     }
     
     // MARK: - Account Section
@@ -276,7 +210,7 @@ struct AddTransactionView: View {
                     } label: {
                         HStack {
                             Image(systemName: systemIconForAccountType(account.type))
-                                .foregroundColor(selectedAccount == account ? selectedTransactionType.color : .secondary)
+                                .foregroundColor(selectedAccount == account ? .primary : .secondary)
                                 .frame(width: 20)
                             
                             VStack(alignment: .leading, spacing: 2) {
@@ -292,7 +226,7 @@ struct AddTransactionView: View {
                             
                             if selectedAccount == account {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(selectedTransactionType.color)
+                                    .foregroundStyle(.primary)
                                     .fontWeight(.semibold)
                             }
                         }
@@ -414,6 +348,11 @@ struct AddTransactionView: View {
     private func setupDefaults() {
         selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
         fromAccount = accounts.first { $0.isDefault } ?? accounts.first
+        
+        if selectedCategory == nil {
+            let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
+            selectedCategory = categories.first { $0.name.lowercased() == "other" && $0.type == categoryType }
+        }
     }
     
     private func formatCurrency(_ amount: Decimal, currency: Currency) -> String {

@@ -29,7 +29,7 @@ struct CurrencySelectionRow: View {
                     Image("dollar")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 20, height: 20)
                         .clipShape(Circle())
                     
                     Text("select_currency".localized)
@@ -40,7 +40,7 @@ struct CurrencySelectionRow: View {
                 
                 Image("chevron.right")
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
                     .foregroundStyle(.tertiary)
             }
             .contentShape(Rectangle())

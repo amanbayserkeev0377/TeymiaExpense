@@ -13,7 +13,7 @@ struct ColorSelectionView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
     }
     
     private func colorButton(index: Int) -> some View {
@@ -23,16 +23,13 @@ struct ColorSelectionView: View {
             ZStack {
                 Circle()
                     .fill(AccountColors.color(at: index))
-                    .frame(width: 50, height: 50)
+                    .frame(width: 30, height: 30)
                 
                 if selectedColorIndex == index {
-                    Circle()
-                        .stroke(.white, lineWidth: 3)
-                        .frame(width: 32, height: 32)
-                    
-                    Image(systemName: "checkmark")
-                        .foregroundColor(.white)
-                        .font(.system(size: 16, weight: .bold))
+                    Image("check")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.white)
                 }
             }
         }
