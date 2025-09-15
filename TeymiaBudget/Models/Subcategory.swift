@@ -52,8 +52,7 @@ extension Subcategory {
                 ("equipment".localized, "equipment"),
                 ("gym".localized, "gym"),
                 ("swimming".localized, "swimming"),
-                ("yoga".localized, "yoga"),
-                ("fitness".localized, "fitness")
+                ("yoga".localized, "yoga")
             ]),
             ("shopping".localized, [
                 ("clothing".localized, "clothing"),
@@ -82,14 +81,13 @@ extension Subcategory {
             ]),
             ("travel".localized, [
                 ("flights".localized, "flights"),
-                ("visa".localized, "visa"),
-                ("souvenirs".localized, "souvenirs"),
+                ("visadocument".localized, "visadocument"),
+                ("hotel".localized, "hotel"),
                 ("tours".localized, "tours")
             ]),
             ("education".localized, [
                 ("books".localized, "books"),
                 ("courses".localized, "courses"),
-                ("online".localized, "online"),
                 ("student.loan".localized, "student.loan"),
                 ("materials".localized, "materials")
             ]),
