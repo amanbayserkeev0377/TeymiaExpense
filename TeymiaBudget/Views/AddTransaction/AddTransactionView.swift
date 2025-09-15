@@ -52,6 +52,7 @@ struct AddTransactionView: View {
     @State private var amount: String = ""
     @State private var selectedAccount: Account?
     @State private var selectedCategory: Category?
+    @State private var selectedSubcategory: Subcategory?
     @State private var note: String = ""
     @State private var date: Date = Date()
     @State private var showingCategorySelection = false
@@ -90,6 +91,7 @@ struct AddTransactionView: View {
                                 Section("Category") {
                                     CategorySelectionRow(
                                         selectedCategory: selectedCategory,
+                                        selectedSubcategory: selectedSubcategory,
                                         onTap: { showingCategorySelection = true }
                                     )
                                 }
@@ -129,15 +131,18 @@ struct AddTransactionView: View {
         }
         .onChange(of: selectedTransactionType) { _, _ in
             let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
-            selectedCategory = categories.first { $0.name.lowercased() == "other" && $0.type == categoryType }
+            selectedCategory = categories.first { $0.name.lowercased().contains("other") && $0.type == categoryType }
         }
         .sheet(isPresented: $showingCategorySelection) {
             CategorySelectionView(
                 transactionType: selectedTransactionType,
-                selectedCategory: selectedCategory
-            ) { category in
-                selectedCategory = category
-            }
+                selectedCategory: selectedCategory,
+                selectedSubcategory: selectedSubcategory,
+                onSelectionChanged: { category, subcategory in
+                    selectedCategory = category
+                    selectedSubcategory = subcategory
+                }
+            )
             .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(40)
@@ -328,7 +333,7 @@ struct AddTransactionView: View {
         
         switch selectedTransactionType {
         case .expense, .income:
-            return selectedAccount != nil && selectedCategory != nil
+            return selectedAccount != nil && (selectedCategory != nil || selectedSubcategory != nil)
         case .transfer:
             return fromAccount != nil && toAccount != nil && fromAccount != toAccount
         }
@@ -348,9 +353,10 @@ struct AddTransactionView: View {
         selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
         fromAccount = accounts.first { $0.isDefault } ?? accounts.first
         
+        // Default category "Other"
         if selectedCategory == nil {
             let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
-            selectedCategory = categories.first { $0.name.lowercased() == "other" && $0.type == categoryType }
+            selectedCategory = categories.first { $0.name.lowercased().contains("other") && $0.type == categoryType }
         }
     }
     
@@ -377,14 +383,15 @@ struct AddTransactionView: View {
     }
     
     private func saveExpenseTransaction(amount: Decimal) {
-        guard let account = selectedAccount, let category = selectedCategory else { return }
+        guard let account = selectedAccount else { return }
         
         let transaction = Transaction(
             amount: -amount,
             note: note.isEmpty ? nil : note,
             date: date,
             type: .expense,
-            category: category,
+            category: selectedCategory,
+            subcategory: selectedSubcategory,
             account: account
         )
         
@@ -396,14 +403,15 @@ struct AddTransactionView: View {
     }
     
     private func saveIncomeTransaction(amount: Decimal) {
-        guard let account = selectedAccount, let category = selectedCategory else { return }
+        guard let account = selectedAccount else { return }
         
         let transaction = Transaction(
             amount: amount,
             note: note.isEmpty ? nil : note,
             date: date,
             type: .income,
-            category: category,
+            category: selectedCategory,
+            subcategory: selectedSubcategory,
             account: account
         )
         
@@ -423,6 +431,7 @@ struct AddTransactionView: View {
             date: date,
             type: .expense,
             category: nil,
+            subcategory: nil,
             account: fromAcc
         )
         
@@ -432,6 +441,7 @@ struct AddTransactionView: View {
             date: date,
             type: .income,
             category: nil,
+            subcategory: nil,
             account: toAcc
         )
         

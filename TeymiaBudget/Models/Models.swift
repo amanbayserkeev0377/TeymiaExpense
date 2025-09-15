@@ -29,26 +29,50 @@ final class Currency {
 // MARK: - Category
 @Model
 final class Category {
-    var name: String
+    var name: String        // "Food & Drinks"
     var iconName: String
     var type: CategoryType
-    var isDefault: Bool
     var sortOrder: Int
+    var isDefault: Bool
     var createdAt: Date
     
-    // Relationships
-    @Relationship(deleteRule: .cascade, inverse: \Transaction.category)
-    var transactions: [Transaction] = []
+    @Relationship(deleteRule: .cascade, inverse: \Subcategory.category)
+    var subcategories: [Subcategory] = []
     
-    @Relationship(deleteRule: .cascade, inverse: \Budget.category)
-    var budgets: [Budget] = []
-    
-    init(name: String, iconName: String, type: CategoryType, isDefault: Bool = false, sortOrder: Int = 0) {
+    init(name: String, iconName: String, type: CategoryType, sortOrder: Int = 0, isDefault: Bool = false) {
         self.name = name
         self.iconName = iconName
         self.type = type
-        self.isDefault = isDefault
         self.sortOrder = sortOrder
+        self.isDefault = isDefault
+        self.createdAt = Date()
+    }
+}
+
+// MARK: - Subcategory
+@Model
+final class Subcategory {
+    var name: String        // "Coffee", "Restaurant"
+    var iconName: String
+    var sortOrder: Int
+    var isDefault: Bool
+    var createdAt: Date
+    
+    // Relationships
+    var category: Category
+    
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.subcategory)
+    var transactions: [Transaction] = []
+    
+    @Relationship(deleteRule: .cascade, inverse: \Budget.subcategory)
+    var budgets: [Budget] = []
+    
+    init(name: String, iconName: String, category: Category, sortOrder: Int = 0, isDefault: Bool = false) {
+        self.name = name
+        self.iconName = iconName
+        self.category = category
+        self.sortOrder = sortOrder
+        self.isDefault = isDefault
         self.createdAt = Date()
     }
 }
@@ -62,7 +86,6 @@ final class Account {
     var isDefault: Bool
     var createdAt: Date
     
-    // Кастомизация карточки
     var colorIndex: Int
     var customIcon: String?
     
@@ -92,17 +115,17 @@ final class Transaction {
     var date: Date
     var type: TransactionType
     var createdAt: Date
-    
-    // Relationships
     var category: Category?
+    var subcategory: Subcategory?
     var account: Account?
     
-    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, category: Category? = nil, account: Account? = nil) {
+    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, category: Category? = nil, subcategory: Subcategory? = nil, account: Account? = nil) {
         self.amount = amount
         self.note = note
         self.date = date
         self.type = type
         self.category = category
+        self.subcategory = subcategory
         self.account = account
         self.createdAt = Date()
     }
@@ -120,10 +143,13 @@ final class Budget {
     var isActive: Bool
     var createdAt: Date
     
-    // Relationships
-    var category: Category?
+    var subcategory: Subcategory?
+
+    var category: Category? {
+        return subcategory?.category
+    }
     
-    init(name: String, limitAmount: Decimal, period: BudgetPeriod, category: Category? = nil) {
+    init(name: String, limitAmount: Decimal, period: BudgetPeriod, subcategory: Subcategory? = nil) {
         // Calculate dates first
         let calendar = Calendar.current
         let now = Date()
@@ -150,7 +176,7 @@ final class Budget {
         self.period = period
         self.startDate = calculatedStartDate
         self.endDate = calculatedEndDate
-        self.category = category
+        self.subcategory = subcategory
         self.isActive = true
         self.createdAt = Date()
     }

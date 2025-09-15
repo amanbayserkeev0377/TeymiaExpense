@@ -3,6 +3,7 @@ import SwiftData
 
 struct CategorySelectionRow: View {
     let selectedCategory: Category?
+    let selectedSubcategory: Subcategory?
     let onTap: () -> Void
     
     var body: some View {
@@ -10,81 +11,239 @@ struct CategorySelectionRow: View {
             onTap()
         } label: {
             HStack {
-                if let category = selectedCategory {
-                    Image(category.iconName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.primary)
-                    
-                    Text("category".localized)
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
+                Image(selectedSubcategory?.iconName ?? selectedCategory?.iconName ?? "")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(.primary)
+                
+                Text("category".localized)
+                    .foregroundStyle(.primary)
+                
+                Spacer()
+                
+                if let subcategory = selectedSubcategory {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(subcategory.category.name)
+                            .font(.footnote)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                        Text(subcategory.name)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } else if let category = selectedCategory {
                     Text(category.name)
-                        .foregroundColor(.secondary)
-                    
-                    Image("chevron.right")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tertiary)
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
                 }
+                
+                Image("chevron.right")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(.tertiary)
             }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
+    
+    private var displayIcon: String {
+        selectedSubcategory?.iconName ?? selectedCategory!.iconName
+    }
+    
 }
 
 struct CategorySelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Query private var categories: [Category]
+    @Query private var subcategories: [Subcategory]
     
     let transactionType: AddTransactionView.TransactionType
     let selectedCategory: Category?
-    let onCategorySelected: (Category) -> Void
+    let selectedSubcategory: Subcategory?
+    let onSelectionChanged: (Category?, Subcategory?) -> Void
+    
+    @State private var searchText = ""
+    @State private var localSelectedCategory: Category?
     
     private var filteredCategories: [Category] {
         let categoryType: CategoryType = transactionType == .income ? .income : .expense
-        return categories.filter { $0.type == categoryType }
+        return categories.filter { $0.type == categoryType }.sorted { $0.sortOrder < $1.sortOrder }
+    }
+    
+    private var subcategoriesForSelectedCategory: [Subcategory] {
+        guard let selectedCategory = localSelectedCategory else { return [] }
+        
+        let filtered = subcategories.filter { $0.category.id == selectedCategory.id }
+        
+        if searchText.isEmpty {
+            return filtered.sorted { $0.sortOrder < $1.sortOrder }
+        }
+        
+        return filtered.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }.sorted { $0.sortOrder < $1.sortOrder }
     }
     
     var body: some View {
-            NavigationStack {
-                ScrollView {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 4), spacing: 20) {
-                        ForEach(filteredCategories) { category in
-                            categoryButton(category: category)
-                        }
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Top Half - Categories
+                categoriesSection
+                
+                // Divider
+                Divider()
+                    .background(Color.secondary.opacity(0.3))
+                
+                // Bottom Half - Subcategories
+                subcategoriesSection
+            }
+        }
+        .searchable(text: $searchText, prompt: "Search subcategories")
+        .navigationTitle("select_category".localized)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    // Если выбрана подкатегория - сохраняем её
+                    if let subcategory = selectedSubcategory {
+                        onSelectionChanged(subcategory.category, subcategory)
                     }
-                    .padding(20)
-                    .padding(.top, 20)
+                    // Если выбрана только категория - сохраняем категорию
+                    else if let category = localSelectedCategory {
+                        onSelectionChanged(category, nil)
+                    }
+                    dismiss()
+                }
+                .disabled(localSelectedCategory == nil)
+            }
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    // TODO: Open Category Management View
+                } label: {
+                    Image(systemName: "pencil")
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    // TODO: Open Add Category View
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
         }
+        .onAppear {
+            if localSelectedCategory == nil {
+                if let subcategory = selectedSubcategory {
+                    localSelectedCategory = subcategory.category
+                } else {
+                    localSelectedCategory = filteredCategories.first
+                }
+            }
+        }
+    }
     
+    // MARK: - Categories Section (Top Half)
+    private var categoriesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                Text("Categories")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                Spacer()
+            }
+            
+            // Categories Grid
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 16) {
+                    ForEach(filteredCategories) { category in
+                        categoryButton(category: category)
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .frame(height: 200) // Fixed height for top half
+        }
+    }
+    
+    // MARK: - Subcategories Section (Bottom Half)
+    private var subcategoriesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                Text("Subcategories")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                
+                Spacer()
+                
+                if let selectedCategory = localSelectedCategory {
+                    Text(selectedCategory.name)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                }
+            }
+            
+            // Subcategories List
+            if subcategoriesForSelectedCategory.isEmpty {
+                // Empty state
+                VStack(spacing: 16) {
+                    Image(systemName: "tray")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary)
+                    
+                    Text("No subcategories found")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    
+                    if !searchText.isEmpty {
+                        Text("Try a different search term")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List(subcategoriesForSelectedCategory) { subcategory in
+                    subcategoryRow(subcategory: subcategory)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
+                }
+                .listStyle(.plain)
+            }
+        }
+    }
+    
+    // MARK: - Category Button
     private func categoryButton(category: Category) -> some View {
         Button {
-            onCategorySelected(category)
-            dismiss()
+            localSelectedCategory = category
         } label: {
             VStack(spacing: 8) {
                 Image(category.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
                     .foregroundStyle(
-                        selectedCategory?.id == category.id
+                        localSelectedCategory?.id == category.id
                         ? (colorScheme == .light ? Color.white : Color.black)
                         : Color.primary
                     )
-                    .padding(14)
+                    .padding(12)
                     .background(
                         Circle()
-                            .fill(selectedCategory?.id == category.id
-                                  ? Color.primary.opacity(0.9)
+                            .fill(localSelectedCategory?.id == category.id
+                                  ? Color.blue.opacity(0.9)
                                   : Color.secondary.opacity(0.1))
                     )
                 
@@ -93,8 +252,42 @@ struct CategorySelectionView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.7)
             }
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Subcategory Row
+    private func subcategoryRow(subcategory: Subcategory) -> some View {
+        Button {
+            onSelectionChanged(subcategory.category, subcategory)
+        } label: {
+            HStack(spacing: 12) {
+                Image(subcategory.iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.primary)
+                    .padding(8)
+                    .background(
+                        Circle()
+                            .fill(Color.secondary.opacity(0.1))
+                    )
+                
+                Text(subcategory.name)
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                
+                Spacer()
+                
+                if selectedSubcategory?.id == subcategory.id {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.blue)
+                        .fontWeight(.semibold)
+                }
+            }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

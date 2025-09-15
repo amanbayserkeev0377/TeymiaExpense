@@ -7,6 +7,7 @@ struct TeymiaBudgetApp: App {
         let schema = Schema([
             Transaction.self,
             Category.self,
+            Subcategory.self,
             Account.self,
             Budget.self,
             Currency.self
@@ -15,7 +16,7 @@ struct TeymiaBudgetApp: App {
         // Development: in-memory storage (no persistence)
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: true // Данные не сохраняются между запусками
+            isStoredInMemoryOnly: false
             // cloudKitDatabase: .private("iCloud.com.amanbayserkeev.teymiabudget") // Add later
         )
 
@@ -41,19 +42,27 @@ struct TeymiaBudgetApp: App {
 
 // MARK: - Default Data Creation
 private func createDefaultDataIfNeeded(context: ModelContext) {
-    // Check if we already have data
-    let accountDescriptor = FetchDescriptor<Account>()
-    let existingAccounts = (try? context.fetch(accountDescriptor)) ?? []
+    let categoryDescriptor = FetchDescriptor<Category>()
+    let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []
     
-    if !existingAccounts.isEmpty {
-        return // Data already exists
+    if !existingCategories.isEmpty {
+        print("Categories already exist: \(existingCategories.count)")
+        return
     }
     
-    // Create defaults in order (currencies first, then categories, then accounts)
+    print("Creating default data...")
     Currency.createDefaults(context: context)
-    Category.createDefaults(context: context)
-    Account.createDefault(context: context)
+    print("Created currencies")
     
-    // Save all default data
+    Category.createDefaults(context: context)
+    print("Created categories")
+    
+    Subcategory.createDefaults(context: context)
+    print("Created subcategories")
+    
+    Account.createDefault(context: context)
+    print("Created accounts")
+    
     try? context.save()
+    print("Saved all data")
 }
