@@ -64,43 +64,40 @@ struct CurrencySelectionView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                currencyTypePicker
-                List {
-                    Section {
-                        ForEach(filteredCurrencies, id: \.code) { currency in
-                            CurrencyRowView(
-                                currency: currency,
-                                isSelected: selectedCurrency?.code == currency.code
-                            ) {
-                                selectedCurrency = currency
-                                dismiss()
-                            }
-                        }
+            List {
+                ForEach(filteredCurrencies, id: \.code) { currency in
+                    CurrencyRowView(
+                        currency: currency,
+                        isSelected: selectedCurrency?.code == currency.code
+                    ) {
+                        selectedCurrency = currency
+                        dismiss()
                     }
-                    .listRowBackground(Color.clear)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .searchable(text: $searchText)
             }
-            .navigationTitle("Select Currency")
-            .navigationBarTitleDisplayMode(.inline)
+            .listStyle(.automatic)
+            .searchable(text: $searchText)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Picker("Currency Type", selection: $selectedType) {
+                        Text("fiat".localized).tag(CurrencyType.fiat)
+                        Text("crypto".localized).tag(CurrencyType.crypto)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 200)
+                    .onChange(of: selectedType) { oldValue, newValue in
+                        searchText = "" // Clear search when switching types
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
         }
-    }
-    
-    // MARK: - Currency Type Picker
-    private var currencyTypePicker: some View {
-        Picker("Currency Type", selection: $selectedType) {
-            Text("Fiat").tag(CurrencyType.fiat)
-            Text("Crypto").tag(CurrencyType.crypto)
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .onChange(of: selectedType) { oldValue, newValue in
-            searchText = "" // Clear search when switching types
-        }
+        .navigationTitle("Select Currency")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
@@ -147,9 +144,8 @@ struct CurrencyRowView: View {
                 
                 // Selection indicator
                 if isSelected {
-                    Image("check")
-                        .resizable()
-                        .frame(width: 28, height: 28)
+                    Image(systemName: "checkmark")
+                        .fontWeight(.semibold)
                 }
             }
             .contentShape(Rectangle())

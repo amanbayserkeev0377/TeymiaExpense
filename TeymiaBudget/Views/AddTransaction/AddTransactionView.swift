@@ -67,8 +67,6 @@ struct AddTransactionView: View {
                         Section {
                             customTransactionTypePicker
                         }
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets())
                         
                         // Amount Section
                         Section {
@@ -84,7 +82,6 @@ struct AddTransactionView: View {
                                     .multilineTextAlignment(.trailing)
                             }
                         }
-                        .listRowBackground(Color.gray.opacity(0.1))
                         
                         // Category Section (only for income/expense)
                         if selectedTransactionType != .transfer {
@@ -95,7 +92,6 @@ struct AddTransactionView: View {
                                         onTap: { showingCategorySelection = true }
                                     )
                                 }
-                                .listRowBackground(Color.gray.opacity(0.1))
                             }
                         
                         // Account/Transfer Section
@@ -113,7 +109,6 @@ struct AddTransactionView: View {
                                 .lineLimit(2...4)
                         }
                     }
-                    .scrollContentBackground(.hidden)
             .navigationTitle(selectedTransactionType.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -143,9 +138,7 @@ struct AddTransactionView: View {
                     selectedSubcategory = subcategory
                 }
             )
-            .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
             .presentationDragIndicator(.visible)
-            .presentationCornerRadius(40)
         }
     }
         

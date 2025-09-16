@@ -1,8 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "home-activity.png",
-      "idiom" : "universal"
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "house-6-4.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "house-6-5.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

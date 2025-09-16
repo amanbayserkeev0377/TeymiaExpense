@@ -35,15 +35,11 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
-                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
-                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
     }
     

@@ -13,6 +13,9 @@ struct AccountTypeSelectionRow: View {
                 } label: {
                     HStack {
                         Image(type.iconName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20, height: 20)
                         Text(type.displayName)
                     }
                 }
@@ -41,5 +44,6 @@ struct AccountTypeSelectionRow: View {
             }
             .contentShape(Rectangle())
         }
+        .tint(.primary)
     }
 }

@@ -53,7 +53,6 @@ struct AddAccountView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .listRowBackground(Color.gray.opacity(0.1))
                 
                 Section {
                     // Color Selection
@@ -78,9 +77,7 @@ struct AddAccountView: View {
                         onTap: { showingCurrencySelection = true }
                     )
                 }
-                .listRowBackground(Color.gray.opacity(0.1))
             }
-            .scrollContentBackground(.hidden)
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -103,16 +100,12 @@ struct AddAccountView: View {
         }
         .sheet(isPresented: $showingCurrencySelection) {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
-                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
         .sheet(isPresented: $showingIconSelection) {
             AccountIconSelectionView(selectedIcon: $selectedIcon)
-                .presentationDetents([.medium])
-                .presentationBackground(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
     }
     
