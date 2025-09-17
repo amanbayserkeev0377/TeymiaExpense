@@ -40,15 +40,15 @@ struct TransactionRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             Group {
-                if let category = transaction.category {
-                    Image(category.iconName)
+                if let subcategory = transaction.subcategory {
+                    Image(subcategory.iconName)
                         .resizable()
                         .frame(width: 24, height: 24)
                 }
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(transaction.category?.name ?? "Transfer")
+                Text(transaction.subcategory?.name ?? "Transfer")
                     .font(.body)
                     .fontWeight(.medium)
                 

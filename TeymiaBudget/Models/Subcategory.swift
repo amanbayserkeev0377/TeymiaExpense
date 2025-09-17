@@ -105,7 +105,7 @@ extension Subcategory {
                 ("gifts.parties".localized, "gifts.parties")
             ]),
             ("other".localized, [
-                ("other".localized, "other")
+                ("general".localized, "general")
             ])
         ]
         

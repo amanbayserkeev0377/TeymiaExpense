@@ -36,7 +36,6 @@ extension Category {
             ("bonuses".localized, "bonuses", 2),
             ("business".localized, "business", 3),
             ("investment".localized, "investment", 4),
-            ("other".localized, "other", 5),
         ]
         
         for (name, iconName, sortOrder) in incomeCategories {

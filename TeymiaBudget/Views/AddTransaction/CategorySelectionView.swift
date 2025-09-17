@@ -2,12 +2,11 @@ import SwiftUI
 import SwiftData
 
 struct CategorySelectionRow: View {
-    let selectedCategory: Category?
     let selectedSubcategory: Subcategory?
     
     var body: some View {
         HStack {
-            Image(selectedSubcategory?.iconName ?? selectedCategory?.iconName ?? "")
+            Image(selectedSubcategory?.iconName ?? "circle.dashed")
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.primary)
@@ -27,17 +26,8 @@ struct CategorySelectionRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            } else if let category = selectedCategory {
-                Text(category.name)
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
             }
         }
-    }
-    
-    private var displayIcon: String {
-        selectedSubcategory?.iconName ?? selectedCategory!.iconName
     }
 }
 
@@ -48,9 +38,8 @@ struct CategorySelectionView: View {
     @Query private var subcategories: [Subcategory]
     
     let transactionType: AddTransactionView.TransactionType
-    let selectedCategory: Category?
     let selectedSubcategory: Subcategory?
-    let onSelectionChanged: (Category?, Subcategory?) -> Void
+    let onSelectionChanged: (Subcategory?) -> Void
     
     @State private var searchText = ""
     @State private var localSelectedCategory: Category?
@@ -135,18 +124,7 @@ struct CategorySelectionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
-                    if let subcategory = selectedSubcategory {
-                        onSelectionChanged(subcategory.category, subcategory)
-                    } else if let category = localSelectedCategory {
-                        onSelectionChanged(category, nil)
-                    }
-                    dismiss()
-                }
-                .disabled(localSelectedCategory == nil)
-            }
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     // TODO: Open Category Management View
                 } label: {
@@ -209,7 +187,8 @@ struct CategorySelectionView: View {
     // MARK: - Subcategory Row
     private func subcategoryRow(subcategory: Subcategory) -> some View {
         Button {
-            onSelectionChanged(subcategory.category, subcategory)
+            onSelectionChanged(subcategory)
+            dismiss()
         } label: {
             HStack(spacing: 12) {
                 Image(subcategory.iconName)
