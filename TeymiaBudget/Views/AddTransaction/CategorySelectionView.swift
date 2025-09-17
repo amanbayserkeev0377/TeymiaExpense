@@ -4,54 +4,41 @@ import SwiftData
 struct CategorySelectionRow: View {
     let selectedCategory: Category?
     let selectedSubcategory: Subcategory?
-    let onTap: () -> Void
     
     var body: some View {
-        Button {
-            onTap()
-        } label: {
-            HStack {
-                Image(selectedSubcategory?.iconName ?? selectedCategory?.iconName ?? "")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.primary)
-                
-                Text("category".localized)
-                    .foregroundStyle(.primary)
-                
-                Spacer()
-                
-                if let subcategory = selectedSubcategory {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(subcategory.category.name)
-                            .font(.footnote)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.secondary)
-                        Text(subcategory.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } else if let category = selectedCategory {
-                    Text(category.name)
-                        .font(.callout)
+        HStack {
+            Image(selectedSubcategory?.iconName ?? selectedCategory?.iconName ?? "")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.primary)
+            
+            Text("category".localized)
+                .foregroundStyle(.primary)
+            
+            Spacer()
+            
+            if let subcategory = selectedSubcategory {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(subcategory.category.name)
+                        .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
+                    Text(subcategory.name)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                
-                Image("chevron.right")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
+            } else if let category = selectedCategory {
+                Text(category.name)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
             }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
     }
     
     private var displayIcon: String {
         selectedSubcategory?.iconName ?? selectedCategory!.iconName
     }
-    
 }
 
 struct CategorySelectionView: View {
@@ -70,7 +57,9 @@ struct CategorySelectionView: View {
     
     private var filteredCategories: [Category] {
         let categoryType: CategoryType = transactionType == .income ? .income : .expense
-        return categories.filter { $0.type == categoryType }.sorted { $0.sortOrder < $1.sortOrder }
+        return categories
+            .filter { $0.type == categoryType }
+            .sorted { $0.sortOrder < $1.sortOrder }
     }
     
     private var subcategoriesForSelectedCategory: [Subcategory] {
@@ -82,35 +71,75 @@ struct CategorySelectionView: View {
             return filtered.sorted { $0.sortOrder < $1.sortOrder }
         }
         
-        return filtered.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
-        }.sorted { $0.sortOrder < $1.sortOrder }
+        return filtered
+            .filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            .sorted { $0.sortOrder < $1.sortOrder }
     }
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Top Half - Categories
-                categoriesSection
+                ScrollView {
+                    VStack(spacing: 0) {
+                        Section {
+                            LazyVGrid(
+                                columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
+                                spacing: 16
+                            ) {
+                                ForEach(filteredCategories) { category in
+                                    categoryButton(category: category)
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 16)
+                        }
+                        .listStyle(.insetGrouped)
+                    }
+                }
+                .frame(height: 300)
+                .background(Color(.systemGroupedBackground))
                 
-                // Divider
                 Divider()
-                    .background(Color.secondary.opacity(0.3))
                 
-                // Bottom Half - Subcategories
-                subcategoriesSection
+                List {
+                    Section("Subcategories") {
+                        if subcategoriesForSelectedCategory.isEmpty {
+                            VStack(spacing: 16) {
+                                Image(systemName: "tray")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(.secondary)
+                                
+                                Text("No subcategories found")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                
+                                if !searchText.isEmpty {
+                                    Text("Try a different search term")
+                                        .font(.caption)
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 140)
+                            .listRowBackground(Color.clear)
+                        } else {
+                            ForEach(subcategoriesForSelectedCategory) { subcategory in
+                                subcategoryRow(subcategory: subcategory)
+                            }
+                        }
+                    }
+                }
+                .listStyle(.insetGrouped)
             }
         }
+        .navigationTitle("Categories")
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Done") {
-                    // Если выбрана подкатегория - сохраняем её
                     if let subcategory = selectedSubcategory {
                         onSelectionChanged(subcategory.category, subcategory)
-                    }
-                    // Если выбрана только категория - сохраняем категорию
-                    else if let category = localSelectedCategory {
+                    } else if let category = localSelectedCategory {
                         onSelectionChanged(category, nil)
                     }
                     dismiss()
@@ -124,7 +153,6 @@ struct CategorySelectionView: View {
                     Image(systemName: "pencil")
                 }
             }
-            
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     // TODO: Open Add Category View
@@ -140,84 +168,6 @@ struct CategorySelectionView: View {
                 } else {
                     localSelectedCategory = filteredCategories.first
                 }
-            }
-        }
-    }
-    
-    // MARK: - Categories Section (Top Half)
-    private var categoriesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
-            HStack {
-                Text("Categories")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                Spacer()
-            }
-            
-            // Categories Grid
-            ScrollView {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 16) {
-                    ForEach(filteredCategories) { category in
-                        categoryButton(category: category)
-                    }
-                }
-                .padding(.horizontal, 20)
-            }
-            .frame(height: 300) // Fixed height for top half
-        }
-    }
-    
-    // MARK: - Subcategories Section (Bottom Half)
-    private var subcategoriesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
-            HStack {
-                Text("Subcategories")
-                    .font(.headline)
-                    .fontDesign(.rounded)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                
-                Spacer()
-                
-                if let selectedCategory = localSelectedCategory {
-                    Text(selectedCategory.name)
-                        .font(.subheadline)
-                        .fontDesign(.rounded)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 16)
-                }
-            }
-            
-            // Subcategories List
-            if subcategoriesForSelectedCategory.isEmpty {
-                // Empty state
-                VStack(spacing: 16) {
-                    Image(systemName: "tray")
-                        .font(.largeTitle)
-                        .foregroundStyle(.secondary)
-                    
-                    Text("No subcategories found")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    
-                    if !searchText.isEmpty {
-                        Text("Try a different search term")
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                List(subcategoriesForSelectedCategory) { subcategory in
-                    subcategoryRow(subcategory: subcategory)
-                }
-                .listStyle(.insetGrouped)
             }
         }
     }

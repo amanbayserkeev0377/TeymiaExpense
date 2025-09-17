@@ -29,61 +29,80 @@ struct AddTransactionView: View {
     
     var body: some View {
         NavigationStack {
-                    Form {
-                        Section {
-                            Picker("Type", selection: $selectedTransactionType) {
-                                ForEach(TransactionType.allCases, id: \.self) { type in
-                                    Text(type.rawValue).tag(type)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-                        }
-                        .listRowBackground(Color.clear)
-                        
-                        // Amount Section
-                        Section {
-                            HStack {
-                                Text(currencySymbol)
-                                    .foregroundStyle(.secondary)
-                                    .font(.system(.title2, design: .rounded))
-
-                                TextField("0", text: $amount)
-                                    .font(.system(.title, design: .rounded))
-                                    .fontWeight(.semibold)
-                                    .keyboardType(.decimalPad)
-                                    .multilineTextAlignment(.trailing)
-                            }
-                        }
-                        
-                        // Category Section (only for income/expense)
-                        if selectedTransactionType != .transfer {
-                                Section {
-                                    CategorySelectionRow(
-                                        selectedCategory: selectedCategory,
-                                        selectedSubcategory: selectedSubcategory,
-                                        onTap: { showingCategorySelection = true }
-                                    )
-                                }
-                            }
-                        
-                        // Account/Transfer Section
-                        if selectedTransactionType == .transfer {
-                            transferSection
-                        } else {
-                            accountSection
-                        }
-                        
-                        // Date & Note
-                        Section {
-                            DatePicker("Date", selection: $date, displayedComponents: [.date])
-                            
-                            TextField("Note (optional)", text: $note, axis: .vertical)
-                                .lineLimit(2...4)
+            Form {
+                Section {
+                    Picker("Type", selection: $selectedTransactionType) {
+                        ForEach(TransactionType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
                         }
                     }
+                    .pickerStyle(.segmented)
+                }
+                .listRowBackground(Color.clear)
+                
+                // Amount Section
+                Section {
+                    HStack {
+                        Text(currencySymbol)
+                            .foregroundStyle(.secondary)
+                            .font(.system(.title2, design: .rounded))
+
+                        TextField("0", text: $amount)
+                            .font(.system(.title, design: .rounded))
+                            .fontWeight(.semibold)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                
+                // Category Section (only for income/expense)
+                if selectedTransactionType != .transfer {
+                    Section {
+                        NavigationLink {
+                            CategorySelectionView(
+                                transactionType: selectedTransactionType,
+                                selectedCategory: selectedCategory,
+                                selectedSubcategory: selectedSubcategory,
+                                onSelectionChanged: { category, subcategory in
+                                    selectedCategory = category
+                                    selectedSubcategory = subcategory
+                                }
+                            )
+                        } label: {
+                            CategorySelectionRow(
+                                selectedCategory: selectedCategory,
+                                selectedSubcategory: selectedSubcategory
+                            )
+                        }
+                    }
+                }
+                
+                // Account/Transfer Section
+                if selectedTransactionType == .transfer {
+                    transferSection
+                } else {
+                    accountSection
+                }
+                
+                // Date & Note
+                Section {
+                    DatePicker("Date", selection: $date, displayedComponents: [.date])
+                    
+                    TextField("Note (optional)", text: $note, axis: .vertical)
+                        .lineLimit(2...4)
+                }
+            }
             .navigationTitle(selectedTransactionType.rawValue)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .cancel) {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.bold)
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
                         saveTransaction()
@@ -102,18 +121,6 @@ struct AddTransactionView: View {
         .onChange(of: selectedTransactionType) { _, _ in
             let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
             selectedCategory = categories.first { $0.name.lowercased().contains("other") && $0.type == categoryType }
-        }
-        .sheet(isPresented: $showingCategorySelection) {
-            CategorySelectionView(
-                transactionType: selectedTransactionType,
-                selectedCategory: selectedCategory,
-                selectedSubcategory: selectedSubcategory,
-                onSelectionChanged: { category, subcategory in
-                    selectedCategory = category
-                    selectedSubcategory = subcategory
-                }
-            )
-            .presentationDragIndicator(.visible)
         }
     }
     

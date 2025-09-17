@@ -86,7 +86,7 @@ struct AddAccountView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .fontWeight(.heavy)
+                            .fontWeight(.bold)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -94,7 +94,7 @@ struct AddAccountView: View {
                         saveAccount()
                     } label: {
                         Image(systemName: "checkmark")
-                            .fontWeight(.heavy)
+                            .fontWeight(.bold)
                     }
                     .disabled(!canSave)
                 }
