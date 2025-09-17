@@ -81,12 +81,22 @@ struct AddAccountView: View {
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .cancel) {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.heavy)
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(role: .confirm) {
                         saveAccount()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .fontWeight(.heavy)
                     }
                     .disabled(!canSave)
-                    .fontWeight(.semibold)
                 }
             }
         }

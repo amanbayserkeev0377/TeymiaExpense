@@ -45,16 +45,15 @@ struct AddTransactionView: View {
                             HStack {
                                 Text(currencySymbol)
                                     .foregroundStyle(.secondary)
-                                    .font(.title2)
-                                
+                                    .font(.system(.title2, design: .rounded))
+
                                 TextField("0", text: $amount)
-                                    .font(.title)
+                                    .font(.system(.title, design: .rounded))
                                     .fontWeight(.semibold)
                                     .keyboardType(.decimalPad)
                                     .multilineTextAlignment(.trailing)
                             }
                         }
-                        .listRowBackground(Color.gray.opacity(0.1))
                         
                         // Category Section (only for income/expense)
                         if selectedTransactionType != .transfer {
@@ -65,7 +64,6 @@ struct AddTransactionView: View {
                                         onTap: { showingCategorySelection = true }
                                     )
                                 }
-                                .listRowBackground(Color.gray.opacity(0.1))
                             }
                         
                         // Account/Transfer Section
@@ -82,15 +80,16 @@ struct AddTransactionView: View {
                             TextField("Note (optional)", text: $note, axis: .vertical)
                                 .lineLimit(2...4)
                         }
-                        .listRowBackground(Color.gray.opacity(0.1))
                     }
-                    .scrollContentBackground(.hidden)
             .navigationTitle(selectedTransactionType.rawValue)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(role: .confirm) {
                         saveTransaction()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .fontWeight(.bold)
                     }
                     .disabled(!canSave)
                     .fontWeight(.semibold)
@@ -161,8 +160,7 @@ struct AddTransactionView: View {
                 }
             }
         }
-        .listStyle(.grouped)
-        .listRowBackground(Color.gray.opacity(0.1))
+        .listStyle(.insetGrouped)
     
     }
     
@@ -209,6 +207,7 @@ struct AddTransactionView: View {
                 }
             }
         }
+        .listStyle(.insetGrouped)
         
         Section("To Account") {
             ForEach(accounts.filter { $0 != fromAccount }) { account in
@@ -241,6 +240,7 @@ struct AddTransactionView: View {
                 .buttonStyle(.plain)
             }
         }
+        .listStyle(.insetGrouped)
     }
     
     // MARK: - Computed Properties

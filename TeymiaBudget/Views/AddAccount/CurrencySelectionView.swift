@@ -13,8 +13,7 @@ struct CurrencySelectionRow: View {
                 if let currency = selectedCurrency {
                     Image(CurrencyService.shared.getCurrencyIcon(for: currency))
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 22, height: 22)
+                        .frame(width: 26, height: 26)
                         .clipShape(Circle())
                     
                     Text("currency".localized)
@@ -28,8 +27,7 @@ struct CurrencySelectionRow: View {
                 } else {
                     Image("dollar")
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 20, height: 20)
+                        .frame(width: 24, height: 24)
                     
                     Text("select_currency".localized)
                         .foregroundStyle(.secondary)
@@ -73,10 +71,12 @@ struct CurrencySelectionView: View {
                         selectedCurrency = currency
                         dismiss()
                     }
+                    .listRowBackground(Color.clear)
                 }
             }
-            .listStyle(.automatic)
+            .listStyle(.plain)
             .searchable(text: $searchText)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Picker("Currency Type", selection: $selectedType) {
@@ -89,15 +89,8 @@ struct CurrencySelectionView: View {
                         searchText = "" // Clear search when switching types
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                    }
-                }
             }
         }
-        .navigationTitle("Select Currency")
-        .navigationBarTitleDisplayMode(.large)
     }
 }
 
@@ -118,7 +111,7 @@ struct CurrencyRowView: View {
                     .clipShape(Circle())
                     .overlay(
                         Circle()
-                            .stroke(.separator, lineWidth: 0.5)
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
                     )
                 
                 // Currency info
@@ -136,6 +129,7 @@ struct CurrencyRowView: View {
                     
                     Text(currency.name)
                         .font(.caption)
+                        .fontDesign(.rounded)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
@@ -145,7 +139,9 @@ struct CurrencyRowView: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .fontWeight(.semibold)
+                        .foregroundStyle(.app)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
                 }
             }
             .contentShape(Rectangle())

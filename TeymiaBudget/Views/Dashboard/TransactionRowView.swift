@@ -43,9 +43,7 @@ struct TransactionRowView: View {
                 if let category = transaction.category {
                     Image(category.iconName)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    Image(systemName: "arrow.left.arrow.right")
+                        .frame(width: 24, height: 24)
                 }
             }
             
@@ -57,13 +55,13 @@ struct TransactionRowView: View {
                 if let note = transaction.note {
                     Text(note)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
                 
                 Text(transaction.date, style: .time)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             
             Spacer()
@@ -72,12 +70,12 @@ struct TransactionRowView: View {
                 Text(formatAmount(transaction.amount, currency: transaction.account?.currency))
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(amountColor(for: transaction))
+                    .foregroundStyle(amountColor(for: transaction))
                 
                 if let account = transaction.account {
                     Text(account.name)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
         }

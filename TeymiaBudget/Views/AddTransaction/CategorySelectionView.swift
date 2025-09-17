@@ -13,8 +13,7 @@ struct CategorySelectionRow: View {
             HStack {
                 Image(selectedSubcategory?.iconName ?? selectedCategory?.iconName ?? "")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
                 
                 Text("category".localized)
@@ -102,9 +101,7 @@ struct CategorySelectionView: View {
                 subcategoriesSection
             }
         }
-        .searchable(text: $searchText, prompt: "Search subcategories")
-        .navigationTitle("select_category".localized)
-        .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $searchText)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Done") {
@@ -169,7 +166,7 @@ struct CategorySelectionView: View {
                 }
                 .padding(.horizontal, 20)
             }
-            .frame(height: 200) // Fixed height for top half
+            .frame(height: 300) // Fixed height for top half
         }
     }
     
@@ -180,6 +177,7 @@ struct CategorySelectionView: View {
             HStack {
                 Text("Subcategories")
                     .font(.headline)
+                    .fontDesign(.rounded)
                     .fontWeight(.semibold)
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
@@ -189,6 +187,7 @@ struct CategorySelectionView: View {
                 if let selectedCategory = localSelectedCategory {
                     Text(selectedCategory.name)
                         .font(.subheadline)
+                        .fontDesign(.rounded)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 20)
                         .padding(.top, 16)
@@ -217,9 +216,8 @@ struct CategorySelectionView: View {
             } else {
                 List(subcategoriesForSelectedCategory) { subcategory in
                     subcategoryRow(subcategory: subcategory)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
                 }
-                .listStyle(.plain)
+                .listStyle(.insetGrouped)
             }
         }
     }
@@ -233,22 +231,22 @@ struct CategorySelectionView: View {
                 Image(category.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 28, height: 28)
+                    .frame(width: 32, height: 32)
                     .foregroundStyle(
                         localSelectedCategory?.id == category.id
                         ? (colorScheme == .light ? Color.white : Color.black)
                         : Color.primary
                     )
-                    .padding(12)
+                    .padding(14)
                     .background(
                         Circle()
                             .fill(localSelectedCategory?.id == category.id
-                                  ? Color.blue.opacity(0.9)
-                                  : Color.secondary.opacity(0.1))
+                                  ? Color.primary.opacity(0.9)
+                                  : Color(.secondarySystemGroupedBackground))
                     )
                 
                 Text(category.name)
-                    .font(.caption)
+                    .font(.system(.caption, design: .rounded))
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
@@ -269,22 +267,18 @@ struct CategorySelectionView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
-                    .padding(8)
-                    .background(
-                        Circle()
-                            .fill(Color.secondary.opacity(0.1))
-                    )
                 
                 Text(subcategory.name)
-                    .font(.body)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Spacer()
                 
                 if selectedSubcategory?.id == subcategory.id {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.blue)
-                        .fontWeight(.semibold)
+                        .foregroundStyle(.app)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
                 }
             }
             .contentShape(Rectangle())

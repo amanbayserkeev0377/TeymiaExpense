@@ -13,9 +13,6 @@ struct AccountTypeSelectionRow: View {
                 } label: {
                     HStack {
                         Image(type.iconName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 20, height: 20)
                         Text(type.displayName)
                     }
                 }
@@ -24,8 +21,7 @@ struct AccountTypeSelectionRow: View {
             HStack {
                 Image(selectedAccountType.iconName)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
                 
                 Text("type".localized)
