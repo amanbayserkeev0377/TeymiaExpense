@@ -4,48 +4,14 @@ import SwiftData
 struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) var colorScheme
 
     @Query private var accounts: [Account]
     @Query private var categories: [Category]
     
-    // Transaction types
     enum TransactionType: String, CaseIterable {
         case expense = "Expense"
         case income = "Income"
         case transfer = "Transfer"
-        
-        var darkColor: Color {
-            switch self {
-            case .expense: return Color(#colorLiteral(red: 0.8, green: 0.1, blue: 0.1, alpha: 1))
-            case .income: return Color(#colorLiteral(red: 0.0, green: 0.6431372549, blue: 0.5490196078, alpha: 1))
-            case .transfer: return Color(#colorLiteral(red: 0.1490196078, green: 0.4666666667, blue: 0.6784313725, alpha: 1))
-            }
-        }
-        
-        var lightColor: Color {
-            switch self {
-            case .expense: return Color(#colorLiteral(red: 1, green: 0.3, blue: 0.3, alpha: 1))
-            case .income: return Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1))
-            case .transfer: return Color(#colorLiteral(red: 0.3568627451, green: 0.6588235294, blue: 0.9294117647, alpha: 1))
-            }
-        }
-        
-        var backgroundGradient: LinearGradient {
-            LinearGradient(
-                colors: [darkColor, lightColor],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-        
-        var customIconName: String {
-            switch self {
-            case .expense: return "expense"
-            case .income: return "income"
-            case .transfer: return "transfer"
-            }
-        }
     }
     
     @State private var selectedTransactionType: TransactionType = .expense
@@ -65,8 +31,14 @@ struct AddTransactionView: View {
         NavigationStack {
                     Form {
                         Section {
-                            customTransactionTypePicker
+                            Picker("Type", selection: $selectedTransactionType) {
+                                ForEach(TransactionType.allCases, id: \.self) { type in
+                                    Text(type.rawValue).tag(type)
+                                }
+                            }
+                            .pickerStyle(.segmented)
                         }
+                        .listRowBackground(Color.clear)
                         
                         // Amount Section
                         Section {
@@ -82,16 +54,18 @@ struct AddTransactionView: View {
                                     .multilineTextAlignment(.trailing)
                             }
                         }
+                        .listRowBackground(Color.gray.opacity(0.1))
                         
                         // Category Section (only for income/expense)
                         if selectedTransactionType != .transfer {
-                                Section("Category") {
+                                Section {
                                     CategorySelectionRow(
                                         selectedCategory: selectedCategory,
                                         selectedSubcategory: selectedSubcategory,
                                         onTap: { showingCategorySelection = true }
                                     )
                                 }
+                                .listRowBackground(Color.gray.opacity(0.1))
                             }
                         
                         // Account/Transfer Section
@@ -102,13 +76,15 @@ struct AddTransactionView: View {
                         }
                         
                         // Date & Note
-                        Section("Details") {
+                        Section {
                             DatePicker("Date", selection: $date, displayedComponents: [.date])
                             
                             TextField("Note (optional)", text: $note, axis: .vertical)
                                 .lineLimit(2...4)
                         }
+                        .listRowBackground(Color.gray.opacity(0.1))
                     }
+                    .scrollContentBackground(.hidden)
             .navigationTitle(selectedTransactionType.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -140,53 +116,6 @@ struct AddTransactionView: View {
             )
             .presentationDragIndicator(.visible)
         }
-    }
-        
-    // MARK: - Transaction Type Picker
-    private var customTransactionTypePicker: some View {
-        HStack(spacing: 0) {
-            ForEach(TransactionType.allCases, id: \.self) { type in
-                transactionTypeButton(for: type)
-            }
-        }
-        .padding(4)
-        .background(
-            RoundedRectangle(cornerRadius: 26)
-                .fill(.gray.opacity(0.1))
-        )
-    }
-    
-    // MARK: - Transaction Type Button
-    private func transactionTypeButton(for type: TransactionType) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                selectedTransactionType = type
-            }
-        } label: {
-            HStack {
-                Image(type.customIconName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(
-                        selectedTransactionType == type
-                        ? .white
-                        : (colorScheme == .light ? type.darkColor : type.lightColor)
-                    )
-                
-                Text(type.rawValue)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(selectedTransactionType == type ? .white : .primary)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 44)
-            .background(
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(selectedTransactionType == type ? AnyShapeStyle(type.backgroundGradient.opacity(0.8)) : AnyShapeStyle(Color.clear))
-            )
-        }
-        .buttonStyle(.plain)
     }
     
     // MARK: - Account Section
@@ -232,6 +161,9 @@ struct AddTransactionView: View {
                 }
             }
         }
+        .listStyle(.grouped)
+        .listRowBackground(Color.gray.opacity(0.1))
+    
     }
     
     // MARK: - Transfer Section
