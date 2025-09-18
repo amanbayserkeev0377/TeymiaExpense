@@ -2,11 +2,11 @@ import SwiftUI
 import SwiftData
 
 struct CategorySelectionRow: View {
-    let selectedSubcategory: Subcategory?
+    let selectedCategory: Category?
     
     var body: some View {
         HStack {
-            Image(selectedSubcategory?.iconName ?? "circle.dashed")
+            Image(selectedCategory?.iconName ?? "circle.dashed")
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.primary)
@@ -16,13 +16,13 @@ struct CategorySelectionRow: View {
             
             Spacer()
             
-            if let subcategory = selectedSubcategory {
+            if let category = selectedCategory {
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(subcategory.category.name)
+                    Text(category.categoryGroup.name)
                         .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
-                    Text(subcategory.name)
+                    Text(category.name)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -34,27 +34,27 @@ struct CategorySelectionRow: View {
 struct CategorySelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
-    @Query private var subcategories: [Subcategory]
     
     let transactionType: AddTransactionView.TransactionType
-    let selectedSubcategory: Subcategory?
-    let onSelectionChanged: (Subcategory?) -> Void
+    let selectedCategory: Category?
+    let onSelectionChanged: (Category?) -> Void
     
     @State private var searchText = ""
-    @State private var localSelectedCategory: Category?
+    @State private var localSelectedCategoryGroup: CategoryGroup?
     
-    private var filteredCategories: [Category] {
-        let categoryType: CategoryType = transactionType == .income ? .income : .expense
-        return categories
-            .filter { $0.type == categoryType }
+    private var filteredCategoryGroups: [CategoryGroup] {
+        let groupType: GroupType = transactionType == .income ? .income : .expense
+        return categoryGroups
+            .filter { $0.type == groupType }
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     
-    private var subcategoriesForSelectedCategory: [Subcategory] {
-        guard let selectedCategory = localSelectedCategory else { return [] }
+    private var categoriesForSelectedGroup: [Category] {
+        guard let selectedGroup = localSelectedCategoryGroup else { return [] }
         
-        let filtered = subcategories.filter { $0.category.id == selectedCategory.id }
+        let filtered = categories.filter { $0.categoryGroup.id == selectedGroup.id }
         
         if searchText.isEmpty {
             return filtered.sorted { $0.sortOrder < $1.sortOrder }
@@ -75,8 +75,8 @@ struct CategorySelectionView: View {
                                 columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
                                 spacing: 16
                             ) {
-                                ForEach(filteredCategories) { category in
-                                    categoryButton(category: category)
+                                ForEach(filteredCategoryGroups) { categoryGroup in
+                                    categoryGroupButton(categoryGroup: categoryGroup)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -91,14 +91,14 @@ struct CategorySelectionView: View {
                 Divider()
                 
                 List {
-                    Section("Subcategories") {
-                        if subcategoriesForSelectedCategory.isEmpty {
+                    Section("Categories") {
+                        if categoriesForSelectedGroup.isEmpty {
                             VStack(spacing: 16) {
                                 Image(systemName: "tray")
                                     .font(.largeTitle)
                                     .foregroundStyle(.secondary)
                                 
-                                Text("No subcategories found")
+                                Text("No categories found")
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 
@@ -111,8 +111,8 @@ struct CategorySelectionView: View {
                             .frame(maxWidth: .infinity, minHeight: 140)
                             .listRowBackground(Color.clear)
                         } else {
-                            ForEach(subcategoriesForSelectedCategory) { subcategory in
-                                subcategoryRow(subcategory: subcategory)
+                            ForEach(categoriesForSelectedGroup) { category in
+                                categoryRow(category: category)
                             }
                         }
                     }
@@ -140,40 +140,40 @@ struct CategorySelectionView: View {
             }
         }
         .onAppear {
-            if localSelectedCategory == nil {
-                if let subcategory = selectedSubcategory {
-                    localSelectedCategory = subcategory.category
+            if localSelectedCategoryGroup == nil {
+                if let category = selectedCategory {
+                    localSelectedCategoryGroup = category.categoryGroup
                 } else {
-                    localSelectedCategory = filteredCategories.first
+                    localSelectedCategoryGroup = filteredCategoryGroups.first
                 }
             }
         }
     }
     
-    // MARK: - Category Button
-    private func categoryButton(category: Category) -> some View {
+    // MARK: - CategoryGroup Button
+    private func categoryGroupButton(categoryGroup: CategoryGroup) -> some View {
         Button {
-            localSelectedCategory = category
+            localSelectedCategoryGroup = categoryGroup
         } label: {
             VStack(spacing: 8) {
-                Image(category.iconName)
+                Image(categoryGroup.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32, height: 32)
                     .foregroundStyle(
-                        localSelectedCategory?.id == category.id
+                        localSelectedCategoryGroup?.id == categoryGroup.id
                         ? (colorScheme == .light ? Color.white : Color.black)
                         : Color.primary
                     )
                     .padding(14)
                     .background(
                         Circle()
-                            .fill(localSelectedCategory?.id == category.id
+                            .fill(localSelectedCategoryGroup?.id == categoryGroup.id
                                   ? Color.primary.opacity(0.9)
                                   : Color(.secondarySystemGroupedBackground))
                     )
                 
-                Text(category.name)
+                Text(categoryGroup.name)  // Изменено
                     .font(.system(.caption, design: .rounded))
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
@@ -184,28 +184,28 @@ struct CategorySelectionView: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - Subcategory Row
-    private func subcategoryRow(subcategory: Subcategory) -> some View {
+    // MARK: - Category Row
+    private func categoryRow(category: Category) -> some View {
         Button {
-            onSelectionChanged(subcategory)
+            onSelectionChanged(category)
             dismiss()
         } label: {
             HStack(spacing: 12) {
-                Image(subcategory.iconName)
+                Image(category.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
                 
-                Text(subcategory.name)
+                Text(category.name)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Spacer()
                 
-                if selectedSubcategory?.id == subcategory.id {
+                if selectedCategory?.id == category.id {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.app)
+                        .foregroundStyle(.blue)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
                 }

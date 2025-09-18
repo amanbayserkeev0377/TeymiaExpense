@@ -26,20 +26,20 @@ final class Currency {
     }
 }
 
-// MARK: - Category
+// MARK: - CategoryGroup
 @Model
-final class Category {
-    var name: String        // "Food & Drinks"
+final class CategoryGroup {
+    var name: String        // "Food & Drinks", "Transport"
     var iconName: String
-    var type: CategoryType
+    var type: GroupType     // income or expense
     var sortOrder: Int
     var isDefault: Bool
     var createdAt: Date
     
-    @Relationship(deleteRule: .cascade, inverse: \Subcategory.category)
-    var subcategories: [Subcategory] = []
+    @Relationship(deleteRule: .cascade, inverse: \Category.categoryGroup)
+    var categories: [Category] = []
     
-    init(name: String, iconName: String, type: CategoryType, sortOrder: Int = 0, isDefault: Bool = false) {
+    init(name: String, iconName: String, type: GroupType, sortOrder: Int = 0, isDefault: Bool = false) {
         self.name = name
         self.iconName = iconName
         self.type = type
@@ -49,28 +49,25 @@ final class Category {
     }
 }
 
-// MARK: - Subcategory
+// MARK: - Category
 @Model
-final class Subcategory {
-    var name: String        // "Coffee", "Restaurant"
+final class Category {
+    var name: String        // "Coffee", "Restaurant", "Taxi"
     var iconName: String
     var sortOrder: Int
     var isDefault: Bool
     var createdAt: Date
     
     // Relationships
-    var category: Category
+    var categoryGroup: CategoryGroup
     
-    @Relationship(deleteRule: .cascade, inverse: \Transaction.subcategory)
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.category)
     var transactions: [Transaction] = []
     
-    @Relationship(deleteRule: .cascade, inverse: \Budget.subcategory)
-    var budgets: [Budget] = []
-    
-    init(name: String, iconName: String, category: Category, sortOrder: Int = 0, isDefault: Bool = false) {
+    init(name: String, iconName: String, categoryGroup: CategoryGroup, sortOrder: Int = 0, isDefault: Bool = false) {
         self.name = name
         self.iconName = iconName
-        self.category = category
+        self.categoryGroup = categoryGroup
         self.sortOrder = sortOrder
         self.isDefault = isDefault
         self.createdAt = Date()
@@ -115,75 +112,26 @@ final class Transaction {
     var date: Date
     var type: TransactionType
     var createdAt: Date
+    
+    // Relationships
+    var categoryGroup: CategoryGroup?  // Automatically derived from category.categoryGroup
     var category: Category?
-    var subcategory: Subcategory?
     var account: Account?
     
-    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, category: Category? = nil, subcategory: Subcategory? = nil, account: Account? = nil) {
+    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil) {
         self.amount = amount
         self.note = note
         self.date = date
         self.type = type
+        self.categoryGroup = categoryGroup
         self.category = category
-        self.subcategory = subcategory
         self.account = account
         self.createdAt = Date()
     }
 }
 
-// MARK: - Budget
-@Model
-final class Budget {
-    var name: String
-    var limitAmount: Decimal
-    var spentAmount: Decimal
-    var period: BudgetPeriod
-    var startDate: Date
-    var endDate: Date
-    var isActive: Bool
-    var createdAt: Date
-    
-    var subcategory: Subcategory?
-
-    var category: Category? {
-        return subcategory?.category
-    }
-    
-    init(name: String, limitAmount: Decimal, period: BudgetPeriod, subcategory: Subcategory? = nil) {
-        // Calculate dates first
-        let calendar = Calendar.current
-        let now = Date()
-        
-        let calculatedStartDate: Date
-        let calculatedEndDate: Date
-        
-        switch period {
-        case .weekly:
-            calculatedStartDate = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
-            calculatedEndDate = calendar.date(byAdding: .weekOfYear, value: 1, to: calculatedStartDate) ?? now
-        case .monthly:
-            calculatedStartDate = calendar.dateInterval(of: .month, for: now)?.start ?? now
-            calculatedEndDate = calendar.date(byAdding: .month, value: 1, to: calculatedStartDate) ?? now
-        case .yearly:
-            calculatedStartDate = calendar.dateInterval(of: .year, for: now)?.start ?? now
-            calculatedEndDate = calendar.date(byAdding: .year, value: 1, to: calculatedStartDate) ?? now
-        }
-        
-        // Initialize all properties
-        self.name = name
-        self.limitAmount = limitAmount
-        self.spentAmount = 0
-        self.period = period
-        self.startDate = calculatedStartDate
-        self.endDate = calculatedEndDate
-        self.subcategory = subcategory
-        self.isActive = true
-        self.createdAt = Date()
-    }
-}
-
 // MARK: - Enums
-enum CategoryType: String, CaseIterable, Codable {
+enum GroupType: String, CaseIterable, Codable {
     case income = "income"
     case expense = "expense"
 }
@@ -198,12 +146,6 @@ enum AccountType: String, CaseIterable, Codable {
     case bankAccount = "bank_account"
     case creditCard = "credit.card"
     case savings = "savings"
-}
-
-enum BudgetPeriod: String, CaseIterable, Codable {
-    case weekly = "weekly"
-    case monthly = "monthly"
-    case yearly = "yearly"
 }
 
 enum CurrencyType: String, CaseIterable, Codable {

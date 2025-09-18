@@ -1,10 +1,10 @@
 import Foundation
 import SwiftData
 
-extension Category {
+extension CategoryGroup {
     static func createDefaults(context: ModelContext) {
-        let expenseCategories = [
-            ("other".localized, "other", 0), // default category
+        let expenseGroups = [
+            ("other".localized, "other", 0), // default category group
             ("food.drinks".localized, "food.drinks", 1),
             ("transport".localized, "transport", 2),
             ("entertainment".localized, "entertainment", 3),
@@ -18,35 +18,35 @@ extension Category {
             ("child".localized, "child", 11)
         ]
         
-        for (name, iconName, sortOrder) in expenseCategories {
-            let category = Category(
+        for (name, iconName, sortOrder) in expenseGroups {
+            let categoryGroup = CategoryGroup(
                 name: name,
                 iconName: iconName,
                 type: .expense,
                 sortOrder: sortOrder,
                 isDefault: true
             )
-            context.insert(category)
+            context.insert(categoryGroup)
         }
         
-        // Default income categories
-        let incomeCategories = [
-            ("salary".localized, "salary", 0), // default category
+        // Default income groups
+        let incomeGroups = [
+            ("salary".localized, "salary", 0), // default category group
             ("gift".localized, "gift", 1),
             ("bonuses".localized, "bonuses", 2),
             ("business".localized, "business", 3),
             ("investment".localized, "investment", 4),
         ]
         
-        for (name, iconName, sortOrder) in incomeCategories {
-            let category = Category(
+        for (name, iconName, sortOrder) in incomeGroups {
+            let categoryGroup = CategoryGroup(
                 name: name,
                 iconName: iconName,
                 type: .income,
                 sortOrder: sortOrder,
                 isDefault: true
             )
-            context.insert(category)
+            context.insert(categoryGroup)
         }
     }
 }

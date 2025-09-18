@@ -1,28 +1,26 @@
 import Foundation
 import SwiftData
 
-extension Subcategory {
+extension Category {
     static func createDefaults(context: ModelContext) {
-        // Получаем созданные категории
-        let categoryDescriptor = FetchDescriptor<Category>()
-        let categories = (try? context.fetch(categoryDescriptor)) ?? []
+        let categoryGroupDescriptor = FetchDescriptor<CategoryGroup>()
+        let categoryGroups = (try? context.fetch(categoryGroupDescriptor)) ?? []
         
-        guard !categories.isEmpty else {
-            print("Warning: No categories found for creating subcategories")
+        guard !categoryGroups.isEmpty else {
+            print("Warning: No category groups found for creating categories")
             return
         }
         
-        // Helper для поиска категории
-        func findCategory(name: String, type: CategoryType) -> Category? {
-            return categories.first { $0.name == name && $0.type == type }
+        func findCategoryGroup(name: String, type: GroupType) -> CategoryGroup? {
+            return categoryGroups.first { $0.name == name && $0.type == type }
         }
         
-        createExpenseSubcategories(findCategory: findCategory, context: context)
-        createIncomeSubcategories(findCategory: findCategory, context: context)
+        createExpenseCategories(findCategoryGroup: findCategoryGroup, context: context)
+        createIncomeCategories(findCategoryGroup: findCategoryGroup, context: context)
     }
     
-    private static func createExpenseSubcategories(findCategory: (String, CategoryType) -> Category?, context: ModelContext) {
-        let subcategoryData: [(categoryName: String, subcategories: [(String, String)])] = [
+    private static func createExpenseCategories(findCategoryGroup: (String, GroupType) -> CategoryGroup?, context: ModelContext) {
+        let categoryData: [(groupName: String, categories: [(String, String)])] = [
             ("food.drinks".localized, [
                 ("delivery".localized, "delivery"),
                 ("groceries".localized, "groceries"),
@@ -109,27 +107,27 @@ extension Subcategory {
             ])
         ]
         
-        for (categoryName, subcategories) in subcategoryData {
-            guard let category = findCategory(categoryName, .expense) else {
-                print("Warning: Category '\(categoryName)' not found for expense subcategories")
+        for (groupName, categories) in categoryData {
+            guard let categoryGroup = findCategoryGroup(groupName, .expense) else {
+                print("Warning: CategoryGroup '\(groupName)' not found for expense categories")
                 continue
             }
             
-            for (index, (subcategoryName, iconName)) in subcategories.enumerated() {
-                let subcategory = Subcategory(
-                    name: subcategoryName,
+            for (index, (categoryName, iconName)) in categories.enumerated() {
+                let category = Category(
+                    name: categoryName,
                     iconName: iconName,
-                    category: category,
+                    categoryGroup: categoryGroup,
                     sortOrder: index,
                     isDefault: true
                 )
-                context.insert(subcategory)
+                context.insert(category)
             }
         }
     }
     
-    private static func createIncomeSubcategories(findCategory: (String, CategoryType) -> Category?, context: ModelContext) {
-        let subcategoryData: [(categoryName: String, subcategories: [(String, String)])] = [
+    private static func createIncomeCategories(findCategoryGroup: (String, GroupType) -> CategoryGroup?, context: ModelContext) {
+        let categoryData: [(groupName: String, categories: [(String, String)])] = [
             ("salary".localized, [
                 ("monthly.salary".localized, "monthly.salary"),
                 ("overtime".localized, "overtime"),
@@ -161,21 +159,21 @@ extension Subcategory {
             ])
         ]
         
-        for (categoryName, subcategories) in subcategoryData {
-            guard let category = findCategory(categoryName, .income) else {
-                print("Warning: Category '\(categoryName)' not found for income subcategories")
+        for (groupName, categories) in categoryData {
+            guard let categoryGroup = findCategoryGroup(groupName, .income) else {  // Изменено
+                print("Warning: CategoryGroup '\(groupName)' not found for income categories")
                 continue
             }
             
-            for (index, (subcategoryName, iconName)) in subcategories.enumerated() {
-                let subcategory = Subcategory(
-                    name: subcategoryName,
+            for (index, (categoryName, iconName)) in categories.enumerated() {
+                let category = Category(
+                    name: categoryName,
                     iconName: iconName,
-                    category: category,
+                    categoryGroup: categoryGroup,  // Изменено
                     sortOrder: index,
                     isDefault: true
                 )
-                context.insert(subcategory)
+                context.insert(category)
             }
         }
     }

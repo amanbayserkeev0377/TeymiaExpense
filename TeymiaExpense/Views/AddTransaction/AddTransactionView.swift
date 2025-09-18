@@ -6,8 +6,8 @@ struct AddTransactionView: View {
     @Environment(\.modelContext) private var modelContext
 
     @Query private var accounts: [Account]
+    @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
-    @Query private var subcategories: [Subcategory]
     
     enum TransactionType: String, CaseIterable {
         case expense = "Expense"
@@ -18,7 +18,7 @@ struct AddTransactionView: View {
     @State private var selectedTransactionType: TransactionType = .expense
     @State private var amount: String = ""
     @State private var selectedAccount: Account?
-    @State private var selectedSubcategory: Subcategory?
+    @State private var selectedCategory: Category?
     @State private var note: String = ""
     @State private var date: Date = Date()
     @State private var showingCategorySelection = false
@@ -61,14 +61,14 @@ struct AddTransactionView: View {
                         NavigationLink {
                             CategorySelectionView(
                                 transactionType: selectedTransactionType,
-                                selectedSubcategory: selectedSubcategory,
-                                onSelectionChanged: { subcategory in
-                                    selectedSubcategory = subcategory
+                                selectedCategory: selectedCategory,
+                                onSelectionChanged: { category in
+                                    selectedCategory = category
                                 }
                             )
                         } label: {
                             CategorySelectionRow(
-                                selectedSubcategory: selectedSubcategory
+                                selectedCategory: selectedCategory
                             )
                         }
                     }
@@ -116,11 +116,11 @@ struct AddTransactionView: View {
             setupDefaults()
         }
         .onChange(of: selectedTransactionType) { _, _ in
-            let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
-            selectedSubcategory = subcategories.first { subcategory in
-                subcategory.category.type == categoryType &&
-                subcategory.category.name.lowercased().contains("other") &&
-                subcategory.name.lowercased().contains("general")
+            let groupType: GroupType = selectedTransactionType == .income ? .income : .expense
+            selectedCategory = categories.first { category in
+                category.categoryGroup.type == groupType &&
+                category.categoryGroup.name.lowercased().contains("other") &&
+                category.name.lowercased().contains("general")
             }
         }
     }
@@ -169,7 +169,6 @@ struct AddTransactionView: View {
             }
         }
         .listStyle(.insetGrouped)
-    
     }
     
     // MARK: - Transfer Section
@@ -266,7 +265,7 @@ struct AddTransactionView: View {
         
         switch selectedTransactionType {
         case .expense, .income:
-            return selectedAccount != nil && selectedSubcategory != nil
+            return selectedAccount != nil && selectedCategory != nil
         case .transfer:
             return fromAccount != nil && toAccount != nil && fromAccount != toAccount
         }
@@ -286,14 +285,14 @@ struct AddTransactionView: View {
         selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
         fromAccount = accounts.first { $0.isDefault } ?? accounts.first
         
-        // Default subcategory "Other" -> "General"
-        if selectedSubcategory == nil {
-            let categoryType: CategoryType = selectedTransactionType == .income ? .income : .expense
+        // Default category "Other" -> "General"
+        if selectedCategory == nil {
+            let groupType: GroupType = selectedTransactionType == .income ? .income : .expense
             
-            selectedSubcategory = subcategories.first { subcategory in
-                subcategory.category.type == categoryType &&
-                subcategory.category.name.lowercased().contains("other") &&
-                subcategory.name.lowercased().contains("general")
+            selectedCategory = categories.first { category in
+                category.categoryGroup.type == groupType &&
+                category.categoryGroup.name.lowercased().contains("other") &&
+                category.name.lowercased().contains("general")
             }
         }
     }
@@ -321,15 +320,15 @@ struct AddTransactionView: View {
     }
     
     private func saveExpenseTransaction(amount: Decimal) {
-        guard let account = selectedAccount else { return }
+        guard let account = selectedAccount, let category = selectedCategory else { return }
         
         let transaction = Transaction(
             amount: -amount,
             note: note.isEmpty ? nil : note,
             date: date,
             type: .expense,
-            category: selectedSubcategory?.category,
-            subcategory: selectedSubcategory,
+            categoryGroup: category.categoryGroup,
+            category: category,
             account: account
         )
         
@@ -341,15 +340,15 @@ struct AddTransactionView: View {
     }
     
     private func saveIncomeTransaction(amount: Decimal) {
-        guard let account = selectedAccount else { return }
+        guard let account = selectedAccount, let category = selectedCategory else { return }
         
         let transaction = Transaction(
             amount: amount,
             note: note.isEmpty ? nil : note,
             date: date,
             type: .income,
-            category: selectedSubcategory?.category,
-            subcategory: selectedSubcategory,
+            categoryGroup: category.categoryGroup,
+            category: category,
             account: account
         )
         
@@ -368,8 +367,8 @@ struct AddTransactionView: View {
             note: note.isEmpty ? "Transfer to \(toAcc.name)" : note,
             date: date,
             type: .expense,
+            categoryGroup: nil,
             category: nil,
-            subcategory: nil,
             account: fromAcc
         )
         
@@ -378,8 +377,8 @@ struct AddTransactionView: View {
             note: note.isEmpty ? "Transfer from \(fromAcc.name)" : note,
             date: date,
             type: .income,
+            categoryGroup: nil,
             category: nil,
-            subcategory: nil,
             account: toAcc
         )
         

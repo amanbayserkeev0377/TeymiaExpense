@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct TransactionHistoryView: View {
-    @Query private var transactions: [Transaction]
+    @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
     
     var body: some View {
         NavigationStack {
@@ -15,7 +15,7 @@ struct TransactionHistoryView: View {
                     }
                 }
             }
-            .listStyle(.grouped)
+            .listStyle(.insetGrouped)
             .navigationTitle("History")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -39,19 +39,38 @@ struct TransactionRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
+            // Icon
             Group {
-                if let subcategory = transaction.subcategory {
-                    Image(subcategory.iconName)
+                if let category = transaction.category {
+                    Image(category.iconName)
                         .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(.primary)
+                } else {
+                    // Transfer icon
+                    Image(systemName: "arrow.left.arrow.right")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.blue)
                         .frame(width: 24, height: 24)
                 }
             }
             
+            // Transaction details
             VStack(alignment: .leading, spacing: 2) {
-                Text(transaction.subcategory?.name ?? "Transfer")
+                Text(transaction.category?.name ?? "Transfer")
                     .font(.body)
                     .fontWeight(.medium)
+                    .foregroundStyle(.primary)
                 
+                // Show group name for regular transactions
+                if let categoryGroup = transaction.category?.categoryGroup {
+                    Text(categoryGroup.name)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
+                // Note
                 if let note = transaction.note {
                     Text(note)
                         .font(.subheadline)
@@ -59,6 +78,7 @@ struct TransactionRowView: View {
                         .lineLimit(1)
                 }
                 
+                // Time
                 Text(transaction.date, style: .time)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -66,6 +86,7 @@ struct TransactionRowView: View {
             
             Spacer()
             
+            // Amount and account
             VStack(alignment: .trailing, spacing: 2) {
                 Text(formatAmount(transaction.amount, currency: transaction.account?.currency))
                     .font(.body)
@@ -80,17 +101,6 @@ struct TransactionRowView: View {
             }
         }
         .padding(.vertical, 4)
-    }
-    
-    private func colorForTransaction(_ transaction: Transaction) -> Color {
-        if transaction.category == nil {
-            return .blue // Transfer
-        }
-        
-        switch transaction.type {
-        case .expense: return .red
-        case .income: return .green
-        }
     }
     
     private func amountColor(for transaction: Transaction) -> Color {

@@ -2,14 +2,13 @@ import SwiftUI
 import SwiftData
 
 @main
-struct TeymiaBudgetApp: App {
+struct TeymiaExpenseApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Transaction.self,
+            CategoryGroup.self,
             Category.self,
-            Subcategory.self,
             Account.self,
-            Budget.self,
             Currency.self
         ])
         
@@ -54,11 +53,11 @@ private func createDefaultDataIfNeeded(context: ModelContext) {
     Currency.createDefaults(context: context)
     print("Created currencies")
     
+    CategoryGroup.createDefaults(context: context)
+    print("Created category groups")
+    
     Category.createDefaults(context: context)
     print("Created categories")
-    
-    Subcategory.createDefaults(context: context)
-    print("Created subcategories")
     
     Account.createDefault(context: context)
     print("Created accounts")

@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct DashboardView: View {
+struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @Query private var accounts: [Account]
@@ -25,7 +25,7 @@ struct DashboardView: View {
                     }
                     .padding(.top, 8)
                 }
-                .navigationTitle("Overview")
+                .navigationTitle("Home")
                 .navigationBarTitleDisplayMode(.large)
             }
             
