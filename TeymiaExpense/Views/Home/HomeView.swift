@@ -87,7 +87,6 @@ struct HomeView: View {
                         TransactionHistoryView()
                     }
                     .font(.subheadline)
-                    .foregroundColor(.blue)
                 }
             }
             .padding(.horizontal, 20)
@@ -105,15 +104,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.systemBackground).opacity(0.6))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(.separator, lineWidth: 0.15)
-                        )
-                )
-                .padding(.horizontal, 20)
             }
         }
     }
