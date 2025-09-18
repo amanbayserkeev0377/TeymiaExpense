@@ -4,7 +4,7 @@ import SwiftData
 struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-
+    
     @Query private var accounts: [Account]
     @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
@@ -21,6 +21,7 @@ struct AddTransactionView: View {
     @State private var selectedCategory: Category?
     @State private var note: String = ""
     @State private var date: Date = Date()
+    @State private var showingAddAccount = false
     @State private var showingCategorySelection = false
     
     // Transfer specific
@@ -46,7 +47,7 @@ struct AddTransactionView: View {
                         Text(currencySymbol)
                             .foregroundStyle(.secondary)
                             .font(.system(.title2, design: .rounded))
-
+                        
                         TextField("0", text: $amount)
                             .font(.system(.title, design: .rounded))
                             .fontWeight(.semibold)
@@ -116,12 +117,18 @@ struct AddTransactionView: View {
             setupDefaults()
         }
         .onChange(of: selectedTransactionType) { _, _ in
-            let groupType: GroupType = selectedTransactionType == .income ? .income : .expense
-            selectedCategory = categories.first { category in
-                category.categoryGroup.type == groupType &&
-                category.categoryGroup.name.lowercased().contains("other") &&
-                category.name.lowercased().contains("general")
+            setDefaultCategory()
+        }
+        .onChange(of: selectedTransactionType) { _, _ in
+            setDefaultCategory()
+            
+            if selectedTransactionType == .transfer && accounts.count > 1 && toAccount == nil {
+                toAccount = accounts.first { $0 != fromAccount }
             }
+        }
+        .sheet(isPresented: $showingAddAccount) {
+            AddAccountView()
+                .presentationDragIndicator(.visible)
         }
     }
     
@@ -129,43 +136,37 @@ struct AddTransactionView: View {
     @ViewBuilder
     private var accountSection: some View {
         Section("Account") {
-            if accounts.isEmpty {
-                ContentUnavailableView(
-                    "No Accounts",
-                    systemImage: "wallet.bifold",
-                    description: Text("Create your first account to get started")
-                )
-                .frame(height: 100)
-            } else {
-                ForEach(accounts) { account in
-                    Button {
-                        selectedAccount = account
-                    } label: {
-                        HStack {
-                            Image(systemName: systemIconForAccountType(account.type))
-                                .foregroundColor(selectedAccount == account ? .primary : .secondary)
-                                .frame(width: 20)
+            ForEach(accounts) { account in
+                Button {
+                    selectedAccount = account
+                } label: {
+                    HStack {
+                        Image(account.cardIcon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(selectedAccount == account ? .primary : .secondary)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(account.name)
+                                .foregroundStyle(.primary)
                             
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(account.name)
-                                    .foregroundColor(.primary)
-                                
-                                Text(formatCurrency(account.balance, currency: account.currency))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            if selectedAccount == account {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.primary)
-                                    .fontWeight(.semibold)
-                            }
+                            Text(formatCurrency(account.balance, currency: account.currency))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        if selectedAccount == account {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.app)
+                                .fontWeight(.bold)
+                                .fontDesign(.rounded)
                         }
                     }
-                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
         }
         .listStyle(.insetGrouped)
@@ -175,76 +176,90 @@ struct AddTransactionView: View {
     @ViewBuilder
     private var transferSection: some View {
         Section("From Account") {
-            if accounts.count < 2 {
-                Text("Need at least 2 accounts for transfers")
-                    .foregroundColor(.secondary)
-                    .font(.subheadline)
-            } else {
-                ForEach(accounts) { account in
-                    Button {
-                        fromAccount = account
-                        if toAccount == account {
-                            toAccount = nil
+            ForEach(accounts) { account in
+                Button {
+                    fromAccount = account
+                    if toAccount == account {
+                        toAccount = nil
+                    }
+                } label: {
+                    HStack {
+                        Image(account.cardIcon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(fromAccount == account ? .primary : .secondary)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(account.name)
+                                .foregroundStyle(.primary)
+                            
+                            Text(formatCurrency(account.balance, currency: account.currency))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
-                    } label: {
-                        HStack {
-                            Image(systemName: systemIconForAccountType(account.type))
-                                .foregroundColor(fromAccount == account ? .blue : .secondary)
-                                .frame(width: 20)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(account.name)
-                                    .foregroundColor(.primary)
-                                
-                                Text(formatCurrency(account.balance, currency: account.currency))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            if fromAccount == account {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
-                                    .fontWeight(.semibold)
-                            }
+                        
+                        Spacer()
+                        
+                        if fromAccount == account {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.app)
+                                .fontWeight(.bold)
+                                .fontDesign(.rounded)
                         }
                     }
-                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
         }
         .listStyle(.insetGrouped)
         
         Section("To Account") {
-            ForEach(accounts.filter { $0 != fromAccount }) { account in
+            let availableToAccounts = accounts.filter { $0 != fromAccount }
+            
+            if availableToAccounts.isEmpty {
                 Button {
-                    toAccount = account
+                    showingAddAccount = true
                 } label: {
-                    HStack {
-                        Image(systemName: systemIconForAccountType(account.type))
-                            .foregroundColor(toAccount == account ? .blue : .secondary)
-                            .frame(width: 20)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(account.name)
-                                .foregroundColor(.primary)
-                            
-                            Text(formatCurrency(account.balance, currency: account.currency))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        if toAccount == account {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
-                                .fontWeight(.semibold)
-                        }
-                    }
+                    Label("Add another account for transfers", systemImage: "plus")
+                        .foregroundStyle(.app)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.plain)
+            } else {
+                ForEach(availableToAccounts) { account in
+                    Button {
+                        toAccount = account
+                    } label: {
+                        HStack {
+                            Image(account.cardIcon)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(toAccount == account ? .primary : .secondary)
+                            
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(account.name)
+                                    .foregroundStyle(.primary)
+                                
+                                Text(formatCurrency(account.balance, currency: account.currency))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if toAccount == account {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.app)
+                                    .fontWeight(.bold)
+                                    .fontDesign(.rounded)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
             }
         }
         .listStyle(.insetGrouped)
@@ -272,27 +287,64 @@ struct AddTransactionView: View {
     }
     
     // MARK: - Helper Methods
-    private func systemIconForAccountType(_ type: AccountType) -> String {
-        switch type {
-        case .cash: return "banknote"
-        case .bankAccount: return "building.columns"
-        case .creditCard: return "creditcard"
-        case .savings: return "piggybank"
+    private func setupDefaults() {
+        // Selected account для expense/income
+        selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
+        
+        // From account для transfer (всегда Main Account)
+        fromAccount = accounts.first { $0.isDefault } ?? accounts.first
+        
+        // To account только если есть другие аккаунты
+        if accounts.count > 1 {
+            toAccount = accounts.first { !$0.isDefault }
+        }
+        
+        // Default category based on transaction type
+        if selectedCategory == nil {
+            setDefaultCategory()
         }
     }
     
-    private func setupDefaults() {
-        selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
-        fromAccount = accounts.first { $0.isDefault } ?? accounts.first
-        
-        // Default category "Other" -> "General"
-        if selectedCategory == nil {
-            let groupType: GroupType = selectedTransactionType == .income ? .income : .expense
-            
+    private func setDefaultCategory() {
+        if selectedTransactionType == .income {
+            // For income: try to find "salary" -> "monthly.salary"
             selectedCategory = categories.first { category in
-                category.categoryGroup.type == groupType &&
+                category.categoryGroup.type == .income &&
+                category.categoryGroup.name.lowercased().contains("salary") &&
+                category.name.lowercased().contains("monthly.salary")
+            }
+            
+            // Fallback: any income category from salary group
+            if selectedCategory == nil {
+                selectedCategory = categories.first { category in
+                    category.categoryGroup.type == .income &&
+                    category.categoryGroup.name.lowercased().contains("salary")
+                }
+            }
+            
+            // Ultimate fallback: first income category
+            if selectedCategory == nil {
+                selectedCategory = categories.first { $0.categoryGroup.type == .income }
+            }
+        } else {
+            // For expense: find "other" -> "general"
+            selectedCategory = categories.first { category in
+                category.categoryGroup.type == .expense &&
                 category.categoryGroup.name.lowercased().contains("other") &&
                 category.name.lowercased().contains("general")
+            }
+            
+            // Fallback: any expense category from other group
+            if selectedCategory == nil {
+                selectedCategory = categories.first { category in
+                    category.categoryGroup.type == .expense &&
+                    category.categoryGroup.name.lowercased().contains("other")
+                }
+            }
+            
+            // Ultimate fallback: first expense category
+            if selectedCategory == nil {
+                selectedCategory = categories.first { $0.categoryGroup.type == .expense }
             }
         }
     }

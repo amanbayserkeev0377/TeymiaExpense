@@ -1,36 +1,5 @@
 import SwiftUI
 
-struct AccountIconSelectionRow: View {
-    let selectedIcon: String
-    let selectedColor: Color
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button {
-            onTap()
-        } label: {
-            HStack {
-                Image(selectedIcon)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.primary)
-                
-                Text("icon".localized)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Image("chevron.right")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 struct AccountIconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -60,12 +29,16 @@ struct AccountIconSelectionView: View {
                 .padding(20)
                 .padding(.top, 20)
             }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Account Icon")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     private func iconButton(icon: String) -> some View {
         Button {
             selectedIcon = icon
+            dismiss()
         } label: {
             Image(icon)
                 .resizable()
@@ -79,10 +52,9 @@ struct AccountIconSelectionView: View {
                 .padding(14)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color(.secondarySystemGroupedBackground))
                 )
         }
         .buttonStyle(.plain)
     }
 }
-

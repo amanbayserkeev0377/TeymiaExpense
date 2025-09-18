@@ -78,13 +78,12 @@ final class Category {
 @Model
 final class Account {
     var name: String
-    var type: AccountType
     var balance: Decimal
     var isDefault: Bool
     var createdAt: Date
     
     var colorIndex: Int
-    var customIcon: String?
+    var customIcon: String
     
     // Relationships
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
@@ -92,9 +91,8 @@ final class Account {
     
     var currency: Currency
     
-    init(name: String, type: AccountType, balance: Decimal, currency: Currency, isDefault: Bool = false, colorIndex: Int = 0, customIcon: String? = nil) {
+    init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, colorIndex: Int = 0, customIcon: String = "cash") {
         self.name = name
-        self.type = type
         self.balance = balance
         self.currency = currency
         self.isDefault = isDefault
@@ -139,13 +137,6 @@ enum GroupType: String, CaseIterable, Codable {
 enum TransactionType: String, CaseIterable, Codable {
     case income = "income"
     case expense = "expense"
-}
-
-enum AccountType: String, CaseIterable, Codable {
-    case cash = "cash"
-    case bankAccount = "bank_account"
-    case creditCard = "credit.card"
-    case savings = "savings"
 }
 
 enum CurrencyType: String, CaseIterable, Codable {

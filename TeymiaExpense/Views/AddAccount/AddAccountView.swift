@@ -8,14 +8,12 @@ struct AddAccountView: View {
     @Query private var currencies: [Currency]
     
     @State private var accountName: String = ""
-    @State private var selectedAccountType: AccountType = .cash
     @State private var initialBalance: String = ""
     @State private var selectedCurrency: Currency?
     @State private var selectedColorIndex: Int = 0
     @State private var selectedIcon: String = "cash"
     
     @State private var showingCurrencySelection = false
-    @State private var showingIconSelection = false
     
     var selectedColor: Color {
         AccountColors.color(at: selectedColorIndex)
@@ -28,7 +26,6 @@ struct AddAccountView: View {
                     AccountCardPreview(
                         name: accountName,
                         balance: initialBalance,
-                        accountType: selectedAccountType,
                         colorIndex: selectedColorIndex,
                         icon: selectedIcon,
                         currencyCode: selectedCurrency?.code ?? "USD"
@@ -37,12 +34,11 @@ struct AddAccountView: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
                 
-                // Account Name
+                // Account Name & Balance
                 Section {
                     TextField("account_name".localized, text: $accountName)
                         .autocorrectionDisabled()
                     
-                    // Initial Balance
                     HStack {
                         TextField("balance".localized, text: $initialBalance)
                             .keyboardType(.decimalPad)
@@ -59,17 +55,21 @@ struct AddAccountView: View {
                     ColorSelectionView(selectedColorIndex: $selectedColorIndex)
                     
                     // Icon Selection
-                    AccountIconSelectionRow(
-                        selectedIcon: selectedIcon,
-                        selectedColor: selectedColor,
-                        onTap: { showingIconSelection = true }
-                    )
-                    
-                    // Account Type
-                    AccountTypeSelectionRow(
-                        selectedAccountType: $selectedAccountType,
-                        selectedIcon: $selectedIcon
-                    )
+                    NavigationLink {
+                        AccountIconSelectionView(selectedIcon: $selectedIcon)
+                    } label: {
+                        HStack {
+                            Image(selectedIcon)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(.primary)
+                            
+                            Text("icon".localized)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                    }
                     
                     // Currency
                     CurrencySelectionRow(
@@ -112,11 +112,6 @@ struct AddAccountView: View {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showingIconSelection) {
-            AccountIconSelectionView(selectedIcon: $selectedIcon)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
     }
     
     // MARK: - Computed Properties
@@ -131,7 +126,6 @@ struct AddAccountView: View {
         if selectedCurrency == nil {
             selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
         }
-        selectedIcon = selectedAccountType.iconName
     }
         
     private func saveAccount() {
@@ -141,7 +135,6 @@ struct AddAccountView: View {
         
         let account = Account(
             name: accountName,
-            type: selectedAccountType,
             balance: balance,
             currency: currency,
             isDefault: false,

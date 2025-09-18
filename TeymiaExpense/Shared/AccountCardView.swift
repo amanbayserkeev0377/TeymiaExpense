@@ -29,18 +29,6 @@ struct AccountCardView: View {
                     )
                 
                 Spacer()
-                
-                // Account type badge
-                Text(account.type.displayName.uppercased())
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.15))
-                    )
             }
             .padding(.top, 24)
             .padding(.horizontal, 24)
@@ -99,7 +87,6 @@ struct AccountCardView: View {
 struct AccountCardPreview: View {
     let name: String
     let balance: String
-    let accountType: AccountType
     let colorIndex: Int
     let icon: String
     let currencyCode: String
@@ -121,18 +108,6 @@ struct AccountCardPreview: View {
                     )
                 
                 Spacer()
-                
-                // Account type badge
-                Text(accountType.displayName.uppercased())
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.15))
-                    )
             }
             .padding(.top, 24)
             .padding(.horizontal, 24)

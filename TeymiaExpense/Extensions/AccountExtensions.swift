@@ -4,6 +4,10 @@ import SwiftData
 
 // MARK: - Account Extensions
 extension Account {
+    var isDeletable: Bool {
+        return !isDefault 
+    }
+    
     var formattedBalance: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -25,27 +29,6 @@ extension Account {
     }
     
     var cardIcon: String {
-        return customIcon ?? type.iconName
-    }
-}
-
-// MARK: - AccountType Extensions
-extension AccountType {
-    var iconName: String {
-        switch self {
-        case .cash: return "cash"
-        case .bankAccount: return "bank"
-        case .creditCard: return "credit.card"
-        case .savings: return "piggy.bank"
-        }
-    }
-        
-    var displayName: String {
-        switch self {
-        case .cash: return "cash".localized
-        case .bankAccount: return "bank".localized
-        case .creditCard: return "card".localized
-        case .savings: return "savings".localized
-        }
+        return customIcon
     }
 }

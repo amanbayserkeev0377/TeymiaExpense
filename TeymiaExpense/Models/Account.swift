@@ -15,7 +15,6 @@ extension Account {
         
         let mainAccount = Account(
             name: "Main Account",
-            type: .cash,
             balance: 0,
             currency: defaultCurrency,
             isDefault: true,

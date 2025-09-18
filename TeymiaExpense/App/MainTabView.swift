@@ -6,7 +6,7 @@ struct MainTabView: View {
             HomeView()
                 .tabItem {
                     Image("home.fill")
-                    Text("HomeView")
+                    Text("Home")
                 }
                 .tag(0)
             
