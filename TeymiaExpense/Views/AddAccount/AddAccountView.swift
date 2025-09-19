@@ -4,79 +4,37 @@ import SwiftData
 struct AddAccountView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) var colorScheme
     @Query private var currencies: [Currency]
     
     @State private var accountName: String = ""
     @State private var initialBalance: String = ""
     @State private var selectedCurrency: Currency?
-    @State private var selectedColorIndex: Int = 0
+    @State private var selectedImageIndex: Int = 0
     @State private var selectedIcon: String = "cash"
     
     @State private var showingCurrencySelection = false
-    
-    var selectedColor: Color {
-        AccountColors.color(at: selectedColorIndex)
-    }
+    @State private var showingIconSelection = false
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    AccountCardPreview(
-                        name: accountName,
-                        balance: initialBalance,
-                        colorIndex: selectedColorIndex,
-                        icon: selectedIcon,
-                        currencyCode: selectedCurrency?.code ?? "USD"
-                    )
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
-                
-                // Account Name & Balance
-                Section {
-                    TextField("account_name".localized, text: $accountName)
-                        .autocorrectionDisabled()
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Image Selection Carousel
+                    imageSelectionCarousel
                     
-                    HStack {
-                        TextField("balance".localized, text: $initialBalance)
-                            .keyboardType(.decimalPad)
+                    // Account Details Form
+                    VStack(spacing: 16) {
+                        accountDetailsSection
                         
-                        Spacer()
-                        
-                        Text(selectedCurrency?.symbol ?? "$")
-                            .foregroundStyle(.secondary)
+                        accountSettingsSection
                     }
+                    .padding(.horizontal, 20)
                 }
-                
-                Section {
-                    // Color Selection
-                    ColorSelectionView(selectedColorIndex: $selectedColorIndex)
-                    
-                    // Icon Selection
-                    NavigationLink {
-                        AccountIconSelectionView(selectedIcon: $selectedIcon)
-                    } label: {
-                        HStack {
-                            Image(selectedIcon)
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(.primary)
-                            
-                            Text("icon".localized)
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                        }
-                    }
-                    
-                    // Currency
-                    CurrencySelectionRow(
-                        selectedCurrency: selectedCurrency,
-                        onTap: { showingCurrencySelection = true }
-                    )
-                }
+                .padding(.top, 20)
+            }
+            .background {
+                GradientBackgroundView()
+                    .ignoresSafeArea()
             }
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
@@ -87,6 +45,7 @@ struct AddAccountView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .fontWeight(.bold)
+                            .foregroundStyle(.white)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -95,6 +54,7 @@ struct AddAccountView: View {
                     } label: {
                         Image(systemName: "checkmark")
                             .fontWeight(.bold)
+                            .foregroundStyle(canSave ? .white : .gray)
                     }
                     .disabled(!canSave)
                 }
@@ -103,14 +63,104 @@ struct AddAccountView: View {
         .onAppear {
             setupDefaults()
         }
-        .onChange(of: currencies) { _, newCurrencies in
-            if !newCurrencies.isEmpty && selectedCurrency == nil {
-                setupDefaults()
-            }
-        }
         .sheet(isPresented: $showingCurrencySelection) {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingIconSelection) {
+            AccountIconSelectionView(selectedIcon: $selectedIcon)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+    }
+    
+    // MARK: - Image Selection Carousel
+    @ViewBuilder
+    private var imageSelectionCarousel: some View {
+        VStack(spacing: 16) {
+            Text("Choose Card Design")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 20)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    ForEach(Array(AccountImageData.images.enumerated()), id: \.element.id) { index, imageData in
+                        Button {
+                            selectedImageIndex = index
+                        } label: {
+                            AccountCardPreview(
+                                name: accountName,
+                                balance: initialBalance,
+                                imageIndex: index,
+                                icon: selectedIcon,
+                                currencyCode: selectedCurrency?.code ?? "USD"
+                            )
+                            .frame(width: 260, height: 180)
+                            .scaleEffect(selectedImageIndex == index ? 1.0 : 0.9)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(
+                                        selectedImageIndex == index ? .white : .clear,
+                                        lineWidth: 2
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .animation(.easeInOut(duration: 0.2), value: selectedImageIndex)
+                    }
+                }
+                .scrollTargetLayout()
+                .padding(.horizontal, 20)
+            }
+            .frame(height: 200)
+            .scrollTargetBehavior(.viewAligned)
+        }
+    }
+    
+    // MARK: - Account Details Section
+    @ViewBuilder
+    private var accountDetailsSection: some View {
+        VStack(spacing: 16) {
+            // Account Name
+            CustomInputField(
+                title: "Account Name",
+                text: $accountName,
+                placeholder: "Enter account name"
+            )
+            
+            // Initial Balance
+            CustomInputField(
+                title: "Initial Balance",
+                text: $initialBalance,
+                placeholder: "0.00",
+                keyboardType: .decimalPad,
+                suffix: selectedCurrency?.symbol ?? "$"
+            )
+        }
+    }
+    
+    // MARK: - Account Settings Section
+    @ViewBuilder
+    private var accountSettingsSection: some View {
+        VStack(spacing: 16) {
+            // Icon Selection
+            CustomSelectionRow(
+                title: "Icon",
+                value: "",
+                icon: selectedIcon
+            ) {
+                showingIconSelection = true
+            }
+            
+            // Currency Selection
+            CustomSelectionRow(
+                title: "Currency",
+                value: selectedCurrency?.code ?? "Select Currency",
+                icon: selectedCurrency != nil ? CurrencyService.shared.getCurrencyIcon(for: selectedCurrency!) : "questionmark.circle"
+            ) {
+                showingCurrencySelection = true
+            }
         }
     }
     
@@ -127,7 +177,7 @@ struct AddAccountView: View {
             selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
         }
     }
-        
+    
     private func saveAccount() {
         guard let currency = selectedCurrency else { return }
         
@@ -138,7 +188,7 @@ struct AddAccountView: View {
             balance: balance,
             currency: currency,
             isDefault: false,
-            colorIndex: selectedColorIndex,
+            colorIndex: selectedImageIndex, // Сохраняем индекс изображения
             customIcon: selectedIcon
         )
         
@@ -150,5 +200,94 @@ struct AddAccountView: View {
         } catch {
             print("Error saving account: \(error)")
         }
+    }
+}
+
+// MARK: - Custom Input Field
+struct CustomInputField: View {
+    let title: String
+    @Binding var text: String
+    let placeholder: String
+    var keyboardType: UIKeyboardType = .default
+    var suffix: String = ""
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.white)
+            
+            HStack {
+                TextField(placeholder, text: $text)
+                    .font(.body)
+                    .foregroundStyle(.white)
+                    .keyboardType(keyboardType)
+                
+                if !suffix.isEmpty {
+                    Text(suffix)
+                        .font(.body)
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial.opacity(0.3))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+            )
+        }
+    }
+}
+
+// MARK: - Custom Selection Row
+struct CustomSelectionRow: View {
+    let title: String
+    let value: String
+    let icon: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                
+                HStack {
+                    Image(icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.white)
+                    
+                    Text(value)
+                        .font(.body)
+                        .foregroundStyle(.white)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.ultraThinMaterial.opacity(0.3))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.white.opacity(0.2), lineWidth: 1)
+                        )
+                )
+            }
+        }
+        .buttonStyle(.plain)
     }
 }

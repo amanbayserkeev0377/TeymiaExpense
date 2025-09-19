@@ -3,30 +3,40 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) var colorScheme
     @Query private var accounts: [Account]
-    @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
+    @StateObject private var firstLaunchManager = FirstLaunchManager()
     
     @State private var showingAddTransaction = false
     @State private var showingAddAccount = false
     
+    // View Properties
+    @State private var topInset: CGFloat = 0
+    @State private var scrollOffsetY: CGFloat = 0
+    @State private var scrollProgressX: CGFloat = 0
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             NavigationStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Account Cards Carousel
-                        accountCardsSection
+                ScrollView(.vertical) {
+                    LazyVStack(spacing: 15) {
+                        HeaderView()
                         
-                        // Transaction List
-                        transactionsSection
-                        
-                        Spacer(minLength: 120)
+                        CarouselView()
+                            .zIndex(-1)
                     }
-                    .padding(.top, 8)
                 }
-                .navigationTitle("Home")
-                .navigationBarTitleDisplayMode(.large)
+                .safeAreaPadding(15)
+//                .background {
+//                    GradientBackgroundView()
+//                        .scaleEffect(y: -1)
+//                        .ignoresSafeArea()
+//                }
+                .onScrollGeometryChange(for: ScrollGeometry.self) {
+                    $0
+                } action: { oldValue, newValue in
+                    topInset = newValue.contentInsets.top + 100
+                    scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
+                }
             }
             
             FloatingAddButton {
@@ -41,136 +51,149 @@ struct HomeView: View {
             AddAccountView()
                 .presentationDragIndicator(.visible)
         }
-    }
-    
-    // MARK: - Account Cards Section
-    private var accountCardsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Accounts")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(.leading, 20)
-                
-                Spacer()
-                
-                Button {
-                    showingAddAccount = true
-                } label: {
-                    Image(systemName: "plus")
-                        .foregroundStyle(.accent)
-                        .frame(width: 20, height: 20)
-                }
-                .padding(.trailing, 20)
+        .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
+            DrawOnSymbolEffectExample(
+                tint: AccountColors.color(at: 0),
+                buttonTitle: "Start Managing Money",
+                data: [
+                    .init(
+                        name: "chart.bar.xaxis.ascending",
+                        title: "Categorized Expenses",
+                        subtitle: "Categorize your expenses to see\n where your money is going",
+                        preDelay: 0.3
+                    ),
+                    .init(
+                        name: "magnifyingglass.circle",
+                        title: "Search for Expenses",
+                        subtitle: "Search for your expenses\nby account or category",
+                        preDelay: 1.6
+                    ),
+                    .init(
+                        name: "arrow.up.arrow.down",
+                        title: "Track Your Money",
+                        subtitle: "Easily manage your income\nand expenses in one place",
+                        preDelay: 1.2
+                    ),
+                ]
+            ) {
+                firstLaunchManager.completeOnboarding()
             }
-            
-            if accounts.isEmpty {
-                emptyAccountsView
-            } else {
-                AccountCarouselView(accounts: accounts)
-            }
+            .presentationDetents([.medium])
         }
     }
     
-    // MARK: - Transactions Section
-    private var transactionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Transactions")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                if !transactions.isEmpty {
-                    NavigationLink("See All") {
-                        TransactionHistoryView()
-                    }
-                    .font(.subheadline)
-                }
-            }
-            .padding(.horizontal, 20)
+    // MARK: - Header View
+    @ViewBuilder
+    func HeaderView() -> some View {
+        HStack {
+            Image(systemName: "dollarsign.circle.fill")
+                .font(.system(size: 35))
+                .foregroundStyle(.white)
             
-            if transactions.isEmpty {
-                emptyTransactionsView
-            } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(transactions.enumerated()), id: \.element.id) { index, transaction in
-                        TransactionRowView(transaction: transaction)
-                        
-                        if index < transactions.count - 1 {
-                            Divider()
-                                .padding(.leading, 76)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: - Empty States
-    private var emptyAccountsView: some View {
-        Button {
-            showingAddAccount = true
-        } label: {
-            VStack(spacing: 16) {
-                Image(systemName: "plus.circle")
-                    .foregroundStyle(.blue)
-                    .font(.system(size: 48))
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Total: ")
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
                 
-                VStack(spacing: 8) {
-                    Text("Add your first account")
-                        .font(.headline)
-                        .foregroundColor(.blue)
+                HStack(spacing: 6) {
+                    Image(systemName: "wallet.bifold")
+                        .foregroundStyle(.white)
                     
-                    Text("Create a bank account, cash wallet, or credit card")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                    Text("\(accounts.count) accounts")
+                        .font(.caption)
+                        .foregroundStyle(.white)
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 220)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(
-                        style: StrokeStyle(lineWidth: 2, dash: [8, 6])
-                    )
-                    .foregroundStyle(.blue.opacity(0.3))
-            )
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 20)
-    }
-
-    
-    private var emptyTransactionsView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "plus.circle.dashed")
-                .foregroundColor(.secondary)
-                .frame(width: 48, height: 48)
             
-            VStack(spacing: 6) {
-                Text("No transactions yet")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Text("Tap the + button to add your first transaction")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+            Spacer(minLength: 0)
+            
+            Button {
+                showingAddAccount = true
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.white, .fill)
+            }
+            
+            Button {
+                // Settings action
+            } label: {
+                Image(systemName: "gearshape.circle.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.white, .fill)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 48)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground).opacity(0.6))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(.separator, lineWidth: 0.15)
-                )
-        )
-        .padding(.horizontal, 20)
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Carousel View
+    @ViewBuilder
+    func CarouselView() -> some View {
+        let spacing: CGFloat = 6
+        
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: spacing) {
+                ForEach(accounts) { account in
+                    AccountCardView(account: account)
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .frame(height: 380)
+        .background(BackdropEffect())
+        .scrollIndicators(.hidden)
+        .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+        .onScrollGeometryChange(for: CGFloat.self) {
+            let offsetX = $0.contentOffset.x + $0.contentInsets.leading
+            let width = $0.containerSize.width + spacing
+            
+            return offsetX / width
+        } action: { oldValue, newValue in
+            let maxValue = CGFloat(max(accounts.count - 1, 0))
+            scrollProgressX = min(max(newValue, 0), maxValue)
+        }
+    }
+    
+    // MARK: - Backdrop Effect
+    @ViewBuilder
+    func BackdropEffect() -> some View {
+        GeometryReader {
+            let size = $0.size
+            
+            ZStack {
+                ForEach(accounts.reversed()) { account in
+                    let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
+                    
+                    Image(account.cardImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size.width, height: size.height)
+                        .clipped()
+                        .opacity(index - scrollProgressX)
+                }
+            }
+            .compositingGroup()
+            .blur(radius: 30, opaque: true)
+            .overlay {
+                Rectangle()
+                    .fill(.black.opacity(0.25))
+            }
+            .mask {
+                Rectangle()
+                    .fill(.linearGradient(colors: [
+                        .black,
+                        .black,
+                        .black,
+                        .black,
+                        .black.opacity(0.5),
+                        .clear
+                    ], startPoint: .top, endPoint: .bottom))
+            }
+        }
+        .containerRelativeFrame(.horizontal)
+        .padding(.bottom, -60)
+        .padding(.top, -topInset)
+        .offset(y: scrollOffsetY < 0 ? scrollOffsetY : 0)
     }
 }

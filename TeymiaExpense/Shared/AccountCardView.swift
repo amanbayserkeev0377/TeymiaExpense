@@ -1,198 +1,179 @@
 import SwiftUI
 
-// MARK: - Account Card (Банковский стиль)
+// MARK: - Account Card with Images
 struct AccountCardView: View {
     let account: Account
     
-    private var cardColor: Color {
-        account.cardColor
-    }
-    
-    private var cardIcon: String {
-        account.cardIcon
-    }
-    
     var body: some View {
-        VStack(spacing: 0) {
-            // Top section с иконкой и типом
-            HStack {
-                // Icon
-                Image(cardIcon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 32, height: 32)
-                    .foregroundStyle(.white)
-                    .padding(14)
-                    .background(
-                        Circle()
-                            .fill(.white.opacity(0.2))
-                    )
-                
-                Spacer()
-            }
-            .padding(.top, 24)
-            .padding(.horizontal, 24)
+        ZStack {
+            // Background Image
+            Image(account.cardImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .containerRelativeFrame(.horizontal)
+                .frame(height: 380)
+                .clipShape(.rect(cornerRadius: 10))
+                .shadow(color: .black.opacity(0.4), radius: 5, x: 5, y: 5)
             
-            Spacer()
-            
-            // Bottom section с балансом
-            VStack(alignment: .leading, spacing: 8) {
+            // Content
+            VStack(spacing: 0) {
+                // Top section with icon
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(account.name)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
-                        
-                        Text(account.formattedBalance)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                    }
+                    Image(account.cardIcon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28, height: 28)
+                        .foregroundStyle(.white)
+                        .padding(12)
+                        .background(
+                            Circle()
+                                .fill(.black.opacity(0.3))
+                                .overlay(
+                                    Circle()
+                                        .stroke(.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
                     
                     Spacer()
                 }
+                .padding(.top, 20)
+                .padding(.horizontal, 20)
                 
-                // Currency code в углу
-                HStack {
-                    Spacer()
-                    Text(account.currency.code)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white.opacity(0.8))
+                Spacer()
+                
+                // Bottom section with balance
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(account.name)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            
+                            Text(account.formattedBalance)
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    // Currency code
+                    HStack {
+                        Spacer()
+                        Text(account.currency.code)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white.opacity(0.9))
+                            .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
+                    }
                 }
+                .padding(.bottom, 20)
+                .padding(.horizontal, 20)
             }
-            .padding(.bottom, 24)
-            .padding(.horizontal, 24)
         }
-        .frame(height: 220)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    LinearGradient(
-                        colors: [account.cardDarkColor, account.cardLightColor],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
     }
 }
 
-// MARK: - Account Card Preview (для AddAccountView)
+// MARK: - Account Card Preview for AddAccountView
 struct AccountCardPreview: View {
     let name: String
     let balance: String
-    let colorIndex: Int
+    let imageIndex: Int
     let icon: String
     let currencyCode: String
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Top section
-            HStack {
-                // Icon
-                Image(icon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 32, height: 32)
-                    .foregroundStyle(.white)
-                    .padding(14)
-                    .background(
-                        Circle()
-                            .fill(.white.opacity(0.2))
-                    )
-                
-                Spacer()
-            }
-            .padding(.top, 24)
-            .padding(.horizontal, 24)
+        ZStack {
+            // Background Image
+            Image(AccountImageData.image(at: imageIndex).imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 240)
+                .clipped()
             
-            Spacer()
+            // Gradient overlay
+            LinearGradient(
+                colors: [
+                    .black.opacity(0.1),
+                    .black.opacity(0.3),
+                    .black.opacity(0.6)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
             
-            // Bottom section
-            VStack(alignment: .leading, spacing: 8) {
+            // Content
+            VStack(spacing: 0) {
+                // Top section
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(name.isEmpty ? "Account Name" : name)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
-                        
-                        Text(balance.isEmpty ? "$0.00" : "$\(balance)")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                    }
+                    Image(icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28, height: 28)
+                        .foregroundStyle(.white)
+                        .padding(12)
+                        .background(
+                            Circle()
+                                .fill(.black.opacity(0.3))
+                                .overlay(
+                                    Circle()
+                                        .stroke(.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
                     
                     Spacer()
                 }
+                .padding(.top, 20)
+                .padding(.horizontal, 20)
                 
-                // Currency code
-                HStack {
-                    Spacer()
-                    Text(currencyCode)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white.opacity(0.8))
-                }
-            }
-            .padding(.bottom, 24)
-            .padding(.horizontal, 24)
-        }
-        .frame(height: 220)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            AccountColors.darkColor(at: colorIndex),
-                            AccountColors.lightColor(at: colorIndex)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-    }
-}
-
-// MARK: - Account Carousel
-struct AccountCarouselView: View {
-    let accounts: [Account]
-    @State private var currentIndex = 0
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            TabView(selection: $currentIndex) {
-                ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
-                    AccountCardView(account: account)
-                        .padding(.horizontal, 16)
-                        .tag(index)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 240)
-            
-            if accounts.count > 1 {
-                HStack(spacing: 8) {
-                    ForEach(0..<accounts.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == currentIndex ? .primary : Color.secondary.opacity(0.2))
-                            .frame(width: 6, height: 6)
-                            .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                Spacer()
+                
+                // Bottom section
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(name.isEmpty ? "Account Name" : name)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            
+                            Text(balance.isEmpty ? "$0.00" : "$\(balance)")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    // Currency code
+                    HStack {
+                        Spacer()
+                        Text(currencyCode)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white.opacity(0.9))
+                            .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
                     }
                 }
-                .padding(.bottom, 8)
+                .padding(.bottom, 20)
+                .padding(.horizontal, 20)
             }
         }
+        .frame(height: 240)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
     }
 }
