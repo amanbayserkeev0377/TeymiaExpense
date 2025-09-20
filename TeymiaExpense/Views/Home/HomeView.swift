@@ -8,7 +8,6 @@ struct HomeView: View {
     @Query private var accounts: [Account]
     @StateObject private var firstLaunchManager = FirstLaunchManager()
     
-    @State private var showingAddTransaction = false
     @State private var showingAddAccount = false
     
     // View Properties
@@ -41,14 +40,6 @@ struct HomeView: View {
                     scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
                 }
             }
-            
-            FloatingAddButton {
-                showingAddTransaction = true
-            }
-        }
-        .sheet(isPresented: $showingAddTransaction) {
-            AddTransactionView()
-                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
@@ -89,12 +80,6 @@ struct HomeView: View {
     @ViewBuilder
     func HeaderView() -> some View {
         HStack {
-            Text("Total: 50 000 сом")
-                .font(.title)
-                .fontWeight(.bold)
-                .fontDesign(.rounded)
-                .foregroundStyle(.white)
-            
             Spacer(minLength: 0)
             
             Button(action: {

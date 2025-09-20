@@ -55,6 +55,7 @@ struct AddTransactionView: View {
                             .multilineTextAlignment(.trailing)
                     }
                 }
+                .listRowBackground(Color.gray.opacity(0.05))
                 
                 // Category Section (only for income/expense)
                 if selectedTransactionType != .transfer {
@@ -73,6 +74,7 @@ struct AddTransactionView: View {
                             )
                         }
                     }
+                    .listRowBackground(Color.gray.opacity(0.05))
                 }
                 
                 // Account/Transfer Section
@@ -82,6 +84,7 @@ struct AddTransactionView: View {
                     accountSection
                 }
                 
+                
                 // Date & Note
                 Section {
                     DatePicker("Date", selection: $date, displayedComponents: [.date])
@@ -89,6 +92,7 @@ struct AddTransactionView: View {
                     TextField("Note (optional)", text: $note, axis: .vertical)
                         .lineLimit(2...4)
                 }
+                .listRowBackground(Color.gray.opacity(0.05))
             }
             .scrollContentBackground(.hidden)
             .navigationTitle(selectedTransactionType.rawValue)
@@ -170,6 +174,7 @@ struct AddTransactionView: View {
                 .buttonStyle(.plain)
             }
         }
+        .listRowBackground(Color.gray.opacity(0.05))
         .listStyle(.insetGrouped)
     }
     
@@ -213,6 +218,7 @@ struct AddTransactionView: View {
                 .buttonStyle(.plain)
             }
         }
+        .listRowBackground(Color.gray.opacity(0.05))
         .listStyle(.insetGrouped)
         
         Section("To Account") {
@@ -263,6 +269,7 @@ struct AddTransactionView: View {
                 }
             }
         }
+        .listRowBackground(Color.gray.opacity(0.05))
         .listStyle(.insetGrouped)
     }
     

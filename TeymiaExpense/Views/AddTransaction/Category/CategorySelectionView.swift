@@ -86,7 +86,6 @@ struct CategorySelectionView: View {
                     }
                 }
                 .frame(height: 300)
-                .background(Color(.systemGroupedBackground))
                 
                 Divider()
                 
@@ -138,7 +137,9 @@ struct CategorySelectionView: View {
                             }
                         }
                     }
+                    .listRowBackground(Color.gray.opacity(0.05))
                 }
+                .scrollContentBackground(.hidden)
                 .listStyle(.insetGrouped)
             }
         }
@@ -192,7 +193,7 @@ struct CategorySelectionView: View {
                         Circle()
                             .fill(localSelectedCategoryGroup?.id == categoryGroup.id
                                   ? Color.primary.opacity(0.9)
-                                  : Color(.secondarySystemGroupedBackground))
+                                  : Color.secondary.opacity(0.1))
                     )
                 
                 Text(categoryGroup.name)
@@ -227,7 +228,7 @@ struct CategorySelectionView: View {
                 
                 if selectedCategory?.id == category.id {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.app)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
                 }

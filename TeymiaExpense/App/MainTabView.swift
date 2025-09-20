@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Namespace private var animation
+    @State private var showingAddTransaction = false
+    
     var body: some View {
         TabView {
             HomeView()
@@ -25,5 +28,17 @@ struct MainTabView: View {
                 .tag(2)
         }
         .tint(AccountColors.color(at: 0))
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .tabViewBottomAccessory {
+            FloatingAddButton {
+                showingAddTransaction = true
+            }
+            .matchedTransitionSource(id: "AddTransaction", in: animation)
+        }
+        .sheet(isPresented: $showingAddTransaction) {
+            AddTransactionView()
+                .presentationDragIndicator(.visible)
+                .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
+        }
     }
 }
