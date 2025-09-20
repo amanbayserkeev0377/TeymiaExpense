@@ -11,9 +11,8 @@ struct AccountCardView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .containerRelativeFrame(.horizontal)
-                .frame(height: 380)
-                .clipShape(.rect(cornerRadius: 10))
-                .shadow(color: .black.opacity(0.4), radius: 5, x: 5, y: 5)
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
             
             // Content
             VStack(spacing: 0) {
@@ -27,11 +26,7 @@ struct AccountCardView: View {
                         .padding(12)
                         .background(
                             Circle()
-                                .fill(.black.opacity(0.3))
-                                .overlay(
-                                    Circle()
-                                        .stroke(.white.opacity(0.2), lineWidth: 1)
-                                )
+                                .fill(.black.opacity(0.1))
                         )
                     
                     Spacer()
@@ -48,6 +43,7 @@ struct AccountCardView: View {
                             Text(account.name)
                                 .font(.title3)
                                 .fontWeight(.semibold)
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
@@ -55,6 +51,7 @@ struct AccountCardView: View {
                             Text(account.formattedBalance)
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.6)
@@ -69,6 +66,7 @@ struct AccountCardView: View {
                         Spacer()
                         Text(account.currency.code)
                             .font(.caption)
+                            .fontDesign(.rounded)
                             .fontWeight(.medium)
                             .foregroundStyle(.white.opacity(0.9))
                             .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
@@ -95,19 +93,9 @@ struct AccountCardPreview: View {
             Image(AccountImageData.image(at: imageIndex).imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(height: 240)
-                .clipped()
-            
-            // Gradient overlay
-            LinearGradient(
-                colors: [
-                    .black.opacity(0.1),
-                    .black.opacity(0.3),
-                    .black.opacity(0.6)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+                .containerRelativeFrame(.horizontal)
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
             
             // Content
             VStack(spacing: 0) {
@@ -121,11 +109,7 @@ struct AccountCardPreview: View {
                         .padding(12)
                         .background(
                             Circle()
-                                .fill(.black.opacity(0.3))
-                                .overlay(
-                                    Circle()
-                                        .stroke(.white.opacity(0.2), lineWidth: 1)
-                                )
+                                .fill(.black.opacity(0.1))
                         )
                     
                     Spacer()
@@ -142,6 +126,7 @@ struct AccountCardPreview: View {
                             Text(name.isEmpty ? "Account Name" : name)
                                 .font(.title3)
                                 .fontWeight(.semibold)
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
@@ -149,6 +134,7 @@ struct AccountCardPreview: View {
                             Text(balance.isEmpty ? "$0.00" : "$\(balance)")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.6)
@@ -163,6 +149,7 @@ struct AccountCardPreview: View {
                         Spacer()
                         Text(currencyCode)
                             .font(.caption)
+                            .fontDesign(.rounded)
                             .fontWeight(.medium)
                             .foregroundStyle(.white.opacity(0.9))
                             .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
@@ -172,8 +159,5 @@ struct AccountCardPreview: View {
                 .padding(.horizontal, 20)
             }
         }
-        .frame(height: 240)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
     }
 }

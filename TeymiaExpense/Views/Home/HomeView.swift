@@ -2,7 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Namespace private var animation
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @Query private var accounts: [Account]
     @StateObject private var firstLaunchManager = FirstLaunchManager()
     
@@ -26,11 +28,12 @@ struct HomeView: View {
                     }
                 }
                 .safeAreaPadding(15)
-//                .background {
-//                    GradientBackgroundView()
-//                        .scaleEffect(y: -1)
-//                        .ignoresSafeArea()
-//                }
+                .background {
+                    Rectangle()
+                        .fill(colorScheme == .light ? Color.white.gradient : Color.black.gradient)
+                        .scaleEffect(y: -1)
+                        .ignoresSafeArea()
+                }
                 .onScrollGeometryChange(for: ScrollGeometry.self) {
                     $0
                 } action: { oldValue, newValue in
@@ -46,10 +49,12 @@ struct HomeView: View {
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
                 .presentationDragIndicator(.visible)
+                .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
         }
-        .sheet(isPresented: $showingAddAccount) {
+        .fullScreenCover(isPresented: $showingAddAccount) {
             AddAccountView()
                 .presentationDragIndicator(.visible)
+                .navigationTransition(.zoom(sourceID: "AddAccountView", in: animation))
         }
         .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
             DrawOnSymbolEffectExample(
@@ -86,45 +91,25 @@ struct HomeView: View {
     @ViewBuilder
     func HeaderView() -> some View {
         HStack {
-            Image(systemName: "dollarsign.circle.fill")
-                .font(.system(size: 35))
+            Text("Total: 50 000 сом")
+                .font(.title)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
                 .foregroundStyle(.white)
-            
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Total: ")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                
-                HStack(spacing: 6) {
-                    Image(systemName: "wallet.bifold")
-                        .foregroundStyle(.white)
-                    
-                    Text("\(accounts.count) accounts")
-                        .font(.caption)
-                        .foregroundStyle(.white)
-                }
-            }
             
             Spacer(minLength: 0)
             
-            Button {
+            Button(action: {
                 showingAddAccount = true
-            } label: {
-                Image(systemName: "plus.circle.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(.white, .fill)
+            }) {
+                Image(systemName: "plus")
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
             }
-            
-            Button {
-                // Settings action
-            } label: {
-                Image(systemName: "gearshape.circle.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(.white, .fill)
-            }
+            .frame(width: 40, height: 40)
+            .glassEffect(.clear)
         }
-        .padding(.bottom, 15)
+        .padding(.bottom, 8)
     }
     
     // MARK: - Carousel View
@@ -140,7 +125,7 @@ struct HomeView: View {
             }
             .scrollTargetLayout()
         }
-        .frame(height: 380)
+        .frame(height: 220)
         .background(BackdropEffect())
         .scrollIndicators(.hidden)
         .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
@@ -174,7 +159,7 @@ struct HomeView: View {
                 }
             }
             .compositingGroup()
-            .blur(radius: 30, opaque: true)
+            .blur(radius: 25, opaque: true)
             .overlay {
                 Rectangle()
                     .fill(.black.opacity(0.25))
@@ -183,10 +168,10 @@ struct HomeView: View {
                 Rectangle()
                     .fill(.linearGradient(colors: [
                         .black,
-                        .black,
-                        .black,
-                        .black,
-                        .black.opacity(0.5),
+                        .black.opacity(0.7),
+                        .black.opacity(0.6),
+                        .black.opacity(0.3),
+                        .black.opacity(0.25),
                         .clear
                     ], startPoint: .top, endPoint: .bottom))
             }
