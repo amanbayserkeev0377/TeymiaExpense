@@ -18,8 +18,9 @@ extension Account {
             balance: 0,
             currency: defaultCurrency,
             isDefault: true,
-            colorIndex: 0,
-            customIcon: "cash"
+            designIndex: 0,
+            customIcon: "cash",
+            designType: .image
         )
         
         context.insert(mainAccount)

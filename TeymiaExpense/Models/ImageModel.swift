@@ -32,7 +32,7 @@ struct AccountImage: Identifiable, Codable {
 // MARK: - Account Extensions for Images
 extension Account {
     var cardImage: String {
-        let imageIndex = colorIndex % AccountImageData.images.count
+        let imageIndex = designIndex % AccountImageData.images.count
         return AccountImageData.images[imageIndex].imageName
     }
 }

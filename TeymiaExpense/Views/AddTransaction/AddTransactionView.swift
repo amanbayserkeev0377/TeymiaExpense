@@ -90,6 +90,7 @@ struct AddTransactionView: View {
                         .lineLimit(2...4)
                 }
             }
+            .scrollContentBackground(.hidden)
             .navigationTitle(selectedTransactionType.rawValue)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {

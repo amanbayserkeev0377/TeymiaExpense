@@ -82,8 +82,9 @@ final class Account {
     var isDefault: Bool
     var createdAt: Date
     
-    var colorIndex: Int
+    var designIndex: Int
     var customIcon: String
+    var designType: AccountDesignType
     
     // Relationships
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
@@ -91,13 +92,14 @@ final class Account {
     
     var currency: Currency
     
-    init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, colorIndex: Int = 0, customIcon: String = "cash") {
+    init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, designIndex: Int = 0, customIcon: String = "cash", designType: AccountDesignType = .image) {
         self.name = name
         self.balance = balance
         self.currency = currency
         self.isDefault = isDefault
-        self.colorIndex = colorIndex
+        self.designIndex = designIndex
         self.customIcon = customIcon
+        self.designType = designType
         self.createdAt = Date()
     }
 }
@@ -142,4 +144,9 @@ enum TransactionType: String, CaseIterable, Codable {
 enum CurrencyType: String, CaseIterable, Codable {
     case fiat = "fiat"
     case crypto = "crypto"
+}
+
+enum AccountDesignType: String, CaseIterable, Codable {
+    case image = "image"
+    case color = "color"
 }

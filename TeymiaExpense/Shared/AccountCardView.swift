@@ -6,13 +6,22 @@ struct AccountCardView: View {
     
     var body: some View {
         ZStack {
-            // Background Image
-            Image(account.cardImage)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .containerRelativeFrame(.horizontal)
-                .frame(height: 220)
-                .clipShape(.rect(cornerRadius: 20))
+            // Background based on design type
+            switch account.designType {
+            case .image:
+                Image(AccountImageData.image(at: account.designIndex).imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .containerRelativeFrame(.horizontal)
+                    .frame(height: 220)
+                    .clipShape(.rect(cornerRadius: 20))
+            case .color:
+                Rectangle()
+                    .fill(AccountColors.gradient(at: account.designIndex))
+                    .containerRelativeFrame(.horizontal)
+                    .frame(height: 220)
+                    .clipShape(.rect(cornerRadius: 20))
+            }
             
             // Content
             VStack(spacing: 0) {
@@ -83,19 +92,15 @@ struct AccountCardView: View {
 struct AccountCardPreview: View {
     let name: String
     let balance: String
-    let imageIndex: Int
+    let designType: AccountDesignType
+    let designIndex: Int
     let icon: String
     let currencyCode: String
     
     var body: some View {
         ZStack {
-            // Background Image
-            Image(AccountImageData.image(at: imageIndex).imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .containerRelativeFrame(.horizontal)
-                .frame(height: 220)
-                .clipShape(.rect(cornerRadius: 20))
+            
+            backgroundView
             
             // Content
             VStack(spacing: 0) {
@@ -158,6 +163,24 @@ struct AccountCardPreview: View {
                 .padding(.bottom, 20)
                 .padding(.horizontal, 20)
             }
+        }
+    }
+    
+    @ViewBuilder
+    private var backgroundView: some View {
+        switch designType {
+        case .image:
+            Image(AccountImageData.image(at: designIndex).imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .containerRelativeFrame(.horizontal)
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
+        case .color:
+            Rectangle()
+                .fill(AccountColors.gradient(at: designIndex))
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
         }
     }
 }

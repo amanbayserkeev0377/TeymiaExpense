@@ -84,7 +84,7 @@ struct CurrencySelectionView: View {
                         Text("crypto".localized).tag(CurrencyType.crypto)
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 200)
+                    .frame(width: 300)
                     .onChange(of: selectedType) { oldValue, newValue in
                         searchText = "" // Clear search when switching types
                     }

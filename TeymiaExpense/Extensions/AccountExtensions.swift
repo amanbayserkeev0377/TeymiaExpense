@@ -17,15 +17,15 @@ extension Account {
     }
     
     var cardColor: Color {
-        return AccountColors.color(at: colorIndex)
+        return AccountColors.color(at: designIndex)
     }
     
     var cardDarkColor: Color {
-        return AccountColors.darkColor(at: colorIndex)
+        return AccountColors.darkColor(at: designIndex)
     }
     
     var cardLightColor: Color {
-        return AccountColors.lightColor(at: colorIndex)
+        return AccountColors.lightColor(at: designIndex)
     }
     
     var cardIcon: String {

@@ -49,12 +49,10 @@ struct HomeView: View {
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
                 .presentationDragIndicator(.visible)
-                .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
         }
-        .fullScreenCover(isPresented: $showingAddAccount) {
+        .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
                 .presentationDragIndicator(.visible)
-                .navigationTransition(.zoom(sourceID: "AddAccountView", in: animation))
         }
         .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
             DrawOnSymbolEffectExample(
@@ -106,7 +104,6 @@ struct HomeView: View {
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
             }
-            .frame(width: 40, height: 40)
             .glassEffect(.clear)
         }
         .padding(.bottom, 8)
@@ -150,12 +147,21 @@ struct HomeView: View {
                 ForEach(accounts.reversed()) { account in
                     let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
                     
-                    Image(account.cardImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: size.width, height: size.height)
-                        .clipped()
-                        .opacity(index - scrollProgressX)
+                    switch account.designType {
+                    case .image:
+                        Image(account.cardImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: size.width, height: size.height)
+                            .clipped()
+                            .opacity(index - scrollProgressX)
+                        
+                    case .color:
+                        Rectangle()
+                            .fill(AccountColors.gradient(at: account.designIndex))
+                            .frame(width: size.width, height: size.height)
+                            .opacity(index - scrollProgressX)
+                    }
                 }
             }
             .compositingGroup()

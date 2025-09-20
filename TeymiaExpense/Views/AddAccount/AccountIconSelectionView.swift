@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AccountIconSelectionView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
     
@@ -29,16 +28,12 @@ struct AccountIconSelectionView: View {
                 .padding(20)
                 .padding(.top, 20)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Account Icon")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     private func iconButton(icon: String) -> some View {
         Button {
             selectedIcon = icon
-            dismiss()
         } label: {
             Image(icon)
                 .resizable()
@@ -52,7 +47,7 @@ struct AccountIconSelectionView: View {
                 .padding(14)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color(.secondarySystemGroupedBackground))
+                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.1))
                 )
         }
         .buttonStyle(.plain)
