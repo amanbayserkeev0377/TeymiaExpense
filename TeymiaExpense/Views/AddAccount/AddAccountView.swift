@@ -50,7 +50,30 @@ struct AddAccountView: View {
                         Text(selectedCurrency?.symbol ?? "$")
                             .foregroundStyle(.secondary)
                     }
+                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
+                    
+                    // Card Design Selection
+                    Button {
+                        showingCardDesignSelection = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "checkmark")
+                            
+                            Text("Card Design")
+                                .foregroundStyle(.primary)
+                            
+                            Spacer()
+                            
+                            Image("chevron.right")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
                     
                     // Icon Selection
                     Button {
@@ -68,10 +91,12 @@ struct AddAccountView: View {
                             
                             Spacer()
                             
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Image("chevron.right")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.tertiary)
                         }
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     
@@ -94,36 +119,20 @@ struct AddAccountView: View {
                             Text(selectedCurrency?.code ?? "Select")
                                 .foregroundStyle(.secondary)
                             
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Image("chevron.right")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.tertiary)
                         }
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    
-                    // Card Design Selection
-                    Button {
-                        showingCardDesignSelection = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "checkmark")
-                            
-                            Text("Card Design")
-                                .foregroundStyle(.primary)
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
                 }
                 .listRowBackground(Color.gray.opacity(0.05))
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Add Account")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

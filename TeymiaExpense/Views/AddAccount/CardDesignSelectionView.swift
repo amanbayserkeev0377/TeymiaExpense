@@ -69,9 +69,9 @@ struct CardDesignSelectionView: View {
                 .resizable()
                 .aspectRatio(16/10, contentMode: .fill)
                 .frame(height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: 12)
                         .stroke(
                             (selectedDesignType == .image && selectedDesignIndex == index) ? .app : .clear,
                             lineWidth: 3
@@ -92,11 +92,11 @@ struct CardDesignSelectionView: View {
             selectedDesignType = .color
         } label: {
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 12)
                     .fill(AccountColors.gradient(at: index))
                     .frame(height: 50)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: 12)
                             .stroke(
                                 (selectedDesignType == .color && selectedDesignIndex == index) ? .app : .clear,
                                 lineWidth: 3
