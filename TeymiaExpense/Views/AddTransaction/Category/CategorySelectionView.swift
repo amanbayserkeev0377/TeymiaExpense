@@ -85,6 +85,7 @@ struct CategorySelectionView: View {
                         .listStyle(.insetGrouped)
                     }
                 }
+                .background(Color(.systemGroupedBackground))
                 .frame(height: 300)
                 
                 Divider()
@@ -137,9 +138,7 @@ struct CategorySelectionView: View {
                             }
                         }
                     }
-                    .listRowBackground(Color.gray.opacity(0.05))
                 }
-                .scrollContentBackground(.hidden)
                 .listStyle(.insetGrouped)
             }
         }
@@ -155,12 +154,12 @@ struct CategorySelectionView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        AddNewCategoryGroupView()
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+                NavigationLink {
+                    AddNewCategoryGroupView()
+                } label: {
+                    Image(systemName: "plus")
                 }
+            }
         }
         .onAppear {
             if localSelectedCategoryGroup == nil {
@@ -192,8 +191,8 @@ struct CategorySelectionView: View {
                     .background(
                         Circle()
                             .fill(localSelectedCategoryGroup?.id == categoryGroup.id
-                                  ? Color.primary.opacity(0.9)
-                                  : Color.secondary.opacity(0.1))
+                                  ? Color.primary
+                                  : Color(.secondarySystemGroupedBackground))
                     )
                 
                 Text(categoryGroup.name)

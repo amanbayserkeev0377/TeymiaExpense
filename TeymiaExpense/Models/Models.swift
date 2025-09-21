@@ -111,18 +111,20 @@ final class Transaction {
     var note: String?
     var date: Date
     var type: TransactionType
+    var isHidden: Bool = false
     var createdAt: Date
     
     // Relationships
-    var categoryGroup: CategoryGroup?  // Automatically derived from category.categoryGroup
+    var categoryGroup: CategoryGroup?
     var category: Category?
     var account: Account?
     
-    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil) {
+    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil, isHidden: Bool = false) {
         self.amount = amount
         self.note = note
         self.date = date
         self.type = type
+        self.isHidden = isHidden
         self.categoryGroup = categoryGroup
         self.category = category
         self.account = account

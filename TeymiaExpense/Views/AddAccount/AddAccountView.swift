@@ -18,6 +18,9 @@ struct AddAccountView: View {
     @State private var showingIconSelection = false
     @State private var showingCardDesignSelection = false
     
+    @FocusState private var isAccountNameFocused: Bool
+    @FocusState private var isInitialBalanceFocused: Bool
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -40,19 +43,47 @@ struct AddAccountView: View {
                 
                 // Account Details
                 Section {
-                    TextField("Account Name", text: $accountName)
-                        .autocorrectionDisabled()
+                    HStack {
+                        TextField("Account Name", text: $accountName)
+                            .autocorrectionDisabled()
+                            .focused($isAccountNameFocused)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                isAccountNameFocused = false
+                                isInitialBalanceFocused = true
+                            }
+                            .fontDesign(.rounded)
+                        
+                        if !accountName.isEmpty {
+                            Button(action: {
+                                accountName = ""
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 16))
+                            }
+                        }
+                    }
                     
                     HStack {
                         TextField("Initial Balance", text: $initialBalance)
                             .keyboardType(.decimalPad)
+                            .focused($isInitialBalanceFocused)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                isInitialBalanceFocused = false
+                            }
+                            .fontDesign(.rounded)
                         
                         Text(selectedCurrency?.symbol ?? "$")
                             .foregroundStyle(.secondary)
+                            .fontDesign(.rounded)
                     }
                     .contentShape(Rectangle())
                     .buttonStyle(.plain)
-                    
+                }
+                
+                Section {
                     // Card Design Selection
                     Button {
                         showingCardDesignSelection = true
@@ -73,7 +104,7 @@ struct AddAccountView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-
+                    
                     
                     // Icon Selection
                     Button {
@@ -128,9 +159,7 @@ struct AddAccountView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .listRowBackground(Color.gray.opacity(0.05))
             }
-            .scrollContentBackground(.hidden)
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -142,10 +171,22 @@ struct AddAccountView: View {
                     }
                     .disabled(!canSave)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button {
+                        isAccountNameFocused = false
+                        isInitialBalanceFocused = false
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                    }
+                }
             }
         }
         .onAppear {
             setupDefaults()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isAccountNameFocused = true
+            }
         }
         .sheet(isPresented: $showingCurrencySelection) {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
