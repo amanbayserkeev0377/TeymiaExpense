@@ -19,9 +19,6 @@ struct AddNewCategoryView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Category Name", text: $categoryName)
-                        .autocorrectionDisabled()
-                    
                     // Show selected group (read-only)
                     HStack {
                         Image(selectedCategoryGroup.iconName)
@@ -42,6 +39,9 @@ struct AddNewCategoryView: View {
                 }
                 
                 Section {
+                    TextField("Category Name", text: $categoryName)
+                        .autocorrectionDisabled()
+                    
                     NavigationLink {
                         CategoryIconSelectionView(selectedIcon: $selectedIcon)
                     } label: {
@@ -62,12 +62,24 @@ struct AddNewCategoryView: View {
             .navigationTitle("New Category")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .cancel) {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(role: .confirm) {
                         saveCategory()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
                     }
                     .disabled(!canSave)
-                    .fontWeight(.semibold)
                 }
             }
         }

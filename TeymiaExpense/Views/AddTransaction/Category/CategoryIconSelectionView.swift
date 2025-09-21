@@ -1,71 +1,120 @@
 import SwiftUI
 
+struct CategorySection: Identifiable {
+    let id = UUID()
+    let name: String
+    let icons: [String]
+}
+
 struct CategoryIconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
     
-    private let availableIcons = [
-        // Food & Drinks
-        "food.drinks", "delivery", "groceries", "restaurant", "coffee", "fast.food", "alcohol", "lunches",
+    private let categories: [CategorySection] = [
+        CategorySection(name: "Food & Drinks", icons: [
+            "food.drinks", "delivery", "groceries", "restaurant",
+            "coffee", "fast.food", "lunches", "apple", "bananas", "chopsticks.noodles", "bowl.rice", "carrot", "croissant", "fish", "grocery.basket", "hamburger", "pizza", "alcohol", "champagne", "cocktail"
+        ]),
         
-        // Transport
-        "transport", "taxi", "public.transport", "fuel", "parking", "repair", "washing",
+        CategorySection(name: "Transport", icons: [
+            "transport", "taxi", "public.transport", "fuel",
+            "parking", "repair", "washing"
+        ]),
         
-        // Entertainment
-        "entertainment", "cinema", "events", "subscriptions", "hobbies", "gaming", "vacation",
+        CategorySection(name: "Entertainment", icons: [
+            "entertainment", "cinema", "events", "subscriptions",
+            "hobbies", "gaming", "vacation"
+        ]),
         
-        // Sports
-        "sports", "equipment", "gym", "swimming", "yoga",
+        CategorySection(name: "Sports", icons: [
+            "sports", "gym", "swimming", "yoga", "equipment"
+        ]),
         
-        // Shopping
-        "shopping", "clothing", "cosmetics", "electronics", "gifts", "marketplaces",
+        CategorySection(name: "Shopping", icons: [
+            "shopping", "clothing", "cosmetics", "electronics",
+            "gifts", "marketplaces", "shopping.basket"
+        ]),
         
-        // Health
-        "health", "dental", "hospital", "pharmacy", "checkups", "therapy",
+        CategorySection(name: "Health", icons: [
+            "health", "dental", "hospital", "pharmacy",
+            "checkups", "therapy", "veterinary", "eye", "eye.crossed"
+        ]),
         
-        // Housing
-        "housing", "rent", "furniture", "home.maintenance", "internet", "telephone",
-        "water", "electricity", "gas", "tv.cable",
+        CategorySection(name: "Housing", icons: [
+            "housing", "rent", "furniture", "home.maintenance",
+            "internet", "telephone", "water", "electricity",
+            "gas", "tv.cable", "home.fill"
+        ]),
         
-        // Travel
-        "travel", "flights", "visadocument", "hotel", "tours",
+        CategorySection(name: "Family", icons: [
+            "child", "kids.clothes", "school.supplies", "kids.food",
+            "kids.healthcare", "toys.entertainment", "gifts.parties",
+            "pet", "pet.food", "toys.accessories"
+        ]),
         
-        // Education
-        "education", "books", "courses", "student.loan", "materials",
+        CategorySection(name: "Travel", icons: [
+            "travel", "flights", "visadocument", "hotel", "tours"
+        ]),
         
-        // Pet
-        "pet", "pet.food", "veterinary", "toys.accessories",
+        CategorySection(name: "Education", icons: [
+            "education", "books", "courses", "student.loan", "materials"
+        ]),
         
-        // Child
-        "child", "kids.clothes", "school.supplies", "kids.food", "kids.healthcare",
-        "toys.entertainment", "gifts.parties",
+        CategorySection(name: "Finance", icons: [
+            "salary", "monthly.salary", "overtime", "bonus",
+            "gift", "birthday.gift", "event.gift", "bonuses",
+            "performance.bonus", "yearend.bonus", "business",
+            "freelance", "consulting", "business.revenue",
+            "investment", "dividends", "interest", "crypto",
+            "rental.income", "refund", "cashback", "income",
+            "bank", "credit.card", "wallet", "piggy.bank",
+            "dollar", "expense", "dollar.sack", "dollar.transfer", "coins",
+            "coins.up", "coins.tax", "commission", "hand.bill",
+            "hand.revenue", "hand.usd", "chart.pie",
+            "cash", "cash.simple", "bitcoin", "bitcoin.lock",
+            "bitcoin.symbol", "crypto.coins", "nft", "amazon.pay",
+            "apple.pay", "paypal", "visa", "master.card", "stripe",
+            "shopify", "briefcase", "scales"
+        ]),
         
-        // Income
-        "salary", "monthly.salary", "overtime", "bonus", "gift", "birthday.gift", "event.gift",
-        "bonuses", "performance.bonus", "yearend.bonus", "commission", "business", "freelance",
-        "consulting", "business.revenue", "investment", "dividends", "interest", "crypto",
-        "rental.income", "refund", "cashback",
-        
-        // Other
-        "other", "general"
+        CategorySection(name: "Miscellaneous", icons: [
+            "other", "general", "transfer",
+            "pencil",
+            "trash"
+        ])
     ]
     
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 6)
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(availableIcons, id: \.self) { icon in
-                        iconButton(icon: icon)
+                LazyVStack(alignment: .leading, spacing: 24) {
+                    ForEach(categories) { category in
+                        categorySection(category)
                     }
                 }
-                .padding(20)
-                .padding(.top, 20)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 20)
             }
-            .navigationTitle("Category Icon")
+            .navigationTitle("Icon")
             .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+    
+    private func categorySection(_ category: CategorySection) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(category.name)
+                .font(.headline)
+                .foregroundColor(.primary)
+                .padding(.horizontal, 4)
+            
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(category.icons, id: \.self) { icon in
+                    iconButton(icon: icon)
+                } 
+            }
         }
     }
     
@@ -77,16 +126,16 @@ struct CategoryIconSelectionView: View {
             Image(icon)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 32, height: 32)
+                .frame(width: 24, height: 24)
                 .foregroundStyle(
                     selectedIcon == icon
                     ? (colorScheme == .light ? Color.white : Color.black)
                     : Color.primary
                 )
-                .padding(14)
+                .padding(10)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary : Color.secondary.opacity(0.1))
                 )
         }
         .buttonStyle(.plain)

@@ -4,9 +4,6 @@ import SwiftData
 
 // MARK: - Account Extensions
 extension Account {
-    var isDeletable: Bool {
-        return !isDefault 
-    }
     
     var formattedBalance: String {
         let formatter = NumberFormatter()

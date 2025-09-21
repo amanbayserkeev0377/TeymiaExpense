@@ -2,9 +2,6 @@ import Foundation
 import SwiftData
 
 extension Category {
-    var isDeletable: Bool {
-        return !isDefault
-    }
     
     static func createDefaults(context: ModelContext) {
         let categoryGroupDescriptor = FetchDescriptor<CategoryGroup>()

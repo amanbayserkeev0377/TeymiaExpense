@@ -110,7 +110,6 @@ struct AddTransactionView: View {
                             .fontWeight(.bold)
                     }
                     .disabled(!canSave)
-                    .fontWeight(.semibold)
                 }
             }
         }

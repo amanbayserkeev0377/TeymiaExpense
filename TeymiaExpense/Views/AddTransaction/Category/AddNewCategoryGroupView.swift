@@ -14,17 +14,18 @@ struct AddNewCategoryGroupView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Group Name", text: $groupName)
-                        .autocorrectionDisabled()
-                    
                     Picker("Type", selection: $groupType) {
                         Text("Expense").tag(GroupType.expense)
                         Text("Income").tag(GroupType.income)
                     }
                     .pickerStyle(.segmented)
                 }
+                .listRowBackground(Color.clear)
                 
                 Section {
+                    TextField("Group Name", text: $groupName)
+                        .autocorrectionDisabled()
+                    
                     NavigationLink {
                         CategoryIconSelectionView(selectedIcon: $selectedIcon)
                     } label: {
@@ -42,15 +43,27 @@ struct AddNewCategoryGroupView: View {
                     }
                 }
             }
-            .navigationTitle("New Category Group")
+            .navigationTitle("New Group")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .cancel) {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(role: .confirm) {
                         saveGroup()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
                     }
                     .disabled(!canSave)
-                    .fontWeight(.semibold)
                 }
             }
         }

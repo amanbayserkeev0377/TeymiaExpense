@@ -44,6 +44,11 @@ struct CategorySelectionView: View {
     @State private var searchText = ""
     @State private var localSelectedCategoryGroup: CategoryGroup?
     
+    // Sheet states
+    @State private var showingCategoryManagement = false
+    @State private var showingAddCategoryGroup = false
+    @State private var showingAddCategory = false
+    
     private var filteredCategoryGroups: [CategoryGroup] {
         let groupType: GroupType = transactionType == .income ? .income : .expense
         return categoryGroups
@@ -54,14 +59,8 @@ struct CategorySelectionView: View {
     private var categoriesForSelectedGroup: [Category] {
         guard let selectedGroup = localSelectedCategoryGroup else { return [] }
         
-        let filtered = categories.filter { $0.categoryGroup.id == selectedGroup.id }
-        
-        if searchText.isEmpty {
-            return filtered.sorted { $0.sortOrder < $1.sortOrder }
-        }
-        
-        return filtered
-            .filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        return categories
+            .filter { $0.categoryGroup.id == selectedGroup.id }
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     
@@ -92,51 +91,21 @@ struct CategorySelectionView: View {
                 
                 List {
                     Section("Categories") {
-                        if categoriesForSelectedGroup.isEmpty && searchText.isEmpty {
-                            // Show "Add first category" button when no categories in group
-                            NavigationLink {
-                                if let selectedGroup = localSelectedCategoryGroup {
-                                    AddNewCategoryView(selectedCategoryGroup: selectedGroup)
-                                }
-                            } label: {
-                                Label("Add first category", systemImage: "plus")
-                                    .foregroundStyle(.app)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        } else if categoriesForSelectedGroup.isEmpty && !searchText.isEmpty {
-                            // Show search empty state
-                            VStack(spacing: 16) {
-                                Image(systemName: "magnifyingglass")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.secondary)
-                                
-                                Text("No categories found")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                
-                                Text("Try a different search term")
-                                    .font(.caption)
-                                    .foregroundStyle(.tertiary)
-                            }
-                            .frame(maxWidth: .infinity, minHeight: 140)
-                            .listRowBackground(Color.clear)
-                        } else {
-                            // Show categories + "Add category" button at the end
-                            ForEach(categoriesForSelectedGroup) { category in
-                                categoryRow(category: category)
-                            }
-                            
-                            // Add category button at the end of list
-                            NavigationLink {
-                                if let selectedGroup = localSelectedCategoryGroup {
-                                    AddNewCategoryView(selectedCategoryGroup: selectedGroup)
-                                }
-                            } label: {
-                                Label("Add new category", systemImage: "plus")
-                                    .foregroundStyle(.app)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                        // Show categories
+                        ForEach(categoriesForSelectedGroup) { category in
+                            categoryRow(category: category)
                         }
+                        
+                        // Always show "Add new category" button
+                        Button {
+                            showingAddCategory = true
+                        } label: {
+                            Label("Add new category", systemImage: "plus")
+                                .foregroundStyle(.app)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
                     }
                 }
                 .listStyle(.insetGrouped)
@@ -144,18 +113,17 @@ struct CategorySelectionView: View {
         }
         .navigationTitle("Categories")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    CategoryManagementView()
+                Button {
+                    showingCategoryManagement = true
                 } label: {
                     Image(systemName: "pencil")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    AddNewCategoryGroupView()
+                Button {
+                    showingAddCategoryGroup = true
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -168,6 +136,21 @@ struct CategorySelectionView: View {
                 } else {
                     localSelectedCategoryGroup = filteredCategoryGroups.first
                 }
+            }
+        }
+        // Sheet presentations
+        .sheet(isPresented: $showingCategoryManagement) {
+            CategoryManagementView()
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingAddCategoryGroup) {
+            AddNewCategoryGroupView()
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingAddCategory) {
+            if let selectedGroup = localSelectedCategoryGroup ?? filteredCategoryGroups.first {
+                AddNewCategoryView(selectedCategoryGroup: selectedGroup)
+                    .presentationDragIndicator(.visible)
             }
         }
     }

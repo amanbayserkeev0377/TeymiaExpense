@@ -212,12 +212,12 @@ struct HomeView: View {
                                 TransactionRowView(transaction: transaction)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
-                                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 20))
+                                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 30))
                                     .swipeActions {
                                         Action(
                                             imageName: "eye.crossed",
                                             tint: .white,
-                                            background: .blue,
+                                            background: .gray,
                                             size: .init(width: 50, height: 50)
                                         ) { resetPosition in
                                             hideTransaction(transaction)
@@ -420,7 +420,7 @@ struct DateFilterView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 2)
                 }
-                .tint(.blue)
+                .tint(.app)
                 .buttonStyle(.glassProminent)
 
                 Text("Maximum Range is 1 Year!")

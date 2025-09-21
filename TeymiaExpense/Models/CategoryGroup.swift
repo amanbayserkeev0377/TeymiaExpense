@@ -2,9 +2,6 @@ import Foundation
 import SwiftData
 
 extension CategoryGroup {
-    var isDeletable: Bool {
-        return !isDefault
-    }
     
     static func createDefaults(context: ModelContext) {
         let expenseGroups = [
