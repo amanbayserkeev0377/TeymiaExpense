@@ -80,8 +80,7 @@ struct CategoryIconSelectionView: View {
         
         CategorySection(name: "Miscellaneous", icons: [
             "other", "general", "transfer",
-            "pencil",
-            "trash"
+            "pencil", "trash"
         ])
     ]
     
