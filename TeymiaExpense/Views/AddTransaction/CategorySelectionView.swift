@@ -61,27 +61,40 @@ struct CategorySelectionView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Category Groups Section
                 ScrollView {
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
-                        spacing: 16
-                    ) {
-                        ForEach(filteredCategoryGroups) { categoryGroup in
-                            categoryGroupButton(categoryGroup: categoryGroup)
+                    if filteredCategoryGroups.isEmpty {
+                        EmptyView(isGroups: true)
+                    } else {
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
+                            spacing: 16
+                        ) {
+                            ForEach(filteredCategoryGroups) { categoryGroup in
+                                categoryGroupButton(categoryGroup: categoryGroup)
+                            }
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
                 }
                 .background(Color(.systemGroupedBackground))
                 .frame(height: 300)
                 
                 Divider()
                 
+                // Categories Section
                 List {
-                    Section {
-                        ForEach(categoriesForSelectedGroup) { category in
-                            categoryRow(category: category)
+                    if categoriesForSelectedGroup.isEmpty {
+                        Section {
+                            EmptyView(isGroups: false)
+                        }
+                        .listRowBackground(Color.clear)
+                    } else {
+                        Section {
+                            ForEach(categoriesForSelectedGroup) { category in
+                                categoryRow(category: category)
+                            }
                         }
                     }
                 }

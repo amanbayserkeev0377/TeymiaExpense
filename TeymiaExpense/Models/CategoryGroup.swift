@@ -18,7 +18,7 @@ extension CategoryGroup {
             ("pet".localized, "pet", 10),
             ("child".localized, "child", 11)
         ]
-        // test
+        
         for (name, iconName, sortOrder) in expenseGroups {
             let categoryGroup = CategoryGroup(
                 name: name,

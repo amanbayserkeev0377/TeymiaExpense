@@ -18,69 +18,57 @@ struct CategoryIconSelectionView: View {
         ]),
         
         CategorySection(name: "Transport", icons: [
-            "transport", "taxi", "public.transport", "fuel",
+            "transport", "taxi", "public.transport", "car.bus", "bike", "motorcycle", "subway", "train", "fuel",
             "parking", "repair", "washing"
         ]),
         
         CategorySection(name: "Entertainment", icons: [
             "entertainment", "cinema", "events", "subscriptions",
-            "hobbies", "gaming", "vacation"
+            "hobbies", "gaming", "chess.piece", "clapper.open", "film", "game.board", "guitar", "music", "piano", "play.alt", "cards", "puzzle",
         ]),
         
         CategorySection(name: "Sports", icons: [
-            "sports", "gym", "swimming", "yoga", "equipment"
+            "sports", "basketball", "football", "tennis", "rugby", "golf", "ping.pong", "chess.knight", "gym", "swimming", "yoga", "skiing", "equipment", "sport.uniform", "archery", "laurel.first", "medal", "trophy",
         ]),
         
         CategorySection(name: "Shopping", icons: [
-            "shopping", "clothing", "cosmetics", "electronics",
-            "gifts", "marketplaces", "shopping.basket"
+            "shopping", "cart.shopping", "clothing", "cosmetics", "electronics",
+            "gifts", "marketplaces", "shopping.basket", "shopping.bag", "tags",
         ]),
         
         CategorySection(name: "Health", icons: [
             "health", "dental", "hospital", "pharmacy",
-            "checkups", "therapy", "veterinary", "eye", "eye.crossed"
+            "checkups", "therapy", "veterinary", "eye", "heart.brain", "heart.rate", "lungs", "medicine", "health.plus", "smoking", "stethoscope", "syringe", "doctor",
         ]),
         
         CategorySection(name: "Housing", icons: [
             "housing", "rent", "furniture", "home.maintenance",
             "internet", "telephone", "water", "electricity",
-            "gas", "tv.cable", "home.fill"
+            "gas", "tv.cable", "bath", "bed.empty", "bolt", "lamp.desk", "paint.roller", "toilet.paper", "wrench"
         ]),
         
         CategorySection(name: "Family", icons: [
-            "child", "kids.clothes", "school.supplies", "kids.food",
-            "kids.healthcare", "toys.entertainment", "gifts.parties",
-            "pet", "pet.food", "toys.accessories"
+            "family", "family2", "child", "baby", "baby.carriage", "kids.clothes", "school.supplies", "toys.entertainment", "gifts.parties", "pet", "pet.food", "pets", "paw", "cat", "toys.accessories", "birthday.gift", "gift",
         ]),
         
         CategorySection(name: "Travel", icons: [
-            "travel", "flights", "visadocument", "hotel", "tours"
+            "travel", "flights", "visadocument", "hotel", "tours", "vacation", "chinese", "compass", "map.marker", "luggage", "plane.globe", "world",
         ]),
         
         CategorySection(name: "Education", icons: [
-            "education", "books", "courses", "student.loan", "materials"
+            "education", "books", "courses", "book.bookmark", "books2", "student", "writer", "scientist", "glasses", "calculator", "square.root", "square.poll", "physics", "react", "ai.technology", "ai.assistant", "language.exchange", "language", "pen.swirl", "pen.paintbrush",
         ]),
         
         CategorySection(name: "Finance", icons: [
-            "salary", "monthly.salary", "overtime", "bonus",
-            "gift", "birthday.gift", "event.gift", "bonuses",
-            "performance.bonus", "yearend.bonus", "business",
-            "freelance", "consulting", "business.revenue",
-            "investment", "dividends", "interest", "crypto",
-            "rental.income", "refund", "cashback", "income",
-            "bank", "credit.card", "wallet", "piggy.bank",
-            "dollar", "expense", "dollar.sack", "dollar.transfer", "coins",
-            "coins.up", "coins.tax", "commission", "hand.bill",
-            "hand.revenue", "hand.usd", "chart.pie",
-            "cash", "cash.simple", "bitcoin", "bitcoin.lock",
-            "bitcoin.symbol", "crypto.coins", "nft", "amazon.pay",
-            "apple.pay", "paypal", "visa", "master.card", "stripe",
-            "shopify", "briefcase", "scales"
+            "salary", "monthly.salary", "overtime", "bonus", "business", "freelance", "consulting", "business.revenue", "investment", "dividends", "refund", "cashback", "income", "bank", "credit.card", "wallet", "piggy.bank", "dollar", "expense", "dollar.sack", "dollar.transfer", "coins", "commission", "hand.bill", "hand.revenue", "hand.usd", "chart.pie", "cash", "cash.simple", "bitcoin.lock", "bitcoin.symbol", "crypto.coins", "nft", "briefcase", "transfer",
+        ]),
+        
+        CategorySection(name: "Brands", icons: [
+            "visa", "stripe", "paypal", "apple.pay", "amazon.pay", "master.card", "bitcoin", "ethereum", "shopify", "instagram", "whatsapp", "threads", "twitter", "meta", "tik.tok", "telegram", "vk", "youtube", "spotify", "reddit", "github", "appstore", "apple.company", "android", "discord", "starbucks", "nvidia", "soundcloud", "twitch", "huawei", "nestle", "burger.king", "t.mobile", "airbnb", "mcdonalds", "ebay", "fedex", "flaticon", "netflix", "sony", "uber"
         ]),
         
         CategorySection(name: "Miscellaneous", icons: [
-            "other", "general", "transfer",
-            "pencil", "trash"
+            "other", "general", "pencil", "trash", "materials", "sun", "moon", "alien", "candle", "diamond", "paperclip", "poop", "shoe.prints", "snooze", "sparkles", "bell", "bookmark", "clock", "comment", "cursor", "dice", "envelope", "flame", "folder", "footprint", "headset", "heart", "info", "keyboard", "lock", "paperplane", "phone.flip", "rocket", "scissors", "search", "smile", "like", "trees", "umbrella", "wheat"
         ])
     ]
     

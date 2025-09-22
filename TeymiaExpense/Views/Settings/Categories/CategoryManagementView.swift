@@ -35,9 +35,7 @@ struct CategoryManagementView: View {
                 
                 if filteredCategoryGroups.isEmpty {
                     Section {
-                        EmptyCategoryGroupsView(type: selectedType) {
-                            showingAddGroup = true
-                        }
+                        EmptyView(isGroups: true)
                     }
                     .listRowBackground(Color.clear)
                 } else {
@@ -184,9 +182,7 @@ struct CategoryGroupDetailView: View {
         List {
             if groupCategories.isEmpty {
                 Section {
-                    EmptyCategoriesView(groupName: categoryGroup.name) {
-                        showingAddCategory = true
-                    }
+                    EmptyView(isGroups: false)
                 }
                 .listRowBackground(Color.clear)
             } else {
@@ -293,41 +289,19 @@ struct CategoryGroupDetailView: View {
     }
 }
 
-// MARK: - Empty State Views
+// MARK: - Empty State View
 
-struct EmptyCategoryGroupsView: View {
-    let type: GroupType
-    let onAddTapped: () -> Void
+struct EmptyView: View {
+    let isGroups: Bool
     
     var body: some View {
         VStack(spacing: 16) {
-            Image("drawer.empty")
+            Image(isGroups ? "box.question" : "drawer.empty")
                 .resizable()
                 .frame(width: 40, height: 40)
                 .foregroundStyle(.secondary)
             
-            Text("No \(type.rawValue.capitalized) Groups")
-                .font(.headline)
-                .fontWeight(.medium)
-                .foregroundStyle(.primary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-    }
-}
-
-struct EmptyCategoriesView: View {
-    let groupName: String
-    let onAddTapped: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            Image("drawer.empty")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .foregroundStyle(.secondary)
-            
-            Text("No Categories")
+            Text(isGroups ? "No Groups" : "No Categories")
                 .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(.primary)
