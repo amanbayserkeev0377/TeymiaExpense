@@ -39,11 +39,9 @@ struct HomeView: View {
                 }
                 .safeAreaPadding(15)
                 .background {
-                    Rectangle()
-                        .fill(colorScheme == .light ? Color.white.gradient : Color.black.gradient)
-                        .scaleEffect(y: -1)
-                        .ignoresSafeArea()
+                    ImageBackgroundView()
                 }
+                .ignoresSafeArea(.container, edges: .bottom)
                 .onScrollGeometryChange(for: ScrollGeometry.self) {
                     $0
                 } action: { oldValue, newValue in
@@ -56,7 +54,8 @@ struct HomeView: View {
                             showingAddAccount = true
                         } label: {
                             Image(systemName: "plus")
-                                .fontWeight(.medium)
+                                .fontWeight(.semibold)
+                                .fontDesign(.rounded)
                         }
                     }
                 }
@@ -212,7 +211,7 @@ struct HomeView: View {
                                 TransactionRowView(transaction: transaction)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
-                                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 30))
+                                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 24))
                                     .swipeActions {
                                         Action(
                                             imageName: "eye.crossed",

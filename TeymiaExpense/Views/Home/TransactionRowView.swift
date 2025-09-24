@@ -44,11 +44,6 @@ struct TransactionRowView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
-                
-                // Time
-                Text(transaction.date, style: .time)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
             
             Spacer()
@@ -67,7 +62,6 @@ struct TransactionRowView: View {
                 }
             }
         }
-        .padding(.vertical, 4)
     }
     
     private func amountColor(for transaction: Transaction) -> Color {

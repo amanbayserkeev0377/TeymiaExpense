@@ -41,7 +41,7 @@ struct CustomSegmentedControl<T: Hashable>: View {
                         : AnyShapeStyle(.secondary)
                     )
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 6)
                     .background {
                         if selection == option {
                             Capsule()
@@ -54,7 +54,7 @@ struct CustomSegmentedControl<T: Hashable>: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(8)
+        .padding(4)
         .background {
             Capsule()
                 .fill(.gray.opacity(0.1))

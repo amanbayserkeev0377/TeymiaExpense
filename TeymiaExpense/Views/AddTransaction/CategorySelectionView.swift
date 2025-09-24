@@ -78,7 +78,7 @@ struct CategorySelectionView: View {
                         .padding(.vertical, 16)
                     }
                 }
-                .background(Color(.systemGroupedBackground))
+                .background(Color.mainBackground)
                 .frame(height: 300)
                 
                 Divider()
@@ -96,8 +96,11 @@ struct CategorySelectionView: View {
                                 categoryRow(category: category)
                             }
                         }
+                        .listRowBackground(Color.mainRowBackground)
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(.mainBackground)
                 .listStyle(.insetGrouped)
             }
         }
@@ -127,15 +130,18 @@ struct CategorySelectionView: View {
                     .foregroundStyle(
                         localSelectedCategoryGroup?.id == categoryGroup.id
                         ? (colorScheme == .light ? Color.white : Color.black)
-                        : Color.primary
+                        : Color.accentColor
                     )
                     .padding(14)
                     .background(
                         Circle()
                             .fill(localSelectedCategoryGroup?.id == categoryGroup.id
-                                  ? Color.primary
-                                  : Color(.secondarySystemGroupedBackground))
+                                  ? Color.clear
+                                  : Color.mainRowBackground)
                     )
+                    .glassEffect(localSelectedCategoryGroup?.id == categoryGroup.id
+                                 ? .regular.tint(.primary)
+                                 : .regular)
                 
                 Text(categoryGroup.name)
                     .font(.system(.caption, design: .rounded))

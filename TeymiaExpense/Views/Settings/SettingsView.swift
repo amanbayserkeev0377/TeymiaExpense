@@ -4,7 +4,7 @@ import SwiftData
 struct SettingsView: View {
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 Section {
                     NavigationLink {
                         CategoryManagementView()

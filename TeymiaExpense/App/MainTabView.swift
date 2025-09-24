@@ -33,12 +33,12 @@ struct MainTabView: View {
             FloatingAddButton {
                 showingAddTransaction = true
             }
-            .matchedTransitionSource(id: "AddTransaction", in: animation)
+//            .matchedTransitionSource(id: "AddTransaction", in: animation)
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
                 .presentationDragIndicator(.visible)
-                .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
+//                .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
         }
     }
 }
