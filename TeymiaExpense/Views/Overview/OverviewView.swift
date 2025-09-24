@@ -85,9 +85,9 @@ struct OverviewView: View {
                 .padding(.vertical, 20)
             }
             .background {
-                ImageBackgroundView()
+                Color.mainBackground
             }
-            .ignoresSafeArea(.container, edges: .bottom)
+            .ignoresSafeArea(.all)
         }
     }
     

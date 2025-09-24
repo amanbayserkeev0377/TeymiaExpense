@@ -165,11 +165,11 @@ struct CategorySelectionView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.accent)
                 
                 Text(category.name)
                     .fontDesign(.rounded)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.accent)
                 
                 Spacer()
                 

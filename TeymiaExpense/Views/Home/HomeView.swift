@@ -39,9 +39,9 @@ struct HomeView: View {
                 }
                 .safeAreaPadding(15)
                 .background {
-                    ImageBackgroundView()
+                    Color.mainBackground
                 }
-                .ignoresSafeArea(.container, edges: .bottom)
+                .ignoresSafeArea(.all)
                 .onScrollGeometryChange(for: ScrollGeometry.self) {
                     $0
                 } action: { oldValue, newValue in
@@ -211,7 +211,7 @@ struct HomeView: View {
                                 TransactionRowView(transaction: transaction)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
-                                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 24))
+                                    .glassEffect(.regular.interactive().tint(.mainRowBackground), in: RoundedRectangle(cornerRadius: 24))
                                     .swipeActions {
                                         Action(
                                             imageName: "eye.crossed",

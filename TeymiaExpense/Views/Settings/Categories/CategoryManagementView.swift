@@ -68,9 +68,12 @@ struct CategoryManagementView: View {
                     } footer: {
                         Text("Swipe left to edit or delete it.")
                     }
+                    .listRowBackground(Color.mainRowBackground)
                 }
             }
             .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
+            .scrollContentBackground(.hidden)
+            .background(.mainBackground)
             .navigationTitle("Categories")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -210,9 +213,12 @@ struct CategoryGroupDetailView: View {
                 } footer: {
                     Text("Swipe left to edit or delete it.")
                 }
+                .listRowBackground(Color.mainRowBackground)
             }
         }
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
+        .scrollContentBackground(.hidden)
+        .background(.mainBackground)
         .navigationTitle(categoryGroup.name)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
