@@ -49,19 +49,9 @@ private func createDefaultDataIfNeeded(context: ModelContext) {
         return
     }
     
-    print("Creating default data...")
     Currency.createDefaults(context: context)
-    print("Created currencies")
-    
     CategoryGroup.createDefaults(context: context)
-    print("Created category groups")
-    
     Category.createDefaults(context: context)
-    print("Created categories")
-    
     Account.createDefault(context: context)
-    print("Created accounts")
-    
     try? context.save()
-    print("Saved all data")
 }

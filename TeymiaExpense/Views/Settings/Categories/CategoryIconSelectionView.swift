@@ -64,11 +64,11 @@ struct CategoryIconSelectionView: View {
         ]),
         
         CategorySection(name: "Brands", icons: [
-            "visa", "stripe", "paypal", "apple.pay", "amazon.pay", "master.card", "bitcoin", "ethereum", "shopify", "instagram", "whatsapp", "threads", "twitter", "meta", "tik.tok", "telegram", "vk", "youtube", "spotify", "reddit", "github", "appstore", "apple.company", "android", "discord", "starbucks", "nvidia", "soundcloud", "twitch", "huawei", "nestle", "burger.king", "t.mobile", "airbnb", "mcdonalds", "ebay", "fedex", "flaticon", "netflix", "sony", "uber"
+            "visa", "stripe", "paypal", "apple.pay", "amazon.pay", "master.card", "bitcoin", "ethereum", "shopify", "instagram", "whatsapp", "threads", "twitter", "meta", "tik.tok", "telegram", "vk", "youtube", "spotify", "reddit", "github", "appstore", "apple.company", "android", "discord", "starbucks", "nvidia", "soundcloud", "twitch", "huawei", "burger.king", "t.mobile", "airbnb", "mcdonalds", "ebay", "fedex", "flaticon", "netflix", "sony", "uber"
         ]),
         
         CategorySection(name: "Miscellaneous", icons: [
-            "other", "general", "pencil", "trash", "materials", "sun", "moon", "alien", "candle", "diamond", "paperclip", "poop", "shoe.prints", "snooze", "sparkles", "bell", "bookmark", "clock", "comment", "cursor", "dice", "envelope", "flame", "folder", "footprint", "headset", "heart", "info", "keyboard", "lock", "paperplane", "phone.flip", "rocket", "scissors", "search", "smile", "like", "trees", "umbrella", "wheat"
+            "other", "general", "pencil", "trash", "materials", "sun", "moon", "alien", "candle", "diamond", "paperclip", "poop", "shoe.prints", "snooze", "sparkles", "bell", "bookmark", "clock", "comment", "cursor", "dice", "envelope", "flame", "folder", "footprint", "headset", "heart", "info", "keyboard", "lock", "paperplane", "phone.flip", "rocket", "scissors", "search", "smile", "like", "trees", "umbrella", "wheat", "calendar"
         ])
     ]
     

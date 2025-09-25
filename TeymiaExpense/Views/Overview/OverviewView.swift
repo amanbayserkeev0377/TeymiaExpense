@@ -5,9 +5,26 @@ struct OverviewView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
-    @Query private var transactions: [Transaction]
+    @Query private var allTransactions: [Transaction]
     
-    // Filter groups that have transactions
+    // Date filtering state
+    @State private var startDate = Date.startOfCurrentMonth
+    @State private var endDate = Date.endOfCurrentMonth
+    
+    // Filtered transactions based on date range
+    private var filteredTransactions: [Transaction] {
+        let calendar = Calendar.current
+        let startOfStartDate = calendar.startOfDay(for: startDate)
+        let endOfEndDate = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
+        
+        return allTransactions.filter { transaction in
+            !transaction.isHidden &&
+            transaction.date >= startOfStartDate &&
+            transaction.date < endOfEndDate
+        }
+    }
+    
+    // Filter groups that have transactions in selected period
     private var expenseGroupsWithTransactions: [CategoryGroup] {
         categoryGroups
             .filter { $0.type == .expense && hasTransactions(for: $0) }
@@ -20,18 +37,70 @@ struct OverviewView: View {
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     
+    // Calculate totals for the period
+    private var totalExpenses: Decimal {
+        filteredTransactions
+            .filter { $0.type == .expense }
+            .reduce(Decimal.zero) { $0 + abs($1.amount) }
+    }
+    
+    private var totalIncome: Decimal {
+        filteredTransactions
+            .filter { $0.type == .income }
+            .reduce(Decimal.zero) { $0 + abs($1.amount) }
+    }
+    
+    private var dateRangeText: String {
+        DateFormatter.formatDateRange(startDate: startDate, endDate: endDate)
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 24) {
+                    // Date Filter Header
+                    HStack {
+                        Text(dateRangeText)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                        
+                        Spacer()
+                        
+                        // Date Filter Menu
+                        CustomMenuView(style: .glass) {
+                            Image("calendar")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .frame(width: 40, height: 30)
+                        } content: {
+                            DateFilterView(
+                                startDate: $startDate,
+                                endDate: $endDate
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    
                     // Expenses Section
                     if !expenseGroupsWithTransactions.isEmpty {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Expenses")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.primary)
-                                .padding(.horizontal, 20)
+                            HStack {
+                                Text("Expenses")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.primary)
+                                
+                                Spacer()
+                                
+                                Text(formatAmount(totalExpenses))
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.red)
+                            }
+                            .padding(.horizontal, 20)
+                            
+                            Divider()
                             
                             LazyVGrid(
                                 columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
@@ -39,7 +108,10 @@ struct OverviewView: View {
                             ) {
                                 ForEach(expenseGroupsWithTransactions) { categoryGroup in
                                     NavigationLink {
-                                        CategoryGroupOverviewView(categoryGroup: categoryGroup)
+                                        CategoryGroupOverviewView(
+                                            categoryGroup: categoryGroup,
+                                            filteredTransactions: filteredTransactions
+                                        )
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .expense)
                                     }
@@ -53,11 +125,22 @@ struct OverviewView: View {
                     // Income Section
                     if !incomeGroupsWithTransactions.isEmpty {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Income")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.primary)
-                                .padding(.horizontal, 20)
+                            HStack {
+                                Text("Income")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.primary)
+                                
+                                Spacer()
+                                
+                                Text(formatAmount(totalIncome))
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.green)
+                            }
+                            .padding(.horizontal, 20)
+                            
+                            Divider()
                             
                             LazyVGrid(
                                 columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
@@ -65,7 +148,10 @@ struct OverviewView: View {
                             ) {
                                 ForEach(incomeGroupsWithTransactions) { categoryGroup in
                                     NavigationLink {
-                                        CategoryGroupOverviewView(categoryGroup: categoryGroup)
+                                        CategoryGroupOverviewView(
+                                            categoryGroup: categoryGroup,
+                                            filteredTransactions: filteredTransactions
+                                        )
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .income)
                                     }
@@ -84,10 +170,7 @@ struct OverviewView: View {
                 }
                 .padding(.vertical, 20)
             }
-            .background {
-                Color.mainBackground
-            }
-            .ignoresSafeArea(.all)
+            .background(Color.mainBackground)
         }
     }
     
@@ -127,9 +210,9 @@ struct OverviewView: View {
         let groupCategories = categories.filter { $0.categoryGroup.id == categoryGroup.id }
         let categoryIds = Set(groupCategories.map { $0.id })
         
-        return transactions.contains { transaction in
+        return filteredTransactions.contains { transaction in
             guard let categoryId = transaction.category?.id else { return false }
-            return categoryIds.contains(categoryId) && !transaction.isHidden
+            return categoryIds.contains(categoryId)
         }
     }
     
@@ -137,28 +220,28 @@ struct OverviewView: View {
         let groupCategories = categories.filter { $0.categoryGroup.id == categoryGroup.id }
         let categoryIds = Set(groupCategories.map { $0.id })
         
-        return transactions.filter { transaction in
+        return filteredTransactions.filter { transaction in
             guard let categoryId = transaction.category?.id else { return false }
-            return categoryIds.contains(categoryId) && !transaction.isHidden
+            return categoryIds.contains(categoryId)
         }.reduce(Decimal.zero) { $0 + abs($1.amount) }
     }
     
     private func formatAmount(_ amount: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "USD" // You can make this dynamic
+        formatter.currencyCode = "USD"
         return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
     }
 }
 
-// MARK: - Category Group Overview Detail View
+// MARK: - Enhanced Category Group Overview Detail View
 
 struct CategoryGroupOverviewView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var categories: [Category]
-    @Query private var transactions: [Transaction]
     
     let categoryGroup: CategoryGroup
+    let filteredTransactions: [Transaction]
     
     private var groupCategories: [Category] {
         categories
@@ -192,14 +275,14 @@ struct CategoryGroupOverviewView: View {
     // MARK: - Helper Methods
     
     private func getTransactionCount(for category: Category) -> Int {
-        transactions.filter { transaction in
-            transaction.category?.id == category.id && !transaction.isHidden
+        filteredTransactions.filter { transaction in
+            transaction.category?.id == category.id
         }.count
     }
     
     private func getTotalAmount(for category: Category) -> Decimal {
-        transactions.filter { transaction in
-            transaction.category?.id == category.id && !transaction.isHidden
+        filteredTransactions.filter { transaction in
+            transaction.category?.id == category.id
         }.reduce(Decimal.zero) { $0 + abs($1.amount) }
     }
 }
@@ -246,7 +329,7 @@ struct CategoryOverviewRow: View {
     private func formatAmount(_ amount: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "USD" // You can make this dynamic
+        formatter.currencyCode = "USD"
         return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
     }
 }

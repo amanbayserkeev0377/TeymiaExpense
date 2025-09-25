@@ -14,8 +14,8 @@ struct HomeView: View {
     @StateObject private var firstLaunchManager = FirstLaunchManager()
     
     @State private var showingAddAccount = false
-    @State private var startDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
-    @State private var endDate = Date()
+    @State private var startDate = Date.startOfCurrentMonth
+    @State private var endDate = Date.endOfCurrentMonth
     
     // View Properties
     @State private var topInset: CGFloat = 0
@@ -23,40 +23,35 @@ struct HomeView: View {
     @State private var scrollProgressX: CGFloat = 0
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            NavigationStack {
-                ScrollView(.vertical) {
-                    LazyVStack(spacing: 15) {
-                        HeaderView()
-                        
-                        CarouselView()
-                            .zIndex(-1)
-                        
-                        // Transactions Section
-                        TransactionsSection()
-                            .padding(.top, 20)
-                    }
+        NavigationStack {
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 15) {
+                    HeaderView()
+                    
+                    CarouselView()
+                        .zIndex(-1)
+                    
+                    // Transactions Section
+                    TransactionsSection()
+                        .padding(.top, 20)
                 }
-                .safeAreaPadding(15)
-                .background {
-                    Color.mainBackground
-                }
-                .ignoresSafeArea(.all)
-                .onScrollGeometryChange(for: ScrollGeometry.self) {
-                    $0
-                } action: { oldValue, newValue in
-                    topInset = newValue.contentInsets.top + 100
-                    scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
-                }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showingAddAccount = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .fontWeight(.semibold)
-                                .fontDesign(.rounded)
-                        }
+            }
+            .safeAreaPadding(15)
+            .background(Color.mainBackground)
+            .onScrollGeometryChange(for: ScrollGeometry.self) {
+                $0
+            } action: { oldValue, newValue in
+                topInset = newValue.contentInsets.top + 100
+                scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingAddAccount = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
                     }
                 }
             }
@@ -154,8 +149,9 @@ struct HomeView: View {
                 
                 // Date Filter Menu
                 CustomMenuView(style: .glass) {
-                    Image(systemName: "calendar")
-                        .font(.title3)
+                    Image("calendar")
+                        .resizable()
+                        .frame(width: 20, height: 20)
                         .frame(width: 40, height: 30)
                 } content: {
                     DateFilterView(
@@ -304,14 +300,7 @@ struct HomeView: View {
     }
     
     private var dateRangeText: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        
-        if Calendar.current.isDate(startDate, inSameDayAs: endDate) {
-            return formatter.string(from: startDate)
-        } else {
-            return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
-        }
+        DateFormatter.formatDateRange(startDate: startDate, endDate: endDate)
     }
     
     // MARK: - Helper Methods
@@ -364,141 +353,18 @@ struct HomeView: View {
 struct EmptyTransactionsView: View {
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "doc.text")
-                .font(.system(size: 32))
+            Image("list.empty")
+                .resizable()
+                .frame(width: 32, height: 32)
                 .foregroundStyle(.secondary)
             
-            VStack(spacing: 8) {
-                Text("No Transactions")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
-                
-                Text("No transactions found for the selected period")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+            Text("No transactions found for the selected period")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
-    }
-}
-
-// MARK: - Date Filter View
-
-struct DateFilterView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Binding var startDate: Date
-    @Binding var endDate: Date
-    
-    var body: some View {
-        VStack(alignment: .center, spacing: 15) {
-            Text("Filter Date Range")
-                .fontWeight(.medium)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 10)
-            
-            DatePicker("Start Date", selection: $startDate, displayedComponents: [.date])
-                .datePickerStyle(.compact)
-                .font(.caption)
-            
-            DatePicker("End Date", selection: $endDate, displayedComponents: [.date])
-                .datePickerStyle(.compact)
-                .font(.caption)
-            
-            VStack(spacing: 10) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Apply")
-                        .font(.callout)
-                        .foregroundStyle(.white)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 2)
-                }
-                .tint(.app)
-                .buttonStyle(.glassProminent)
-
-                Text("Maximum Range is 1 Year!")
-                    .font(.caption2)
-                    .foregroundStyle(.gray)
-            }
-            .padding(.top, 15)
-        }
-        .padding(15)
-        .frame(width: 250, height: 250)
-    }
-}
-
-// MARK: - Custom Menu View (add this to your project)
-
-struct CustomMenuView<Label: View, Content: View>: View {
-    var style: CustomMenuStyle = .glass
-    var isHapticsEnabled: Bool = true
-    @ViewBuilder var label: Label
-    @ViewBuilder var content: Content
-    
-    @State private var haptics: Bool = false
-    @State private var isExpanded: Bool = false
-    @Namespace private var namespace
-    
-    var body: some View {
-        Button {
-            if isHapticsEnabled {
-                haptics.toggle()
-            }
-            
-            isExpanded.toggle()
-        } label: {
-            label
-                .matchedTransitionSource(id: "MENUCONTENT", in: namespace)
-        }
-        .applyStyle(style)
-        .popover(isPresented: $isExpanded) {
-            PopOverHelper {
-                content
-            }
-            .navigationTransition(.zoom(sourceID: "MENUCONTENT", in: namespace))
-        }
-        .sensoryFeedback(.selection, trigger: haptics)
-    }
-}
-
-fileprivate struct PopOverHelper<Content: View>: View {
-    @ViewBuilder var content: Content
-    @State private var isVisible: Bool = false
-    
-    var body: some View {
-        content
-            .opacity(isVisible ? 1 : 0)
-            .task {
-                try? await Task.sleep(for: .seconds(0.1))
-                withAnimation(.snappy(duration: 0.3, extraBounce: 0)) {
-                    isVisible = true
-                }
-            }
-            .presentationCompactAdaptation(.popover)
-    }
-}
-
-enum CustomMenuStyle: String, CaseIterable {
-    case glass = "Glass"
-    case glassProminent = "Glass Prominent"
-}
-
-fileprivate extension View {
-    @ViewBuilder
-    func applyStyle(_ style: CustomMenuStyle) -> some View {
-        switch style {
-        case .glass:
-            self
-                .buttonStyle(.glass)
-        case .glassProminent:
-            self
-                .buttonStyle(.glassProminent)
-        }
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
     }
 }
