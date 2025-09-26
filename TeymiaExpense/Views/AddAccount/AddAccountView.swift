@@ -18,8 +18,6 @@ struct AddAccountView: View {
     @State private var selectedDesignType: AccountDesignType = .image
     @State private var selectedDesignIndex: Int = 0
     @State private var selectedIcon: String = "cash"
-    @State private var isDefaultAccount: Bool = false
-    
     @State private var showingCurrencySelection = false
     @State private var showingIconSelection = false
     @State private var showingCardDesignSelection = false
@@ -256,7 +254,6 @@ struct AddAccountView: View {
         selectedDesignType = account.designType
         selectedDesignIndex = account.designIndex
         selectedIcon = account.customIcon
-        isDefaultAccount = account.isDefault
     }
     
     private func setupCreateMode() {
@@ -266,9 +263,6 @@ struct AddAccountView: View {
         if selectedCurrency == nil {
             selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
         }
-        
-        // Auto-set as default if no other accounts exist
-        isDefaultAccount = accounts.isEmpty
     }
     
     // MARK: - Save/Update Methods
@@ -278,18 +272,11 @@ struct AddAccountView: View {
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let balance = Decimal(string: initialBalance) ?? 0
         
-        // If setting as default, unset other default accounts
-        if isDefaultAccount {
-            for account in accounts {
-                account.isDefault = false
-            }
-        }
-        
         let account = Account(
             name: trimmedName,
             balance: balance,
             currency: currency,
-            isDefault: isDefaultAccount,
+            isDefault: false,
             designIndex: selectedDesignIndex,
             customIcon: selectedIcon,
             designType: selectedDesignType
@@ -312,18 +299,10 @@ struct AddAccountView: View {
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let newBalance = Decimal(string: initialBalance) ?? 0
         
-        // If setting as default, unset other default accounts
-        if isDefaultAccount && !account.isDefault {
-            for otherAccount in accounts where otherAccount.id != account.id {
-                otherAccount.isDefault = false
-            }
-        }
-        
         // Update account properties
         account.name = trimmedName
         account.balance = newBalance
         account.currency = currency
-        account.isDefault = isDefaultAccount
         account.designIndex = selectedDesignIndex
         account.customIcon = selectedIcon
         account.designType = selectedDesignType
