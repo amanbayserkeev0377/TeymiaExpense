@@ -23,7 +23,8 @@ struct OverviewView: View {
         return allTransactions.filter { transaction in
             !transaction.isHidden &&
             transaction.date >= startOfStartDate &&
-            transaction.date < endOfEndDate
+            transaction.date < endOfEndDate &&
+            transaction.type != .transfer
         }
     }
     

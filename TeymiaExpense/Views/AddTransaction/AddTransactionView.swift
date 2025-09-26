@@ -4,16 +4,15 @@ import SwiftData
 struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(UserPreferences.self) private var userPreferences
     
     @Query private var accounts: [Account]
     @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
     
-    enum TransactionType: String, CaseIterable {
-        case expense = "Expense"
-        case income = "Income"
-        case transfer = "Transfer"
-    }
+    // MARK: - Edit Mode Support
+    private let editingTransaction: Transaction?
+    private var isEditMode: Bool { editingTransaction != nil }
     
     @State private var selectedTransactionType: TransactionType = .expense
     @State private var amount: String = ""
@@ -29,6 +28,17 @@ struct AddTransactionView: View {
     // Transfer specific
     @State private var fromAccount: Account?
     @State private var toAccount: Account?
+    
+    // MARK: - Original balance tracking for edit mode
+    @State private var originalAmount: Decimal = 0
+    @State private var originalAccount: Account?
+    @State private var originalFromAccount: Account?
+    @State private var originalToAccount: Account?
+    
+    // MARK: - Initializers
+    init(editingTransaction: Transaction? = nil) {
+        self.editingTransaction = editingTransaction
+    }
     
     var body: some View {
         NavigationStack {
@@ -47,7 +57,7 @@ struct AddTransactionView: View {
                     
                     CustomSegmentedControl(
                         options: TransactionType.allCases,
-                        titles: TransactionType.allCases.map { $0.rawValue },
+                        titles: TransactionType.allCases.map { $0.displayName },
                         icons: TransactionType.allCases.map { $0.customIconName },
                         gradients: TransactionType.allCases.map { $0.backgroundGradient },
                         selection: $selectedTransactionType
@@ -60,7 +70,7 @@ struct AddTransactionView: View {
                     Section {
                         NavigationLink {
                             CategorySelectionView(
-                                transactionType: selectedTransactionType,
+                                transactionType: selectedTransactionType == .income ? .income : .expense,
                                 selectedCategory: selectedCategory,
                                 onSelectionChanged: { category in
                                     selectedCategory = category
@@ -103,7 +113,7 @@ struct AddTransactionView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.mainBackground.ignoresSafeArea())
-            .navigationTitle(selectedTransactionType.rawValue)
+            .navigationTitle(isEditMode ? "Edit Transaction" : selectedTransactionType.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -123,7 +133,7 @@ struct AddTransactionView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
-                        saveTransaction()
+                        isEditMode ? updateTransaction() : saveTransaction()
                     } label: {
                         Image(systemName: "checkmark")
                     }
@@ -132,19 +142,33 @@ struct AddTransactionView: View {
             }
         }
         .onAppear {
-            setupDefaults()
-            DispatchQueue.main.async {
-                isAmountFieldFocused = true
+            setupInitialValues()
+            if !isEditMode {
+                DispatchQueue.main.async {
+                    isAmountFieldFocused = true
+                }
             }
         }
-        .onChange(of: selectedTransactionType) { _, _ in
-            setDefaultCategory()
-        }
-        .onChange(of: selectedTransactionType) { _, _ in
-            setDefaultCategory()
-            
-            if selectedTransactionType == .transfer && accounts.count > 1 && toAccount == nil {
-                toAccount = accounts.first { $0 != fromAccount }
+        .onChange(of: selectedTransactionType) { oldValue, newValue in
+            // Handle transaction type change in both create and edit modes
+            if !isEditMode {
+                // Create mode: set default category
+                setDefaultCategory()
+                
+                if selectedTransactionType == .transfer && accounts.count > 1 && toAccount == nil {
+                    toAccount = accounts.first { $0 != fromAccount }
+                }
+            } else {
+                // Edit mode: clear category when switching between income/expense and transfer
+                if (oldValue == .transfer && newValue != .transfer) ||
+                   (oldValue != .transfer && newValue == .transfer) {
+                    selectedCategory = nil
+                }
+                
+                // Set appropriate default category for edit mode
+                if newValue != .transfer {
+                    setDefaultCategory()
+                }
             }
         }
         .sheet(isPresented: $showingAddAccount) {
@@ -260,7 +284,6 @@ struct AddTransactionView: View {
                                 .frame(width: 24, height: 24)
                                 .foregroundStyle(toAccount == account ? .primary : .secondary)
                             
-                            
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(account.name)
                                     .foregroundStyle(.primary)
@@ -310,23 +333,52 @@ struct AddTransactionView: View {
         }
     }
     
-    // MARK: - Helper Methods
-    private func setupDefaults() {
-        // Selected account для expense/income
-        selectedAccount = accounts.first { $0.isDefault } ?? accounts.first
+    // MARK: - Setup Methods
+    private func setupInitialValues() {
+        if let transaction = editingTransaction {
+            setupEditMode(with: transaction)
+        } else {
+            setupCreateMode()
+        }
+    }
+    
+    private func setupEditMode(with transaction: Transaction) {
+        // Store original values for balance calculations
+        originalAmount = transaction.amount
+        originalAccount = transaction.account
+        originalFromAccount = transaction.account
+        originalToAccount = transaction.toAccount
         
-        // From account для transfer (всегда Main Account)
-        fromAccount = accounts.first { $0.isDefault } ?? accounts.first
+        // Set form values
+        amount = String(describing: abs(transaction.amount))
+        selectedAccount = transaction.account
+        selectedCategory = transaction.category
+        note = transaction.note ?? ""
+        date = transaction.date
         
-        // To account только если есть другие аккаунты
+        // Set transaction type and accounts
+        selectedTransactionType = transaction.type
+        
+        if transaction.type == .transfer {
+            fromAccount = transaction.account
+            toAccount = transaction.toAccount
+        }
+    }
+    
+    private func setupCreateMode() {
+        // Use preferred account (last used or first available)
+        selectedAccount = userPreferences.getPreferredAccount(from: accounts)
+        
+        // For transfer: use preferred account as fromAccount
+        fromAccount = userPreferences.getPreferredAccount(from: accounts)
+        
+        // To account only if there are other accounts
         if accounts.count > 1 {
-            toAccount = accounts.first { !$0.isDefault }
+            toAccount = accounts.first { $0.id != fromAccount?.id }
         }
         
         // Default category based on transaction type
-        if selectedCategory == nil {
-            setDefaultCategory()
-        }
+        setDefaultCategory()
     }
     
     private func setDefaultCategory() {
@@ -350,7 +402,7 @@ struct AddTransactionView: View {
             if selectedCategory == nil {
                 selectedCategory = categories.first { $0.categoryGroup.type == .income }
             }
-        } else {
+        } else if selectedTransactionType == .expense {
             // For expense: find "other" -> "general"
             selectedCategory = categories.first { category in
                 category.categoryGroup.type == .expense &&
@@ -373,6 +425,7 @@ struct AddTransactionView: View {
         }
     }
     
+    // MARK: - Helper Methods
     private func formatCurrency(_ amount: Decimal, currency: Currency) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -381,6 +434,7 @@ struct AddTransactionView: View {
         return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency.symbol)0.00"
     }
     
+    // MARK: - Save/Update Methods
     private func saveTransaction() {
         guard let amountDouble = Double(amount) else { return }
         let decimalAmount = Decimal(amountDouble)
@@ -392,6 +446,75 @@ struct AddTransactionView: View {
             saveIncomeTransaction(amount: decimalAmount)
         case .transfer:
             saveTransferTransaction(amount: decimalAmount)
+        }
+    }
+    
+    private func updateTransaction() {
+        guard let transaction = editingTransaction,
+              let amountDouble = Double(amount) else { return }
+        
+        let newAmount = Decimal(amountDouble)
+        
+        // Revert original balance changes
+        revertOriginalBalanceChanges()
+        
+        // Update transaction data
+        updateTransactionData(transaction: transaction, newAmount: newAmount)
+        
+        // Apply new balance changes
+        applyNewBalanceChanges(newAmount: newAmount)
+        
+        try? modelContext.save()
+        dismiss()
+    }
+    
+    private func revertOriginalBalanceChanges() {
+        guard let transaction = editingTransaction else { return }
+        
+        switch transaction.type {
+        case .expense:
+            // Revert expense: add amount back to account
+            originalAccount?.balance += abs(originalAmount)
+        case .income:
+            // Revert income: subtract amount from account
+            originalAccount?.balance -= abs(originalAmount)
+        case .transfer:
+            // Revert transfer: restore both account balances
+            originalFromAccount?.balance += abs(originalAmount)
+            originalToAccount?.balance -= abs(originalAmount)
+        }
+    }
+    
+    private func updateTransactionData(transaction: Transaction, newAmount: Decimal) {
+        // Update basic transaction data
+        transaction.amount = newAmount
+        transaction.note = note.isEmpty ? nil : note
+        transaction.date = date
+        transaction.type = selectedTransactionType
+        
+        // Update accounts and categories based on type
+        if selectedTransactionType == .transfer {
+            transaction.account = fromAccount
+            transaction.toAccount = toAccount
+            transaction.category = nil
+            transaction.categoryGroup = nil
+        } else {
+            transaction.account = selectedAccount
+            transaction.toAccount = nil
+            transaction.category = selectedCategory
+            transaction.categoryGroup = selectedCategory?.categoryGroup
+        }
+    }
+    
+    private func applyNewBalanceChanges(newAmount: Decimal) {
+        switch selectedTransactionType {
+        case .expense:
+            selectedAccount?.balance -= newAmount
+        case .income:
+            selectedAccount?.balance += newAmount
+        case .transfer:
+            fromAccount?.balance -= newAmount
+            toAccount?.balance += newAmount
         }
     }
     
@@ -409,6 +532,7 @@ struct AddTransactionView: View {
         )
         
         account.balance -= amount
+        userPreferences.updateLastUsedAccount(account) // Remember this account
         modelContext.insert(transaction)
         
         try? modelContext.save()
@@ -429,6 +553,7 @@ struct AddTransactionView: View {
         )
         
         account.balance += amount
+        userPreferences.updateLastUsedAccount(account) // Remember this account
         modelContext.insert(transaction)
         
         try? modelContext.save()
@@ -438,38 +563,32 @@ struct AddTransactionView: View {
     private func saveTransferTransaction(amount: Decimal) {
         guard let fromAcc = fromAccount, let toAcc = toAccount else { return }
         
-        let expenseTransaction = Transaction(
-            amount: -amount,
-            note: note.isEmpty ? "Transfer to \(toAcc.name)" : note,
-            date: date,
-            type: .expense,
-            categoryGroup: nil,
-            category: nil,
-            account: fromAcc
-        )
-        
-        let incomeTransaction = Transaction(
+        // Create single transfer transaction
+        let transferTransaction = Transaction(
             amount: amount,
-            note: note.isEmpty ? "Transfer from \(fromAcc.name)" : note,
+            note: note.isEmpty ? nil : note,
             date: date,
-            type: .income,
+            type: .transfer,
             categoryGroup: nil,
             category: nil,
-            account: toAcc
+            account: fromAcc,
+            toAccount: toAcc
         )
         
+        // Update balances
         fromAcc.balance -= amount
         toAcc.balance += amount
         
-        modelContext.insert(expenseTransaction)
-        modelContext.insert(incomeTransaction)
+        userPreferences.updateLastUsedAccount(fromAcc) // Remember fromAccount for transfers
+        modelContext.insert(transferTransaction)
         
         try? modelContext.save()
         dismiss()
     }
 }
 
-extension AddTransactionView.TransactionType {
+// MARK: - TransactionType Extensions (moved outside AddTransactionView)
+extension TransactionType {
     var displayName: String {
         switch self {
         case .expense: return "Expense"

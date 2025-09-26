@@ -37,16 +37,15 @@ struct CategorySelectionView: View {
     @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
     
-    let transactionType: AddTransactionView.TransactionType
+    let transactionType: GroupType
     let selectedCategory: Category?
     let onSelectionChanged: (Category?) -> Void
     
     @State private var localSelectedCategoryGroup: CategoryGroup?
     
     private var filteredCategoryGroups: [CategoryGroup] {
-        let groupType: GroupType = transactionType == .income ? .income : .expense
         return categoryGroups
-            .filter { $0.type == groupType }
+            .filter { $0.type == transactionType }
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     

@@ -90,6 +90,9 @@ final class Account {
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
     var transactions: [Transaction] = []
     
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.toAccount)
+    var incomingTransfers: [Transaction] = []
+    
     var currency: Currency
     
     init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, designIndex: Int = 0, customIcon: String = "cash", designType: AccountDesignType = .image) {
@@ -118,8 +121,9 @@ final class Transaction {
     var categoryGroup: CategoryGroup?
     var category: Category?
     var account: Account?
+    var toAccount: Account?
     
-    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil, isHidden: Bool = false) {
+    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil, toAccount: Account? = nil, isHidden: Bool = false) {
         self.amount = amount
         self.note = note
         self.date = date
@@ -128,6 +132,7 @@ final class Transaction {
         self.categoryGroup = categoryGroup
         self.category = category
         self.account = account
+        self.toAccount = toAccount
         self.createdAt = Date()
     }
 }
@@ -139,8 +144,9 @@ enum GroupType: String, CaseIterable, Codable {
 }
 
 enum TransactionType: String, CaseIterable, Codable {
-    case income = "income"
     case expense = "expense"
+    case income = "income"
+    case transfer = "transfer"
 }
 
 enum CurrencyType: String, CaseIterable, Codable {

@@ -15,9 +15,13 @@ struct HomeView: View {
     ) private var allTransactions: [Transaction]
     @StateObject private var firstLaunchManager = FirstLaunchManager()
     
-    @State private var showingAddAccount = false
+    @State private var showingAccountsManagement = false
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
+    
+    // MARK: - Edit Transaction Support
+    @State private var showingEditTransaction = false
+    @State private var editingTransaction: Transaction?
     
     // View Properties
     @State private var topInset: CGFloat = 0
@@ -33,7 +37,6 @@ struct HomeView: View {
                     CarouselView()
                         .zIndex(-1)
                     
-                    // Transactions Section
                     TransactionsSection()
                         .padding(.top, 20)
                 }
@@ -49,18 +52,24 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showingAddAccount = true
+                        showingAccountsManagement = true
                     } label: {
-                        Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                            .fontDesign(.rounded)
+                        Image("cards.blank")
+                            .resizable()
+                            .frame(width: 24, height: 24)
                     }
                 }
             }
         }
-        .sheet(isPresented: $showingAddAccount) {
-            AddAccountView()
+        .sheet(isPresented: $showingAccountsManagement) {
+            AccountsManagementView()
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingEditTransaction) {
+            if let transaction = editingTransaction {
+                AddTransactionView(editingTransaction: transaction)
+                    .presentationDragIndicator(.visible)
+            }
         }
         .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
             DrawOnSymbolEffectExample(
@@ -210,7 +219,25 @@ struct HomeView: View {
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
                                     .glassEffect(.regular.interactive().tint(.mainRowBackground), in: RoundedRectangle(cornerRadius: 24))
+                                    .onTapGesture {
+                                        // Tap to edit transaction
+                                        editingTransaction = transaction
+                                        showingEditTransaction = true
+                                    }
                                     .swipeActions {
+                                        // Edit action
+                                        Action(
+                                            imageName: "edit",
+                                            tint: .white,
+                                            background: .blue,
+                                            size: .init(width: 50, height: 50)
+                                        ) { resetPosition in
+                                            editingTransaction = transaction
+                                            showingEditTransaction = true
+                                            resetPosition.toggle()
+                                        }
+                                        
+                                        // Hide action
                                         Action(
                                             imageName: "eye.crossed",
                                             tint: .white,
@@ -221,6 +248,7 @@ struct HomeView: View {
                                             resetPosition.toggle()
                                         }
                                         
+                                        // Delete action
                                         Action(
                                             imageName: "trash",
                                             tint: .white,
@@ -324,7 +352,7 @@ struct HomeView: View {
         return userPreferences.formatAmount(amount, currencies: currencies)
     }
     
-    // MARK: - Swipe Actions Helper Methods
+    // MARK: - Swipe Actions Helper Methods (Updated for Transfer)
     private func hideTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {
             transaction.isHidden = true
@@ -334,14 +362,30 @@ struct HomeView: View {
     
     private func deleteTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {
-            // Update account balance
-            if let account = transaction.account {
-                account.balance -= transaction.amount
+            // Update account balance based on transaction type
+            switch transaction.type {
+            case .expense:
+                // Revert expense: add amount back to account (amount is negative for expense)
+                if let account = transaction.account {
+                    account.balance -= transaction.amount // Since amount is negative, this adds money back
+                }
+            case .income:
+                // Revert income: subtract amount from account (amount is positive for income)
+                if let account = transaction.account {
+                    account.balance -= transaction.amount // This subtracts the income
+                }
+            case .transfer:
+                // Revert transfer: restore both account balances
+                if let fromAccount = transaction.account {
+                    fromAccount.balance += transaction.amount // Add money back to from account
+                }
+                if let toAccount = transaction.toAccount {
+                    toAccount.balance -= transaction.amount // Remove money from to account
+                }
             }
             
             // Delete transaction
             modelContext.delete(transaction)
-            
             try? modelContext.save()
         }
     }

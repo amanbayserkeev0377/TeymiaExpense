@@ -6,6 +6,11 @@ struct AddAccountView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Query private var currencies: [Currency]
+    @Query private var accounts: [Account]
+    
+    // MARK: - Edit Mode Support
+    private let editingAccount: Account?
+    private var isEditMode: Bool { editingAccount != nil }
     
     @State private var accountName: String = ""
     @State private var initialBalance: String = ""
@@ -13,6 +18,7 @@ struct AddAccountView: View {
     @State private var selectedDesignType: AccountDesignType = .image
     @State private var selectedDesignIndex: Int = 0
     @State private var selectedIcon: String = "cash"
+    @State private var isDefaultAccount: Bool = false
     
     @State private var showingCurrencySelection = false
     @State private var showingIconSelection = false
@@ -21,14 +27,19 @@ struct AddAccountView: View {
     @FocusState private var isAccountNameFocused: Bool
     @FocusState private var isInitialBalanceFocused: Bool
     
+    // MARK: - Initializers
+    init(editingAccount: Account? = nil) {
+        self.editingAccount = editingAccount
+    }
+    
     var body: some View {
         NavigationStack {
             Form {
-                // Card Preview Section - with backdrop effect
+                // Card Preview Section
                 Section {
                     AccountCardPreview(
-                        name: accountName.isEmpty ? "Account Name" : accountName,
-                        balance: initialBalance.isEmpty ? "0" : initialBalance,
+                        name: accountName.isEmpty ? (isEditMode ? editingAccount?.name ?? "Account Name" : "Account Name") : accountName,
+                        balance: initialBalance.isEmpty ? (isEditMode ? String(describing: editingAccount?.balance ?? 0) : "0") : initialBalance,
                         designType: selectedDesignType,
                         designIndex: selectedDesignIndex,
                         icon: selectedIcon,
@@ -66,7 +77,7 @@ struct AddAccountView: View {
                     }
                     
                     HStack {
-                        TextField("Initial Balance", text: $initialBalance)
+                        TextField(isEditMode ? "Current Balance" : "Initial Balance", text: $initialBalance)
                             .keyboardType(.decimalPad)
                             .focused($isInitialBalanceFocused)
                             .submitLabel(.done)
@@ -109,7 +120,6 @@ struct AddAccountView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    
                     
                     // Icon Selection
                     Button {
@@ -168,7 +178,7 @@ struct AddAccountView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.mainBackground.ignoresSafeArea())
-            .navigationTitle("Add Account")
+            .navigationTitle(isEditMode ? "Edit Account" : "Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -180,7 +190,7 @@ struct AddAccountView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
-                        saveAccount()
+                        isEditMode ? updateAccount() : saveAccount()
                     } label: {
                         Image(systemName: "checkmark")
                     }
@@ -198,9 +208,11 @@ struct AddAccountView: View {
             }
         }
         .onAppear {
-            setupDefaults()
-            DispatchQueue.main.async {
-                isAccountNameFocused = true
+            setupInitialValues()
+            if !isEditMode {
+                DispatchQueue.main.async {
+                    isAccountNameFocused = true
+                }
             }
         }
         .sheet(isPresented: $showingCurrencySelection) {
@@ -227,26 +239,57 @@ struct AddAccountView: View {
         !accountName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedCurrency != nil
     }
     
-    // MARK: - Helper Methods
-    private func setupDefaults() {
+    // MARK: - Setup Methods
+    private func setupInitialValues() {
+        if let account = editingAccount {
+            setupEditMode(with: account)
+        } else {
+            setupCreateMode()
+        }
+    }
+    
+    private func setupEditMode(with account: Account) {
+        // Populate fields with existing account data
+        accountName = account.name
+        initialBalance = String(describing: account.balance)
+        selectedCurrency = account.currency
+        selectedDesignType = account.designType
+        selectedDesignIndex = account.designIndex
+        selectedIcon = account.customIcon
+        isDefaultAccount = account.isDefault
+    }
+    
+    private func setupCreateMode() {
+        // Set defaults for new account
         guard !currencies.isEmpty else { return }
         
         if selectedCurrency == nil {
             selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
         }
+        
+        // Auto-set as default if no other accounts exist
+        isDefaultAccount = accounts.isEmpty
     }
     
+    // MARK: - Save/Update Methods
     private func saveAccount() {
         guard let currency = selectedCurrency else { return }
         
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let balance = Decimal(string: initialBalance) ?? 0
         
+        // If setting as default, unset other default accounts
+        if isDefaultAccount {
+            for account in accounts {
+                account.isDefault = false
+            }
+        }
+        
         let account = Account(
             name: trimmedName,
             balance: balance,
             currency: currency,
-            isDefault: false,
+            isDefault: isDefaultAccount,
             designIndex: selectedDesignIndex,
             customIcon: selectedIcon,
             designType: selectedDesignType
@@ -259,6 +302,37 @@ struct AddAccountView: View {
             dismiss()
         } catch {
             print("Error saving account: \(error)")
+        }
+    }
+    
+    private func updateAccount() {
+        guard let account = editingAccount,
+              let currency = selectedCurrency else { return }
+        
+        let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newBalance = Decimal(string: initialBalance) ?? 0
+        
+        // If setting as default, unset other default accounts
+        if isDefaultAccount && !account.isDefault {
+            for otherAccount in accounts where otherAccount.id != account.id {
+                otherAccount.isDefault = false
+            }
+        }
+        
+        // Update account properties
+        account.name = trimmedName
+        account.balance = newBalance
+        account.currency = currency
+        account.isDefault = isDefaultAccount
+        account.designIndex = selectedDesignIndex
+        account.customIcon = selectedIcon
+        account.designType = selectedDesignType
+        
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Error updating account: \(error)")
         }
     }
 }
