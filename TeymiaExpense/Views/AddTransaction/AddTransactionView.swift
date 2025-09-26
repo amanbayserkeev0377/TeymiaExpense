@@ -24,6 +24,8 @@ struct AddTransactionView: View {
     @State private var showingAddAccount = false
     @State private var showingCategorySelection = false
     
+    @FocusState private var isAmountFieldFocused: Bool
+    
     // Transfer specific
     @State private var fromAccount: Account?
     @State private var toAccount: Account?
@@ -32,6 +34,17 @@ struct AddTransactionView: View {
         NavigationStack {
             Form {
                 Section {
+                    HStack {
+                        TextField("\(currencySymbol)", text: $amount)
+                            .autocorrectionDisabled()
+                            .focused($isAmountFieldFocused)
+                            .font(.system(.largeTitle, design: .rounded))
+                            .fontWeight(.bold)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.center)
+                    }
+                    .contentShape(Rectangle())
+                    
                     CustomSegmentedControl(
                         options: TransactionType.allCases,
                         titles: TransactionType.allCases.map { $0.rawValue },
@@ -40,22 +53,7 @@ struct AddTransactionView: View {
                         selection: $selectedTransactionType
                     )
                 }
-                .listRowBackground(Color.clear)
-                
-                // Amount Section
-                Section {
-                    HStack {
-                        Text(currencySymbol)
-                            .foregroundStyle(.secondary)
-                            .font(.system(.title2, design: .rounded))
-                        
-                        TextField("0", text: $amount)
-                            .font(.system(.title, design: .rounded))
-                            .fontWeight(.semibold)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                }
+                .listRowBackground(Color.mainRowBackground)
                 
                 // Category Section (only for income/expense)
                 if selectedTransactionType != .transfer {
@@ -74,6 +72,7 @@ struct AddTransactionView: View {
                             )
                         }
                     }
+                    .listRowBackground(Color.mainRowBackground)
                 }
                 
                 // Account/Transfer Section
@@ -86,15 +85,37 @@ struct AddTransactionView: View {
                 
                 // Date & Note
                 Section {
-                    DatePicker("Date", selection: $date, displayedComponents: [.date])
-                    
-                    TextField("Note (optional)", text: $note, axis: .vertical)
-                        .lineLimit(2...4)
+                    HStack {
+                        Image("calendar.date")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 22, height: 22)
+                        DatePicker("date".localized, selection: $date, displayedComponents: [.date])
+                    }
+                    HStack {
+                        Image("note")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 22, height: 22)
+                        TextField("note".localized, text: $note, axis: .vertical)
+                    }
                 }
+                .listRowBackground(Color.mainRowBackground)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.mainBackground.ignoresSafeArea())
             .navigationTitle(selectedTransactionType.rawValue)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button {
+                        isAmountFieldFocused = false
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                            .fontWeight(.medium)
+                    }
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .cancel) {
                         dismiss()
@@ -116,6 +137,9 @@ struct AddTransactionView: View {
         }
         .onAppear {
             setupDefaults()
+            DispatchQueue.main.async {
+                isAmountFieldFocused = true
+            }
         }
         .onChange(of: selectedTransactionType) { _, _ in
             setDefaultCategory()
@@ -170,6 +194,7 @@ struct AddTransactionView: View {
                 .buttonStyle(.plain)
             }
         }
+        .listRowBackground(Color.mainRowBackground)
         .listStyle(.insetGrouped)
     }
     
@@ -213,6 +238,7 @@ struct AddTransactionView: View {
                 .buttonStyle(.plain)
             }
         }
+        .listRowBackground(Color.mainRowBackground)
         .listStyle(.insetGrouped)
         
         Section("To Account") {
@@ -263,6 +289,7 @@ struct AddTransactionView: View {
                 }
             }
         }
+        .listRowBackground(Color.mainRowBackground)
         .listStyle(.insetGrouped)
     }
     
@@ -474,8 +501,8 @@ extension AddTransactionView.TransactionType {
     var backgroundGradient: LinearGradient {
         LinearGradient(
             colors: [darkColor, lightColor],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            startPoint: .top,
+            endPoint: .bottom
         )
     }
     

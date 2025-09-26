@@ -71,10 +71,12 @@ struct CurrencySelectionView: View {
                         selectedCurrency = currency
                         dismiss()
                     }
-                    .listRowBackground(Color.clear)
+                    .listRowBackground(Color.mainRowBackground)
                 }
             }
-            .listStyle(.plain)
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color.mainBackground)
             .searchable(text: $searchText)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

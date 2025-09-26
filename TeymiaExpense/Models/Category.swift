@@ -161,7 +161,7 @@ extension Category {
         ]
         
         for (groupName, categories) in categoryData {
-            guard let categoryGroup = findCategoryGroup(groupName, .income) else {  // Изменено
+            guard let categoryGroup = findCategoryGroup(groupName, .income) else {
                 print("Warning: CategoryGroup '\(groupName)' not found for income categories")
                 continue
             }
@@ -170,7 +170,7 @@ extension Category {
                 let category = Category(
                     name: categoryName,
                     iconName: iconName,
-                    categoryGroup: categoryGroup,  // Изменено
+                    categoryGroup: categoryGroup,
                     sortOrder: index,
                     isDefault: true
                 )

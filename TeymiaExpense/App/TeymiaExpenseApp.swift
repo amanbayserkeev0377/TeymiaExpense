@@ -45,7 +45,6 @@ private func createDefaultDataIfNeeded(context: ModelContext) {
     let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []
     
     if !existingCategories.isEmpty {
-        print("Categories already exist: \(existingCategories.count)")
         return
     }
     

@@ -1,7 +1,7 @@
 import SwiftUI
 
 class FirstLaunchManager: ObservableObject {
-    @Published var shouldShowOnboarding: Bool = true // Always show for test
+    @Published var shouldShowOnboarding: Bool = false
 
 //    @Published var shouldShowOnboarding: Bool
 //    

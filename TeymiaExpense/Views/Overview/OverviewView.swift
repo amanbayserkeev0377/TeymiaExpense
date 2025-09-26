@@ -2,10 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct OverviewView: View {
+    @Namespace private var animation
     @Environment(\.colorScheme) private var colorScheme
     @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
     @Query private var allTransactions: [Transaction]
+    
+    @State private var selectedCategoryGroup: CategoryGroup?
     
     // Date filtering state
     @State private var startDate = Date.startOfCurrentMonth
@@ -107,15 +110,12 @@ struct OverviewView: View {
                                 spacing: 16
                             ) {
                                 ForEach(expenseGroupsWithTransactions) { categoryGroup in
-                                    NavigationLink {
-                                        CategoryGroupOverviewView(
-                                            categoryGroup: categoryGroup,
-                                            filteredTransactions: filteredTransactions
-                                        )
+                                    Button {
+                                        selectedCategoryGroup = categoryGroup
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .expense)
                                     }
-                                    .buttonStyle(.plain)
+                                    .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -147,15 +147,12 @@ struct OverviewView: View {
                                 spacing: 16
                             ) {
                                 ForEach(incomeGroupsWithTransactions) { categoryGroup in
-                                    NavigationLink {
-                                        CategoryGroupOverviewView(
-                                            categoryGroup: categoryGroup,
-                                            filteredTransactions: filteredTransactions
-                                        )
+                                    Button {
+                                        selectedCategoryGroup = categoryGroup
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .income)
                                     }
-                                    .buttonStyle(.plain)
+                                    .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -172,6 +169,13 @@ struct OverviewView: View {
             }
             .background(Color.mainBackground)
         }
+        .sheet(item: $selectedCategoryGroup) { categoryGroup in
+            CategoryGroupOverviewView(
+                categoryGroup: categoryGroup,
+                filteredTransactions: filteredTransactions
+            )
+            .navigationTransition(.zoom(sourceID: "categoryGroup-\(categoryGroup.id)", in: animation))
+        }
     }
     
     // MARK: - Category Group Button
@@ -185,7 +189,7 @@ struct OverviewView: View {
                 .padding(14)
                 .background(
                     Circle()
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(Color.mainRowBackground)
                 )
                 .glassEffect(.regular)
             
@@ -269,7 +273,7 @@ struct CategoryGroupOverviewView: View {
             }
         }
         .navigationTitle(categoryGroup.name)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     // MARK: - Helper Methods

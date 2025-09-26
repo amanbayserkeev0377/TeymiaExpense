@@ -82,6 +82,7 @@ struct AddAccountView: View {
                     .contentShape(Rectangle())
                     .buttonStyle(.plain)
                 }
+                .listRowBackground(Color.mainRowBackground)
                 
                 Section {
                     // Card Design Selection
@@ -89,7 +90,11 @@ struct AddAccountView: View {
                         showingCardDesignSelection = true
                     } label: {
                         HStack {
-                            Image(systemName: "checkmark")
+                            Image(selectedDesignType == .image ? "photo" : "palette")
+                                .resizable()
+                                .frame(width: 22, height: 22)
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundStyle(.primary)
                             
                             Text("Card Design")
                                 .foregroundStyle(.primary)
@@ -159,7 +164,10 @@ struct AddAccountView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                .listRowBackground(Color.mainRowBackground)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.mainBackground.ignoresSafeArea())
             .navigationTitle("Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -195,7 +203,7 @@ struct AddAccountView: View {
         }
         .onAppear {
             setupDefaults()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.async {
                 isAccountNameFocused = true
             }
         }
