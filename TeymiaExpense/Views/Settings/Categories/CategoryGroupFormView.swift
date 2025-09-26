@@ -64,8 +64,6 @@ struct CategoryGroupFormView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -73,8 +71,6 @@ struct CategoryGroupFormView: View {
                         save()
                     } label: {
                         Image(systemName: "checkmark")
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
                     }
                     .disabled(!canSave)
                 }

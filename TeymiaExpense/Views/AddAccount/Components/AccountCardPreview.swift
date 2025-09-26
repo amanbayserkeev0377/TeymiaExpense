@@ -1,33 +1,23 @@
 import SwiftUI
 
-// MARK: - Account Card with Images
-struct AccountCardView: View {
-    let account: Account
+struct AccountCardPreview: View {
+    let name: String
+    let balance: String
+    let designType: AccountDesignType
+    let designIndex: Int
+    let icon: String
+    let currencyCode: String
     
     var body: some View {
         ZStack {
-            // Background based on design type
-            switch account.designType {
-            case .image:
-                Image(AccountImageData.image(at: account.designIndex).imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .containerRelativeFrame(.horizontal)
-                    .frame(height: 220)
-                    .clipShape(.rect(cornerRadius: 20))
-            case .color:
-                Rectangle()
-                    .fill(AccountColors.gradient(at: account.designIndex))
-                    .containerRelativeFrame(.horizontal)
-                    .frame(height: 220)
-                    .clipShape(.rect(cornerRadius: 20))
-            }
+            
+            backgroundView
             
             // Content
             VStack(spacing: 0) {
-                // Top section with icon
+                // Top section
                 HStack {
-                    Image(account.cardIcon)
+                    Image(icon)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 28, height: 28)
@@ -45,11 +35,11 @@ struct AccountCardView: View {
                 
                 Spacer()
                 
-                // Bottom section with balance
+                // Bottom section
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(account.name)
+                            Text(name.isEmpty ? "Account Name" : name)
                                 .font(.title3)
                                 .fontWeight(.semibold)
                                 .fontDesign(.rounded)
@@ -57,7 +47,7 @@ struct AccountCardView: View {
                                 .lineLimit(1)
                                 .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
                             
-                            Text(account.formattedBalance)
+                            Text(balance.isEmpty ? "$0.00" : "$\(balance)")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
@@ -73,7 +63,7 @@ struct AccountCardView: View {
                     // Currency code
                     HStack {
                         Spacer()
-                        Text(account.currency.code)
+                        Text(currencyCode)
                             .font(.caption)
                             .fontDesign(.rounded)
                             .fontWeight(.medium)
@@ -86,7 +76,22 @@ struct AccountCardView: View {
             }
         }
     }
+    
+    @ViewBuilder
+    private var backgroundView: some View {
+        switch designType {
+        case .image:
+            Image(AccountImageData.image(at: designIndex).imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .containerRelativeFrame(.horizontal)
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
+        case .color:
+            Rectangle()
+                .fill(AccountColors.gradient(at: designIndex))
+                .frame(height: 220)
+                .clipShape(.rect(cornerRadius: 20))
+        }
+    }
 }
-
-// MARK: - Account Card Preview for AddAccountView
-

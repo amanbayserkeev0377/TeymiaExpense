@@ -5,6 +5,8 @@ struct HomeView: View {
     @Namespace private var animation
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(UserPreferences.self) private var userPreferences
+    @Query private var currencies: [Currency]
     @Query private var accounts: [Account]
     @Query(
         filter: #Predicate<Transaction> { !$0.isHidden },
@@ -319,10 +321,7 @@ struct HomeView: View {
     }
     
     private func formatAmount(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD" // You can make this dynamic based on user preference
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
+        return userPreferences.formatAmount(amount, currencies: currencies)
     }
     
     // MARK: - Swipe Actions Helper Methods

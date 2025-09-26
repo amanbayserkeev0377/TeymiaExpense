@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct TeymiaExpenseApp: App {
+    @State private var userPreferences = UserPreferences()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Transaction.self,
@@ -34,6 +36,7 @@ struct TeymiaExpenseApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .environment(userPreferences)
         }
         .modelContainer(sharedModelContainer)
     }

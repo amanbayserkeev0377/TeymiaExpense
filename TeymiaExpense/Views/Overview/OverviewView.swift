@@ -115,6 +115,7 @@ struct OverviewView: View {
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .expense)
                                     }
+                                    .buttonStyle(.plain)
                                     .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
                                 }
                             }
@@ -152,6 +153,7 @@ struct OverviewView: View {
                                     } label: {
                                         categoryGroupButton(categoryGroup: categoryGroup, type: .income)
                                     }
+                                    .buttonStyle(.plain)
                                     .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
                                 }
                             }
@@ -170,10 +172,13 @@ struct OverviewView: View {
             .background(Color.mainBackground)
         }
         .sheet(item: $selectedCategoryGroup) { categoryGroup in
-            CategoryGroupOverviewView(
-                categoryGroup: categoryGroup,
-                filteredTransactions: filteredTransactions
-            )
+            NavigationStack {
+                CategoryGroupOverviewView(
+                    categoryGroup: categoryGroup,
+                    filteredTransactions: filteredTransactions
+                )
+            }
+            .presentationDragIndicator(.visible)
             .navigationTransition(.zoom(sourceID: "categoryGroup-\(categoryGroup.id)", in: animation))
         }
     }
@@ -241,6 +246,7 @@ struct OverviewView: View {
 // MARK: - Enhanced Category Group Overview Detail View
 
 struct CategoryGroupOverviewView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Query private var categories: [Category]
     
@@ -274,6 +280,15 @@ struct CategoryGroupOverviewView: View {
         }
         .navigationTitle(categoryGroup.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+        }
     }
     
     // MARK: - Helper Methods
@@ -294,6 +309,9 @@ struct CategoryGroupOverviewView: View {
 // MARK: - Category Overview Row
 
 struct CategoryOverviewRow: View {
+    @Environment(UserPreferences.self) private var userPreferences
+    @Query private var currencies: [Currency]
+    
     let category: Category
     let transactionCount: Int
     let totalAmount: Decimal
@@ -331,9 +349,6 @@ struct CategoryOverviewRow: View {
     }
     
     private func formatAmount(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
+        return userPreferences.formatAmount(amount, currencies: currencies)
     }
 }

@@ -82,8 +82,6 @@ struct CategoryManagementView: View {
                         showingAddGroup = true
                     } label: {
                         Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                            .fontDesign(.rounded)
                     }
                 }
                 
@@ -95,10 +93,8 @@ struct CategoryManagementView: View {
                     } label: {
                         if isEditMode {
                             Image(systemName: "checkmark")
-                                .fontWeight(.semibold)
-                                .fontDesign(.rounded)
                         } else {
-                            Image("edit")
+                            Image(systemName: "pencil")
                         }
                     }
                 }

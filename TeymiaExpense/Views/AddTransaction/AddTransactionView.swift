@@ -82,7 +82,6 @@ struct AddTransactionView: View {
                     accountSection
                 }
                 
-                
                 // Date & Note
                 Section {
                     HStack {
@@ -113,7 +112,6 @@ struct AddTransactionView: View {
                         isAmountFieldFocused = false
                     } label: {
                         Image(systemName: "keyboard.chevron.compact.down")
-                            .fontWeight(.medium)
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
@@ -121,7 +119,6 @@ struct AddTransactionView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .fontWeight(.bold)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -129,7 +126,6 @@ struct AddTransactionView: View {
                         saveTransaction()
                     } label: {
                         Image(systemName: "checkmark")
-                            .fontWeight(.bold)
                     }
                     .disabled(!canSave)
                 }
@@ -501,8 +497,8 @@ extension AddTransactionView.TransactionType {
     var backgroundGradient: LinearGradient {
         LinearGradient(
             colors: [darkColor, lightColor],
-            startPoint: .top,
-            endPoint: .bottom
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
     }
     
