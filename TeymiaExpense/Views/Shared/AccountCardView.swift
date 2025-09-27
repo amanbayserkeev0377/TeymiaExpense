@@ -88,5 +88,3 @@ struct AccountCardView: View {
     }
 }
 
-// MARK: - Account Card Preview for AddAccountView
-
