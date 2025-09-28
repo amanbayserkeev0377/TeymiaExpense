@@ -18,7 +18,39 @@ class FirstLaunchManager: ObservableObject {
     }
 }
 
-struct DrawOnSymbolEffectExample: View {
+struct OnboardingView: View {
+    let onComplete: () -> Void
+    
+    var body: some View {
+        DrawOnSymbolEffect(
+            tint: AccountColors.color(at: 0),
+            buttonTitle: "Start Managing Money",
+            data: [
+                .init(
+                    name: "chart.bar.xaxis.ascending",
+                    title: "Categorized Expenses",
+                    subtitle: "Categorize your expenses to see\n where your money is going",
+                    preDelay: 0.3
+                ),
+                .init(
+                    name: "magnifyingglass.circle",
+                    title: "Search for Expenses",
+                    subtitle: "Search for your expenses\nby account or category",
+                    preDelay: 1.6
+                ),
+                .init(
+                    name: "arrow.up.arrow.down",
+                    title: "Track Your Money",
+                    subtitle: "Easily manage your income\nand expenses in one place",
+                    preDelay: 1.2
+                ),
+            ],
+            onTap: onComplete
+        )
+    }
+}
+
+struct DrawOnSymbolEffect: View {
     var tint: Color = .blue
     var buttonTitle: String = "Start Your Journey"
     var loopDelay: CGFloat = 1

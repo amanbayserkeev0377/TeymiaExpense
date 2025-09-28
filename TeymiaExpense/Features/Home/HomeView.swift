@@ -2,9 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Namespace private var animation
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var currencies: [Currency]
     @Query private var accounts: [Account]
@@ -16,9 +14,9 @@ struct HomeView: View {
     @StateObject private var firstLaunchManager = FirstLaunchManager()
     
     @State private var showingAccountsManagement = false
+    @State private var editingTransaction: Transaction?
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
-    @State private var editingTransaction: Transaction?
     
     // View Properties
     @State private var topInset: CGFloat = 0
@@ -29,13 +27,29 @@ struct HomeView: View {
         NavigationStack {
             ScrollView(.vertical) {
                 LazyVStack(spacing: 15) {
-                    HeaderView()
+                    // Accounts Carousel
+                    AccountsCarouselView(
+                        accounts: accounts,
+                        scrollProgressX: $scrollProgressX,
+                        topInset: topInset,
+                        scrollOffsetY: scrollOffsetY
+                    )
+                    .zIndex(-1)
                     
-                    CarouselView()
-                        .zIndex(-1)
-                    
-                    TransactionsSection()
-                        .padding(.top, 20)
+                    // Transactions Section
+                    TransactionsListView(
+                        transactions: filteredTransactions,
+                        startDate: $startDate,
+                        endDate: $endDate,
+                        userPreferences: userPreferences,
+                        currencies: currencies,
+                        onEditTransaction: { transaction in
+                            editingTransaction = transaction
+                        },
+                        onHideTransaction: hideTransaction,
+                        onDeleteTransaction: deleteTransaction
+                    )
+                    .padding(.top, 20)
                 }
             }
             .safeAreaPadding(15)
@@ -67,263 +81,15 @@ struct HomeView: View {
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
-            DrawOnSymbolEffectExample(
-                tint: AccountColors.color(at: 0),
-                buttonTitle: "Start Managing Money",
-                data: [
-                    .init(
-                        name: "chart.bar.xaxis.ascending",
-                        title: "Categorized Expenses",
-                        subtitle: "Categorize your expenses to see\n where your money is going",
-                        preDelay: 0.3
-                    ),
-                    .init(
-                        name: "magnifyingglass.circle",
-                        title: "Search for Expenses",
-                        subtitle: "Search for your expenses\nby account or category",
-                        preDelay: 1.6
-                    ),
-                    .init(
-                        name: "arrow.up.arrow.down",
-                        title: "Track Your Money",
-                        subtitle: "Easily manage your income\nand expenses in one place",
-                        preDelay: 1.2
-                    ),
-                ]
-            ) {
+            OnboardingView(onComplete: {
                 firstLaunchManager.completeOnboarding()
-            }
+            })
             .presentationDetents([.medium])
         }
     }
     
-    // MARK: - Header View
-    @ViewBuilder
-    func HeaderView() -> some View {
-        HStack {
-            Spacer(minLength: 0)
-        }
-        .padding(.bottom, 8)
-    }
-    
-    // MARK: - Carousel View
-    @ViewBuilder
-    func CarouselView() -> some View {
-        let spacing: CGFloat = 6
-        
-        VStack(spacing: 0) {
-            ScrollView(.horizontal) {
-                LazyHStack(spacing: spacing) {
-                    ForEach(accounts) { account in
-                        AccountCardView(account: account)
-                    }
-                }
-                .scrollTargetLayout()
-            }
-            .frame(height: 220)
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
-            .onScrollGeometryChange(for: CGFloat.self) {
-                let offsetX = $0.contentOffset.x + $0.contentInsets.leading
-                let width = $0.containerSize.width + spacing
-                
-                return offsetX / width
-            } action: { oldValue, newValue in
-                let maxValue = CGFloat(max(accounts.count - 1, 0))
-                scrollProgressX = min(max(newValue, 0), maxValue)
-            }
-            
-            // Page indicators
-            HStack(spacing: 8) {
-                ForEach(0..<accounts.count, id: \.self) { index in
-                    Circle()
-                        .fill(index == Int(scrollProgressX.rounded()) ? Color.primary : Color.secondary.opacity(0.5))
-                        .frame(width: 6, height: 6)
-                        .animation(.easeInOut(duration: 0.3), value: scrollProgressX)
-                }
-            }
-            .padding(.top, 16)
-        }
-        .background(BackdropEffect())
-    }
-    
-    // MARK: - Transactions Section
-    @ViewBuilder
-    func TransactionsSection() -> some View {
-        VStack(spacing: 16) {
-            // Section Header with Filter
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Transaction History")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-                    
-                    Text(dateRangeText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Spacer()
-                
-                // Date Filter Menu
-                CustomMenuView(style: .glass) {
-                    Image("calendar")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .frame(width: 40, height: 30)
-                } content: {
-                    DateFilterView(
-                        startDate: $startDate,
-                        endDate: $endDate
-                    )
-                }
-            }
-            
-            // Transactions List
-            if filteredTransactions.isEmpty {
-                EmptyTransactionsView()
-            } else {
-                TransactionsList()
-            }
-        }
-    }
-    
-    // MARK: - Transactions List
-    @ViewBuilder
-    func TransactionsList() -> some View {
-        let groupedTransactions = Dictionary(grouping: filteredTransactions) { transaction in
-            Calendar.current.startOfDay(for: transaction.date)
-        }
-        let sortedDates = groupedTransactions.keys.sorted(by: >)
-        
-        LazyVStack(spacing: 20) {
-            ForEach(sortedDates, id: \.self) { date in
-                VStack(spacing: 12) {
-                    // Date Header
-                    HStack {
-                        Text(formatDateHeader(date))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                        
-                        Spacer()
-                        
-                        if let dayTransactions = groupedTransactions[date] {
-                            let dayTotal = dayTransactions.reduce(Decimal.zero) { $0 + $1.amount }
-                            Text(formatAmount(dayTotal))
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(dayTotal >= 0 ? .green : .red)
-                        }
-                    }
-                    .padding(.horizontal, 4)
-                    
-                    // Transactions for this date
-                    if let dayTransactions = groupedTransactions[date] {
-                        LazyVStack(spacing: 8) {
-                            ForEach(dayTransactions) { transaction in
-                                TransactionRowView(transaction: transaction)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .glassEffect(.regular.interactive().tint(.mainRowBackground), in: RoundedRectangle(cornerRadius: 24))
-                                    .onTapGesture {
-                                        editingTransaction = transaction
-                                    }
-                                    .swipeActions {
-                                        // Edit action
-                                        Action(
-                                            imageName: "edit",
-                                            tint: .white,
-                                            background: .blue,
-                                            size: .init(width: 50, height: 50)
-                                        ) { resetPosition in
-                                            editingTransaction = transaction
-                                            resetPosition.toggle()
-                                        }
-                                        
-                                        // Hide action
-                                        Action(
-                                            imageName: "eye.crossed",
-                                            tint: .white,
-                                            background: .gray,
-                                            size: .init(width: 50, height: 50)
-                                        ) { resetPosition in
-                                            hideTransaction(transaction)
-                                            resetPosition.toggle()
-                                        }
-                                        
-                                        // Delete action
-                                        Action(
-                                            imageName: "trash",
-                                            tint: .white,
-                                            background: .red,
-                                            size: .init(width: 50, height: 50)
-                                        ) { resetPosition in
-                                            deleteTransaction(transaction)
-                                            resetPosition.toggle()
-                                        }
-                                    }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: - Backdrop Effect
-    @ViewBuilder
-    func BackdropEffect() -> some View {
-        GeometryReader {
-            let size = $0.size
-            
-            ZStack {
-                ForEach(accounts.reversed()) { account in
-                    let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
-                    
-                    switch account.designType {
-                    case .image:
-                        Image(account.cardImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: size.width, height: size.height)
-                            .clipped()
-                            .opacity(index - scrollProgressX)
-                        
-                    case .color:
-                        Rectangle()
-                            .fill(AccountColors.gradient(at: account.designIndex))
-                            .frame(width: size.width, height: size.height)
-                            .opacity(index - scrollProgressX)
-                    }
-                }
-            }
-            .compositingGroup()
-            .blur(radius: 25, opaque: true)
-            .overlay {
-                Rectangle()
-                    .fill(.black.opacity(0.25))
-            }
-            .mask {
-                Rectangle()
-                    .fill(.linearGradient(colors: [
-                        .black,
-                        .black.opacity(0.7),
-                        .black.opacity(0.6),
-                        .black.opacity(0.3),
-                        .black.opacity(0.25),
-                        .clear
-                    ], startPoint: .top, endPoint: .bottom))
-            }
-        }
-        .containerRelativeFrame(.horizontal)
-        .padding(.bottom, -60)
-        .padding(.top, -topInset)
-        .offset(y: scrollOffsetY < 0 ? scrollOffsetY : 0)
-    }
-    
     // MARK: - Computed Properties
+    
     private var filteredTransactions: [Transaction] {
         let calendar = Calendar.current
         let startOfStartDate = calendar.startOfDay(for: startDate)
@@ -334,30 +100,8 @@ struct HomeView: View {
         }
     }
     
-    private var dateRangeText: String {
-        DateFormatter.formatDateRange(startDate: startDate, endDate: endDate)
-    }
+    // MARK: - Transaction Actions
     
-    // MARK: - Helper Methods
-    private func formatDateHeader(_ date: Date) -> String {
-        let calendar = Calendar.current
-        
-        if calendar.isDateInToday(date) {
-            return "Today"
-        } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            return formatter.string(from: date)
-        }
-    }
-    
-    private func formatAmount(_ amount: Decimal) -> String {
-        return userPreferences.formatAmount(amount, currencies: currencies)
-    }
-    
-    // MARK: - Swipe Actions Helper Methods (Updated for Transfer)
     private func hideTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {
             transaction.isHidden = true
@@ -367,52 +111,9 @@ struct HomeView: View {
     
     private func deleteTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {
-            // Update account balance based on transaction type
-            switch transaction.type {
-            case .expense:
-                // Revert expense: add amount back to account (amount is negative for expense)
-                if let account = transaction.account {
-                    account.balance -= transaction.amount // Since amount is negative, this adds money back
-                }
-            case .income:
-                // Revert income: subtract amount from account (amount is positive for income)
-                if let account = transaction.account {
-                    account.balance -= transaction.amount // This subtracts the income
-                }
-            case .transfer:
-                // Revert transfer: restore both account balances
-                if let fromAccount = transaction.account {
-                    fromAccount.balance += transaction.amount // Add money back to from account
-                }
-                if let toAccount = transaction.toAccount {
-                    toAccount.balance -= transaction.amount // Remove money from to account
-                }
-            }
-            
-            // Delete transaction
+            TransactionService.revertBalanceChanges(for: transaction)
             modelContext.delete(transaction)
             try? modelContext.save()
         }
-    }
-}
-
-// MARK: - Supporting Views
-
-struct EmptyTransactionsView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image("list.empty")
-                .resizable()
-                .frame(width: 32, height: 32)
-                .foregroundStyle(.secondary)
-            
-            Text("No transactions found for the selected period")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
     }
 }

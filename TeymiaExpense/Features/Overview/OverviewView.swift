@@ -164,7 +164,7 @@ struct OverviewView: View {
                     
                     // Empty state when no transactions exist
                     if expenseGroupsWithTransactions.isEmpty && incomeGroupsWithTransactions.isEmpty {
-                        EmptyView(isGroups: true)
+                        TransactionEmptyStateView()
                             .padding(.top, 60)
                     }
                 }
@@ -264,7 +264,7 @@ struct CategoryGroupOverviewView: View {
         List {
             if groupCategories.isEmpty {
                 Section {
-                    EmptyView(isGroups: false)
+                    CategoryEmptyStateView(isGroups: false)
                 }
                 .listRowBackground(Color.clear)
             } else {

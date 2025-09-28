@@ -30,7 +30,7 @@ class UserPreferences {
         return currencies.first { $0.code == baseCurrencyCode }
     }
     
-    // MARK: - Account Selection Logic
+    // MARK: - Account Management
     
     func getPreferredAccount(from accounts: [Account]) -> Account? {
         // Try to find last used account by name
@@ -39,20 +39,29 @@ class UserPreferences {
             return lastUsedAccount
         }
         
-        // Fallback to first account
+        // Fallback to default account
+        if let defaultAccount = accounts.first(where: { $0.isDefault }) {
+            return defaultAccount
+        }
+        
+        // Ultimate fallback to first account
         return accounts.first
     }
     
     func updateLastUsedAccount(_ account: Account) {
         lastUsedAccountName = account.name
     }
-}
-
-extension UserPreferences {
+    
+    // MARK: - Amount Formatting
+    
     func formatAmount(_ amount: Decimal, currencies: [Currency]) -> String {
-        guard let baseCurrency = getBaseCurrency(from: currencies) else {
-            return "\(amount)"
-        }
-        return amount.formatted(currency: baseCurrency)
+        let currency = currencies.first { $0.code == baseCurrencyCode } ?? currencies.first
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency?.code ?? "USD"
+        formatter.currencySymbol = currency?.symbol ?? "$"
+        
+        return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency?.symbol ?? "$")0.00"
     }
 }
