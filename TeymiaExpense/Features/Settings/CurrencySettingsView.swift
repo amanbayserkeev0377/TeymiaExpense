@@ -11,7 +11,7 @@ struct CurrencySettingsView: View {
     @State private var searchText = ""
     
     private var filteredCurrencies: [Currency] {
-        let currencies = CurrencyData.searchCurrencies(query: searchText, type: selectedType)
+        let currencies = CurrencyDataProvider.searchCurrencies(query: searchText, type: selectedType)
         return currencies
     }
     

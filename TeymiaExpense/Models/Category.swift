@@ -1,6 +1,28 @@
 import Foundation
 import SwiftData
 
+@Model
+final class Category {
+    var name: String
+    var iconName: String
+    var sortOrder: Int
+    var isDefault: Bool
+    var createdAt: Date
+    var categoryGroup: CategoryGroup
+    
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.category)
+    var transactions: [Transaction] = []
+    
+    init(name: String, iconName: String, categoryGroup: CategoryGroup, sortOrder: Int = 0, isDefault: Bool = false) {
+        self.name = name
+        self.iconName = iconName
+        self.categoryGroup = categoryGroup
+        self.sortOrder = sortOrder
+        self.isDefault = isDefault
+        self.createdAt = Date()
+    }
+}
+
 extension Category {
     
     static func createDefaults(context: ModelContext) {

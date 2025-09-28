@@ -1,6 +1,37 @@
 import Foundation
-import SwiftUI
 import SwiftData
+
+@Model
+final class Account {
+    var name: String
+    var balance: Decimal
+    var isDefault: Bool
+    var createdAt: Date
+    
+    var designIndex: Int
+    var customIcon: String
+    var designType: AccountDesignType
+    
+    // Relationships
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
+    var transactions: [Transaction] = []
+    
+    @Relationship(deleteRule: .cascade, inverse: \Transaction.toAccount)
+    var incomingTransfers: [Transaction] = []
+    
+    var currency: Currency
+    
+    init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, designIndex: Int = 0, customIcon: String = "cash", designType: AccountDesignType = .image) {
+        self.name = name
+        self.balance = balance
+        self.currency = currency
+        self.isDefault = isDefault
+        self.designIndex = designIndex
+        self.customIcon = customIcon
+        self.designType = designType
+        self.createdAt = Date()
+    }
+}
 
 extension Account {
     static func createDefault(context: ModelContext) {
@@ -25,4 +56,9 @@ extension Account {
         
         context.insert(mainAccount)
     }
+}
+
+enum AccountDesignType: String, CaseIterable, Codable {
+    case image = "image"
+    case color = "color"
 }

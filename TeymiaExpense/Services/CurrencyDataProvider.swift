@@ -1,10 +1,7 @@
 import Foundation
-import SwiftData
 
-// MARK: - Currency Data
-struct CurrencyData {
+struct CurrencyDataProvider {
     
-    // MARK: - Complete Fiat Currencies List
     static let fiatCurrencies: [Currency] = [
         // TIER 1: Major global currencies (by trading volume)
         Currency(code: "USD", symbol: "$", name: "currency_us_dollar".localized, type: .fiat),
@@ -178,7 +175,7 @@ struct CurrencyData {
         Currency(code: "ZMW", symbol: "ZK", name: "currency_zambian_kwacha".localized, type: .fiat),
         Currency(code: "ZWL", symbol: "$", name: "currency_zimbabwean_dollar".localized, type: .fiat)
     ]
-
+    
     // MARK: - Complete Crypto Currencies List
     static let cryptoCurrencies: [Currency] = [
         // TOP 10: By market cap ranking (January 2025)
@@ -251,84 +248,6 @@ struct CurrencyData {
         Currency(code: "ZEC", symbol: "ZEC", name: "Zcash", type: .crypto)
     ]
     
-    // MARK: - Auto-Detection Logic
-    static func detectUserCurrency() -> String {
-        // Get user's locale
-        let userLocale = Locale.current
-        
-        // Try to get currency from locale
-        if let currencyCode = userLocale.currency?.identifier {
-            return currencyCode
-        }
-        
-        // Fallback: map region to currency
-        if let regionCode = userLocale.region?.identifier {
-            let currencyByRegion = getCurrencyForRegion(regionCode)
-            return currencyByRegion
-        }
-        
-        // Ultimate fallback - USD
-        return "USD"
-    }
-    
-    private static func getCurrencyForRegion(_ regionCode: String) -> String {
-        let regionToCurrency: [String: String] = [
-            // Major regions
-            "US": "USD", "CA": "CAD", "GB": "GBP",
-            "AU": "AUD", "JP": "JPY", "CN": "CNY", "IN": "INR",
-            "BR": "BRL", "MX": "MXN", "KR": "KRW", "SG": "SGD",
-            "CH": "CHF", "SE": "SEK", "NO": "NOK", "DK": "DKK",
-            "PL": "PLN", "CZ": "CZK", "HU": "HUF", "IL": "ILS",
-            "TR": "TRY", "AE": "AED", "SA": "SAR", "TH": "THB",
-            "MY": "MYR", "ZA": "ZAR", "RU": "RUB",
-            
-            // CIS countries
-            "KG": "KGS", "KZ": "KZT", "UZ": "UZS", "TJ": "TJS",
-            "AM": "AMD", "AZ": "AZN", "GE": "GEL", "MD": "MDL",
-            "UA": "UAH", "BY": "BYN"
-        ]
-        
-        return regionToCurrency[regionCode] ?? "USD"
-    }
-    
-    // MARK: - Create Default Currencies with Auto-Detection
-    static func createDefaultCurrencies() -> [Currency] {
-        let detectedCurrencyCode = detectUserCurrency()
-        var currencies: [Currency] = []
-        
-        // Check if detected currency exists in our list
-        let hasDetectedCurrency = fiatCurrencies.contains { $0.code == detectedCurrencyCode }
-        let defaultCurrencyCode = hasDetectedCurrency ? detectedCurrencyCode : "USD"
-        
-        // Add fiat currencies with auto-detection
-        for currency in fiatCurrencies {
-            let currencyWithDefault = Currency(
-                code: currency.code,
-                symbol: currency.symbol,
-                name: currency.name,
-                type: currency.type,
-                isDefault: currency.code == defaultCurrencyCode
-            )
-            currencies.append(currencyWithDefault)
-        }
-        
-        // Add crypto currencies (no defaults)
-        for currency in cryptoCurrencies {
-            let currencyWithDefault = Currency(
-                code: currency.code,
-                symbol: currency.symbol,
-                name: currency.name,
-                type: currency.type,
-                isDefault: false
-            )
-            currencies.append(currencyWithDefault)
-        }
-        
-        return currencies
-    }
-    
-    // MARK: - Helper Methods
-    
     static func getCurrencies(for type: CurrencyType) -> [Currency] {
         switch type {
         case .fiat:
@@ -337,12 +256,12 @@ struct CurrencyData {
             return cryptoCurrencies
         }
     }
-
+    
     static func findCurrency(by code: String) -> Currency? {
         let allCurrencies = fiatCurrencies + cryptoCurrencies
         return allCurrencies.first { $0.code == code }
     }
-
+    
     static func searchCurrencies(query: String, type: CurrencyType? = nil) -> [Currency] {
         let currencies = type == nil ? (fiatCurrencies + cryptoCurrencies) : getCurrencies(for: type!)
         
@@ -354,37 +273,5 @@ struct CurrencyData {
             currency.code.lowercased().contains(query.lowercased()) ||
             currency.name.lowercased().contains(query.lowercased())
         }
-    }
-}
-
-// MARK: - Currency Extensions
-extension Currency {
-    static func createDefaults(context: ModelContext) {
-        let currencies = CurrencyData.createDefaultCurrencies()
-        
-        for currency in currencies {
-            context.insert(currency)
-        }
-    }
-}
-
-// MARK: - Currency Service
-class CurrencyService {
-    static let shared = CurrencyService()
-    private init() {}
-    
-    // Get icon name for currency (flag for fiat, crypto icon for crypto)
-    func getCurrencyIcon(for currency: Currency) -> String {
-        return currency.code.uppercased()
-    }
-    
-    private func getFlagIcon(for currencyCode: String) -> String {
-        // Icons in Assets are named by currency codes directly (USD, EUR, CNY, etc.)
-        return currencyCode.uppercased()
-    }
-    
-    private func getCryptoIcon(for currencyCode: String) -> String {
-        // Crypto icons are also named by currency codes (BTC, ETH, etc.)
-        return currencyCode.uppercased()
     }
 }

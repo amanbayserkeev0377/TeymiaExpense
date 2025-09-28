@@ -1,6 +1,28 @@
 import Foundation
 import SwiftData
 
+@Model
+final class CategoryGroup {
+    var name: String
+    var iconName: String
+    var type: GroupType
+    var sortOrder: Int
+    var isDefault: Bool
+    var createdAt: Date
+    
+    @Relationship(deleteRule: .cascade, inverse: \Category.categoryGroup)
+    var categories: [Category] = []
+    
+    init(name: String, iconName: String, type: GroupType, sortOrder: Int = 0, isDefault: Bool = false) {
+        self.name = name
+        self.iconName = iconName
+        self.type = type
+        self.sortOrder = sortOrder
+        self.isDefault = isDefault
+        self.createdAt = Date()
+    }
+}
+
 extension CategoryGroup {
     
     static func createDefaults(context: ModelContext) {
@@ -54,4 +76,9 @@ extension CategoryGroup {
 
 enum TransferError: Error {
     case importNotSupported
+}
+
+enum GroupType: String, CaseIterable, Codable {
+    case income = "income"
+    case expense = "expense"
 }

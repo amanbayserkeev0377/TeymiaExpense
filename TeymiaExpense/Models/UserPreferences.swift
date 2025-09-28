@@ -21,7 +21,7 @@ class UserPreferences {
     
     init() {
         let savedCurrency = UserDefaults.standard.string(forKey: "userBaseCurrencyCode")
-        self.baseCurrencyCode = savedCurrency ?? CurrencyData.detectUserCurrency()
+        self.baseCurrencyCode = savedCurrency ?? CurrencyService.detectUserCurrency()
         
         self.lastUsedAccountName = UserDefaults.standard.string(forKey: "lastUsedAccountName")
     }

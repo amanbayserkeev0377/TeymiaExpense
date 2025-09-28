@@ -11,7 +11,7 @@ struct CurrencySelectionRow: View {
         } label: {
             HStack {
                 if let currency = selectedCurrency {
-                    Image(CurrencyService.shared.getCurrencyIcon(for: currency))
+                    Image(CurrencyService.getCurrencyIcon(for: currency))
                         .resizable()
                         .frame(width: 26, height: 26)
                         .clipShape(Circle())
@@ -56,7 +56,7 @@ struct CurrencySelectionView: View {
     @State private var searchText = ""
     
     private var filteredCurrencies: [Currency] {
-        let currencies = CurrencyData.searchCurrencies(query: searchText, type: selectedType)
+        let currencies = CurrencyDataProvider.searchCurrencies(query: searchText, type: selectedType)
         return currencies
     }
     
@@ -106,7 +106,7 @@ struct CurrencyRowView: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 // Currency flag/icon
-                Image(CurrencyService.shared.getCurrencyIcon(for: currency))
+                Image(CurrencyService.getCurrencyIcon(for: currency))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 32, height: 32)

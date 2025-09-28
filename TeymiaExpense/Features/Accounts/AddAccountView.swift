@@ -68,7 +68,7 @@ struct AddAccountView: View {
                                 accountName = ""
                             }) {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.secondary)
                                     .font(.system(size: 16))
                             }
                         }
@@ -149,7 +149,7 @@ struct AddAccountView: View {
                         showingCurrencySelection = true
                     } label: {
                         HStack {
-                            Image(selectedCurrency != nil ? CurrencyService.shared.getCurrencyIcon(for: selectedCurrency!) : "questionmark.circle")
+                            Image(selectedCurrency != nil ? CurrencyService.getCurrencyIcon(for: selectedCurrency!) : "questionmark.circle")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 24, height: 24)
