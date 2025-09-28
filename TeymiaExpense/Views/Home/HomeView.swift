@@ -116,27 +116,40 @@ struct HomeView: View {
     func CarouselView() -> some View {
         let spacing: CGFloat = 6
         
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: spacing) {
-                ForEach(accounts) { account in
-                    AccountCardView(account: account)
+        VStack(spacing: 0) {
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: spacing) {
+                    ForEach(accounts) { account in
+                        AccountCardView(account: account)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .frame(height: 220)
+            .scrollIndicators(.hidden)
+            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+            .onScrollGeometryChange(for: CGFloat.self) {
+                let offsetX = $0.contentOffset.x + $0.contentInsets.leading
+                let width = $0.containerSize.width + spacing
+                
+                return offsetX / width
+            } action: { oldValue, newValue in
+                let maxValue = CGFloat(max(accounts.count - 1, 0))
+                scrollProgressX = min(max(newValue, 0), maxValue)
+            }
+            
+            // Page indicators
+            HStack(spacing: 8) {
+                ForEach(0..<accounts.count, id: \.self) { index in
+                    Circle()
+                        .fill(index == Int(scrollProgressX.rounded()) ? Color.primary : Color.secondary.opacity(0.5))
+                        .frame(width: 6, height: 6)
+                        .animation(.easeInOut(duration: 0.3), value: scrollProgressX)
                 }
             }
-            .scrollTargetLayout()
+            .padding(.top, 16)
         }
-        .frame(height: 220)
         .background(BackdropEffect())
-        .scrollIndicators(.hidden)
-        .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
-        .onScrollGeometryChange(for: CGFloat.self) {
-            let offsetX = $0.contentOffset.x + $0.contentInsets.leading
-            let width = $0.containerSize.width + spacing
-            
-            return offsetX / width
-        } action: { oldValue, newValue in
-            let maxValue = CGFloat(max(accounts.count - 1, 0))
-            scrollProgressX = min(max(newValue, 0), maxValue)
-        }
     }
     
     // MARK: - Transactions Section
