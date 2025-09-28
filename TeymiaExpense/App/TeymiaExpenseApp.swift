@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct TeymiaExpenseApp: App {
     @State private var userPreferences = UserPreferences()
+    @State private var isDataLoaded = false
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -14,20 +15,13 @@ struct TeymiaExpenseApp: App {
             Currency.self
         ])
         
-        // Development: in-memory storage (no persistence)
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false
-            // cloudKitDatabase: .private("iCloud.com.amanbayserkeev.teymiabudget") // Add later
         )
 
         do {
-            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            
-            // Create default data on first launch
-            createDefaultDataIfNeeded(context: container.mainContext)
-            
-            return container
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -35,25 +29,44 @@ struct TeymiaExpenseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(userPreferences)
+            if isDataLoaded {
+                MainTabView()
+                    .environment(userPreferences)
+            } else {
+                // Loading placeholder
+                VStack {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                    Text("Loading...")
+                        .font(.headline)
+                        .padding(.top)
+                }
+                .task {
+                    await createDefaultDataIfNeeded()
+                    isDataLoaded = true
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }
-}
-
-// MARK: - Default Data Creation
-private func createDefaultDataIfNeeded(context: ModelContext) {
-    let categoryDescriptor = FetchDescriptor<Category>()
-    let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []
     
-    if !existingCategories.isEmpty {
-        return
+    // MARK: - Async Default Data Creation
+    private func createDefaultDataIfNeeded() async {
+        let context = sharedModelContainer.mainContext
+        
+        await MainActor.run {
+            let categoryDescriptor = FetchDescriptor<Category>()
+            let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []
+            
+            if !existingCategories.isEmpty {
+                return
+            }
+            
+            Currency.createDefaults(context: context)
+            CategoryGroup.createDefaults(context: context)
+            Category.createDefaults(context: context)
+            Account.createDefault(context: context)
+            try? context.save()
+        }
     }
-    
-    Currency.createDefaults(context: context)
-    CategoryGroup.createDefaults(context: context)
-    Category.createDefaults(context: context)
-    Account.createDefault(context: context)
-    try? context.save()
 }

@@ -7,7 +7,6 @@ struct AccountsManagementView: View {
     @Query private var accounts: [Account]
     
     @State private var showingAddAccount = false
-    @State private var showingEditAccount = false
     @State private var editingAccount: Account?
     @State private var showingDeleteAlert = false
     @State private var deleteAlertMessage = ""
@@ -27,23 +26,20 @@ struct AccountsManagementView: View {
                             AccountRowView(account: account)
                                 .onTapGesture {
                                     editingAccount = account
-                                    showingEditAccount = true
                                 }
                                 .swipeActions {
-                                    Button {
-                                        editingAccount = account
-                                        showingEditAccount = true
-                                    } label: {
-                                        Image("edit")
-                                    }
-                                    .tint(.blue)
-                                    
                                     Button(role: .destructive) {
                                         confirmDeleteAccount(account)
                                     } label: {
                                         Image("trash.swipe")
                                     }
                                     .tint(.red)
+                                    Button {
+                                        editingAccount = account
+                                    } label: {
+                                        Image("edit")
+                                    }
+                                    .tint(.blue)
                                 }
                         }
                     } footer: {
@@ -80,11 +76,9 @@ struct AccountsManagementView: View {
             AddAccountView()
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showingEditAccount) {
-            if let account = editingAccount {
-                AddAccountView(editingAccount: account)
-                    .presentationDragIndicator(.visible)
-            }
+        .sheet(item: $editingAccount) { account in
+            AddAccountView(editingAccount: account)
+                .presentationDragIndicator(.visible)
         }
         .alert("Delete Account", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {

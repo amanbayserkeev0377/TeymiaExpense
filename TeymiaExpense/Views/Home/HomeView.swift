@@ -18,9 +18,6 @@ struct HomeView: View {
     @State private var showingAccountsManagement = false
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
-    
-    // MARK: - Edit Transaction Support
-    @State private var showingEditTransaction = false
     @State private var editingTransaction: Transaction?
     
     // View Properties
@@ -65,11 +62,9 @@ struct HomeView: View {
             AccountsManagementView()
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showingEditTransaction) {
-            if let transaction = editingTransaction {
-                AddTransactionView(editingTransaction: transaction)
-                    .presentationDragIndicator(.visible)
-            }
+        .sheet(item: $editingTransaction) { transaction in
+            AddTransactionView(editingTransaction: transaction)
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
             DrawOnSymbolEffectExample(
@@ -233,9 +228,7 @@ struct HomeView: View {
                                     .padding(.vertical, 12)
                                     .glassEffect(.regular.interactive().tint(.mainRowBackground), in: RoundedRectangle(cornerRadius: 24))
                                     .onTapGesture {
-                                        // Tap to edit transaction
                                         editingTransaction = transaction
-                                        showingEditTransaction = true
                                     }
                                     .swipeActions {
                                         // Edit action
@@ -246,7 +239,6 @@ struct HomeView: View {
                                             size: .init(width: 50, height: 50)
                                         ) { resetPosition in
                                             editingTransaction = transaction
-                                            showingEditTransaction = true
                                             resetPosition.toggle()
                                         }
                                         

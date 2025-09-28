@@ -6,7 +6,7 @@ struct CategorySelectionRow: View {
     
     var body: some View {
         HStack {
-            Image(selectedCategory?.iconName ?? "circle.dashed")
+            Image(selectedCategory?.iconName ?? "other")
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.primary)
