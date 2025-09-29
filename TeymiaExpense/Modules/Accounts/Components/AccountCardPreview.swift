@@ -47,7 +47,7 @@ struct AccountCardPreview: View {
                                 .lineLimit(1)
                                 .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
                             
-                            Text(balance.isEmpty ? "$0.00" : "$\(balance)")
+                            Text(balance.isEmpty ? "0" : "\(balance)")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
