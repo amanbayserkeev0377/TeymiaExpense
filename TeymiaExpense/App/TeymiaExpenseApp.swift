@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct TeymiaExpenseApp: App {
     @State private var userPreferences = UserPreferences()
+    @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -35,6 +36,7 @@ struct TeymiaExpenseApp: App {
         WindowGroup {
             MainTabView()
                 .environment(userPreferences)
+                .preferredColorScheme(userTheme.colorScheme)
         }
         .modelContainer(sharedModelContainer)
     }
