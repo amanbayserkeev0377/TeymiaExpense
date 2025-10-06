@@ -6,11 +6,7 @@ import SwiftData
 extension Account {
     
     var formattedBalance: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency.code
-        formatter.currencySymbol = currency.symbol
-        return formatter.string(from: balance as NSDecimalNumber) ?? "0\(currency.symbol)"
+        CurrencyFormatter.format(balance, currency: currency)
     }
     
     var cardColor: Color {

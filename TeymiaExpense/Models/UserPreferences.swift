@@ -55,13 +55,13 @@ class UserPreferences {
     // MARK: - Amount Formatting
     
     func formatAmount(_ amount: Decimal, currencies: [Currency]) -> String {
-        let currency = currencies.first { $0.code == baseCurrencyCode } ?? currencies.first
+        let currency = currencies.first { $0.code == baseCurrencyCode } ?? currencies.first ?? Currency(
+            code: "USD",
+            symbol: "$",
+            name: "US Dollar",
+            type: .fiat
+        )
         
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency?.code ?? "USD"
-        formatter.currencySymbol = currency?.symbol ?? "$"
-        
-        return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency?.symbol ?? "$")0.00"
+        return CurrencyFormatter.format(amount, currency: currency)
     }
 }

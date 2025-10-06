@@ -11,6 +11,7 @@ struct AddTransactionView: View {
     
     // MARK: - Edit Mode Support
     private let editingTransaction: Transaction?
+    private let preselectedAccount: Account?
     private var isEditMode: Bool { editingTransaction != nil }
     
     // MARK: - Form State
@@ -27,8 +28,9 @@ struct AddTransactionView: View {
     @FocusState private var isAmountFieldFocused: Bool
     
     // MARK: - Initializers
-    init(editingTransaction: Transaction? = nil) {
+    init(editingTransaction: Transaction? = nil, preselectedAccount: Account? = nil) {
         self.editingTransaction = editingTransaction
+        self.preselectedAccount = preselectedAccount
     }
     
     var body: some View {
@@ -169,8 +171,14 @@ struct AddTransactionView: View {
     }
     
     private func setupForCreating() {
-        selectedAccount = userPreferences.getPreferredAccount(from: accounts)
-        fromAccount = selectedAccount
+        // Use preselected account if provided, otherwise use preferred account
+        if let preselected = preselectedAccount {
+            selectedAccount = preselected
+            fromAccount = preselected
+        } else {
+            selectedAccount = userPreferences.getPreferredAccount(from: accounts)
+            fromAccount = selectedAccount
+        }
         
         if accounts.count > 1 {
             toAccount = accounts.first { $0.id != selectedAccount?.id }
@@ -272,49 +280,6 @@ struct AddTransactionView: View {
         } catch {
             print("Error updating transaction: \(error)")
             // TODO: Show user-friendly error alert
-        }
-    }
-}
-
-// MARK: - TransactionType Extensions
-extension TransactionType {
-    var displayName: String {
-        switch self {
-        case .expense: return "Expense"
-        case .income: return "Income"
-        case .transfer: return "Transfer"
-        }
-    }
-    
-    var darkColor: Color {
-        switch self {
-        case .expense: return Color(#colorLiteral(red: 0.8, green: 0.1, blue: 0.1, alpha: 1))
-        case .income: return Color(#colorLiteral(red: 0.0, green: 0.6431372549, blue: 0.5490196078, alpha: 1))
-        case .transfer: return Color(#colorLiteral(red: 0.1490196078, green: 0.4666666667, blue: 0.6784313725, alpha: 1))
-        }
-    }
-    
-    var lightColor: Color {
-        switch self {
-        case .expense: return Color(#colorLiteral(red: 1, green: 0.3, blue: 0.3, alpha: 1))
-        case .income: return Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1))
-        case .transfer: return Color(#colorLiteral(red: 0.3568627451, green: 0.6588235294, blue: 0.9294117647, alpha: 1))
-        }
-    }
-    
-    var backgroundGradient: LinearGradient {
-        LinearGradient(
-            colors: [darkColor, lightColor],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-    
-    var customIconName: String {
-        switch self {
-        case .expense: return "expense"
-        case .income: return "income"
-        case .transfer: return "transfer"
         }
     }
 }

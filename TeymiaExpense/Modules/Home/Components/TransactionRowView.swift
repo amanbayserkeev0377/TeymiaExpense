@@ -7,56 +7,26 @@ struct TransactionRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Icon
-            Group {
-                if transaction.type == .transfer {
-                    Image("transfer")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(.primary)
-                } else if let category = transaction.category {
-                    Image(category.iconName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(.primary)
-                } else {
-                    // Fallback icon
-                    Image(systemName: "questionmark.circle")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 24, height: 24)
-                }
-            }
+            Image(transaction.displayIcon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.primary)
             
             // Transaction details
             VStack(alignment: .leading, spacing: 2) {
-                if transaction.type == .transfer {
-                    // Transfer title: "Account1 → Account2"
-                    if let fromAccount = transaction.account,
-                       let toAccount = transaction.toAccount {
-                        Text("\(fromAccount.name) → \(toAccount.name)")
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                    } else {
-                        Text("Transfer")
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                    }
-                } else {
-                    Text(transaction.category?.name ?? "Unknown")
-                        .font(.body)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                    
-                    // Show group name for regular transactions
-                    if let categoryGroup = transaction.category?.categoryGroup {
-                        Text(categoryGroup.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                Text(transaction.displayTitle(relativeTo: nil))
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.primary)
+                
+                // Show group name for regular transactions
+                if transaction.type != .transfer,
+                   let categoryGroup = transaction.category?.categoryGroup {
+                    Text(categoryGroup.name)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 
                 // Note
@@ -72,10 +42,11 @@ struct TransactionRowView: View {
             
             // Amount and account
             VStack(alignment: .trailing, spacing: 2) {
-                Text(formatAmount(transaction.amount, currency: transaction.account?.currency))
+                Text(transaction.formattedAmount(for: transaction.account))
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundStyle(amountColor(for: transaction))
+                    .fontDesign(.rounded)
+                    .foregroundStyle(transaction.typeColor)
                 
                 if transaction.type != .transfer, let account = transaction.account {
                     Text(account.name)
@@ -85,21 +56,5 @@ struct TransactionRowView: View {
             }
         }
         .contentShape(Rectangle())
-    }
-    
-    private func amountColor(for transaction: Transaction) -> Color {
-        switch transaction.type {
-        case .expense: return .red
-        case .income: return .green
-        case .transfer: return .blue
-        }
-    }
-    
-    private func formatAmount(_ amount: Decimal, currency: Currency?) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency?.code ?? "USD"
-        formatter.currencySymbol = currency?.symbol ?? "$"
-        return formatter.string(from: amount as NSDecimalNumber) ?? "\(currency?.symbol ?? "$")0.00"
     }
 }

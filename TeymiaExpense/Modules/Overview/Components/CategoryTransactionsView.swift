@@ -54,7 +54,8 @@ struct CategoryTransactionsView: View {
                         Text(userPreferences.formatAmount(totalAmount, currencies: currencies))
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundStyle(category.categoryGroup.type == .income ? .green : .red)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(category.categoryGroup.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
                     }
                     
                     Spacer()
@@ -62,10 +63,12 @@ struct CategoryTransactionsView: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("Transactions")
                             .font(.caption)
+                            .fontDesign(.rounded)
                             .foregroundStyle(.secondary)
                         
                         Text("\(filteredTransactions.count)")
                             .font(.title2)
+                            .fontDesign(.rounded)
                             .fontWeight(.bold)
                             .foregroundStyle(.primary)
                     }

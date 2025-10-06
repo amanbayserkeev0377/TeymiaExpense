@@ -103,10 +103,12 @@ struct CategoryOverviewRow: View {
                 Text(category.name)
                     .font(.body)
                     .fontWeight(.medium)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Text("\(transactionCount) transactions")
                     .font(.caption)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.secondary)
             }
             
@@ -116,7 +118,8 @@ struct CategoryOverviewRow: View {
             Text(userPreferences.formatAmount(totalAmount, currencies: currencies))
                 .font(.body)
                 .fontWeight(.semibold)
-                .foregroundStyle(category.categoryGroup.type == .income ? .green : .red)
+                .fontDesign(.rounded)
+                .foregroundStyle(category.categoryGroup.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
         }
         .padding(.vertical, 4)
     }

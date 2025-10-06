@@ -7,6 +7,8 @@ struct AccountsCarouselView: View {
     let scrollOffsetY: CGFloat
     
     private let spacing: CGFloat = 6
+    @State private var selectedAccount: Account?
+    @Namespace private var animation
     
     var body: some View {
         VStack(spacing: 0) {
@@ -14,6 +16,10 @@ struct AccountsCarouselView: View {
                 LazyHStack(spacing: spacing) {
                     ForEach(accounts) { account in
                         AccountCardView(account: account)
+                            .matchedTransitionSource(id: account.id, in: animation)
+                            .onTapGesture {
+                                selectedAccount = account
+                            }
                     }
                 }
                 .scrollTargetLayout()
@@ -50,6 +56,11 @@ struct AccountsCarouselView: View {
             topInset: topInset,
             scrollOffsetY: scrollOffsetY
         ))
+        .sheet(item: $selectedAccount) { account in
+            AccountTransactionsView(account: account)
+                .navigationTransition(.zoom(sourceID: account.id, in: animation))
+                .presentationDragIndicator(.visible)
+        }
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - Account Card with Images
 struct AccountCardView: View {
     let account: Account
+    @AppStorage("hideBalance") private var hideBalance: Bool = false
     
     var body: some View {
         ZStack {
@@ -45,46 +46,48 @@ struct AccountCardView: View {
                 
                 Spacer()
                 
-                // Bottom section with balance
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(account.name)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.white)
-                                .lineLimit(1)
-                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
-                            
-                            Text(account.formattedBalance)
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
-                        }
+                // Bottom section with balance and hide button
+                HStack(alignment: .bottom, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(account.name)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
                         
-                        Spacer()
+                        Text(hideBalance ? "••••" : account.formattedBalance)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            .contentTransition(.numericText())
+                            .animation(.easeInOut(duration: 0.25), value: hideBalance)
                     }
                     
-                    // Currency code
-                    HStack {
-                        Spacer()
-                        Text(account.currency.code)
-                            .font(.caption)
-                            .fontDesign(.rounded)
-                            .fontWeight(.medium)
+                    Spacer()
+                    
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            hideBalance.toggle()
+                        }
+                    } label: {
+                        Image(hideBalance ? "eye.crossed" : "eye")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20, height: 20)
                             .foregroundStyle(.white.opacity(0.9))
-                            .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 1)
                     }
+                    .buttonStyle(.plain)
+                    .offset(y: -10)
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, 15)
                 .padding(.horizontal, 20)
             }
         }
     }
 }
-

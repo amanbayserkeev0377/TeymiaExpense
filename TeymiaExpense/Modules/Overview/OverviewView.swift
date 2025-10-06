@@ -96,6 +96,7 @@ struct OverviewView: View {
             Text(dateRangeText)
                 .font(.title3)
                 .fontWeight(.semibold)
+                .fontDesign(.rounded)
                 .foregroundStyle(.primary)
             
             Spacer()
@@ -121,7 +122,7 @@ struct OverviewView: View {
             OverviewTransactionSection(
                 title: "Expenses",
                 total: totalExpenses,
-                color: .red,
+                color: Color("ExpenseColor"),
                 groups: expenseGroupsWithTransactions,
                 filteredTransactions: filteredTransactions,
                 categories: categories,
@@ -139,7 +140,7 @@ struct OverviewView: View {
             OverviewTransactionSection(
                 title: "Income",
                 total: totalIncome,
-                color: .green,
+                color: Color("IncomeColor"),
                 groups: incomeGroupsWithTransactions,
                 filteredTransactions: filteredTransactions,
                 categories: categories,

@@ -19,6 +19,7 @@ struct OverviewTransactionSection: View {
                 Text(title)
                     .font(.title2)
                     .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Spacer()
@@ -26,6 +27,7 @@ struct OverviewTransactionSection: View {
                 Text(userPreferences.formatAmount(total, currencies: currencies))
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .fontDesign(.rounded)
                     .foregroundStyle(color)
             }
             .padding(.horizontal, 20)

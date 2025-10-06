@@ -151,7 +151,8 @@ struct DayTransactionsView: View {
                 Text(userPreferences.formatAmount(dayTotal, currencies: currencies))
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(dayTotal >= 0 ? .green : .red)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(dayTotal >= 0 ? Color("IncomeColor") : Color("ExpenseColor"))
             }
             .padding(.horizontal, 4)
             
