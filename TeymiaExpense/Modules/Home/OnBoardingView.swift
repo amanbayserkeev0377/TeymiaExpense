@@ -1,157 +1,240 @@
 import SwiftUI
 
+// MARK: - First Launch Manager
 class FirstLaunchManager: ObservableObject {
-    @Published var shouldShowOnboarding: Bool = false
-
-//    @Published var shouldShowOnboarding: Bool
-//    
-//    private let userDefaults = UserDefaults.standard
-//    private let firstLaunchKey = "hasSeenOnboarding"
-//    
-//    init() {
-//        self.shouldShowOnboarding = !userDefaults.bool(forKey: firstLaunchKey)
-//    }
+    @Published var shouldShowOnboarding: Bool
+    
+    private let userDefaults = UserDefaults.standard
+    private let firstLaunchKey = "hasSeenOnboarding"
+    
+    init() {
+        self.shouldShowOnboarding = !userDefaults.bool(forKey: firstLaunchKey)
+    }
     
     func completeOnboarding() {
-//        userDefaults.set(true, forKey: firstLaunchKey)
+        userDefaults.set(true, forKey: firstLaunchKey)
         shouldShowOnboarding = false
     }
 }
 
-struct OnboardingView: View {
-    let onComplete: () -> Void
-    
-    var body: some View {
-        DrawOnSymbolEffect(
-            tint: AccountColors.color(at: 0),
-            buttonTitle: "Start Managing Money",
-            data: [
-                .init(
-                    name: "chart.bar.xaxis.ascending",
-                    title: "Categorized Expenses",
-                    subtitle: "Categorize your expenses to see\n where your money is going",
-                    preDelay: 0.3
-                ),
-                .init(
-                    name: "magnifyingglass.circle",
-                    title: "Search for Expenses",
-                    subtitle: "Search for your expenses\nby account or category",
-                    preDelay: 1.6
-                ),
-                .init(
-                    name: "arrow.up.arrow.down",
-                    title: "Track Your Money",
-                    subtitle: "Easily manage your income\nand expenses in one place",
-                    preDelay: 1.2
-                ),
-            ],
-            onTap: onComplete
-        )
+// MARK: - OnBoarding Card Model
+struct OnBoardingCard: Identifiable {
+    var id: String = UUID().uuidString
+    var symbol: String
+    var title: String
+    var subTitle: String
+}
+
+// MARK: - OnBoarding Card Result Builder
+@resultBuilder
+struct OnBoardingCardResultBuilder {
+    static func buildBlock(_ components: OnBoardingCard...) -> [OnBoardingCard] {
+        components.compactMap { $0 }
     }
 }
 
-struct DrawOnSymbolEffect: View {
-    var tint: Color = .blue
-    var buttonTitle: String = "Start Your Journey"
-    var loopDelay: CGFloat = 1
-    @State var data: [SymbolData]
-    var onTap: () -> ()
-    @State private var currentIndex: Int = 0
-    @State private var isDisappeared: Bool = false
+// MARK: - Main OnBoarding View
+struct OnBoardingView<Icon: View, Footer: View>: View {
+    var tint: Color
+    var title: String
+    var icon: Icon
+    var cards: [OnBoardingCard]
+    var footer: Footer
+    var onContinue: () -> ()
+    
+    @State private var animateIcon: Bool = false
+    @State private var animateTitle: Bool = false
+    @State private var animateCards: [Bool]
+    @State private var animateFooter: Bool = false
+    
+    init(
+        tint: Color,
+        title: String,
+        @ViewBuilder icon: @escaping () -> Icon,
+        @OnBoardingCardResultBuilder cards: @escaping () -> [OnBoardingCard],
+        @ViewBuilder footer: @escaping () -> Footer,
+        onContinue: @escaping () -> Void
+    ) {
+        self.tint = tint
+        self.title = title
+        self.icon = icon()
+        self.cards = cards()
+        self.footer = footer()
+        self.onContinue = onContinue
+        self._animateCards = .init(initialValue: Array(repeating: false, count: cards().count))
+    }
+    
     var body: some View {
-        VStack(spacing: 25) {
-            ZStack {
-                ForEach(data) { symbolData in
-                    if symbolData.drawOn {
-                        Image(systemName: symbolData.name)
-                            .font(.system(size: symbolData.symbolSize, weight: .regular))
-                            .foregroundStyle(.white)
-                            .transition(.symbolEffect(.drawOn.individually))
+        VStack(spacing: 0) {
+            ScrollView(.vertical) {
+                VStack(spacing: 0) {
+                    icon
+                        .frame(maxWidth: .infinity)
+                        .blurSlide(animateIcon)
+                    
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .blurSlide(animateTitle)
+                        .padding(.bottom, 32)
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        CardsView()
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 20)
+            }
+            .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
+            
+            VStack(spacing: 0) {
+                footer
+                    .padding(.horizontal, 20)
+                
+                Button(action: onContinue) {
+                    Text("Continue")
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                }
+                .tint(tint)
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
+            }
+            .blurSlide(animateFooter)
+        }
+        .frame(maxWidth: 330)
+        .interactiveDismissDisabled()
+        .allowsHitTesting(animateFooter)
+        .task {
+            guard !animateIcon else { return }
+            
+            await delayedAnimation(0.35) {
+                animateIcon = true
+            }
+            
+            await delayedAnimation(0.2) {
+                animateTitle = true
+            }
+            
+            try? await Task.sleep(for: .seconds(0.2))
+            
+            for index in animateCards.indices {
+                let delay = Double(index) * 0.1
+                await delayedAnimation(delay) {
+                    animateCards[index] = true
                 }
             }
-            .frame(width: 120, height: 120)
-            .background {
-                RoundedRectangle(cornerRadius: 35, style: .continuous)
-                    .fill(tint.gradient)
-            }
-            .geometryGroup()
-            .padding(.top, 30)
             
-            /// Title & Subtitle With Numeric Content Transition Effect
-            VStack(spacing: 6) {
-                Text(data[currentIndex].title)
-                    .font(.title2)
-                    .lineLimit(1)
+            await delayedAnimation(0.2) {
+                animateFooter = true
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func CardsView() -> some View {
+        ForEach(cards.indices, id: \.self) { index in
+            let card = cards[index]
+            
+            HStack(alignment: .center, spacing: 12) {
+                Image(card.symbol)
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundStyle(tint)
                 
-                Text(data[currentIndex].subtitle)
-                    .font(.callout)
-                    .foregroundStyle(.gray)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(card.title)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                        .lineLimit(1)
+                    
+                    Text(card.subTitle)
+                        .font(.subheadline)
+                        .fontDesign(.rounded)
+                        .lineLimit(2)
+                }
             }
-            .contentTransition(.numericText())
-            .animation(.snappy(duration: 1, extraBounce: 0), value: currentIndex)
-            .fontDesign(.rounded)
-            .frame(maxWidth: 300)
-            .frame(height: 80)
-            .geometryGroup()
+            .blurSlide(animateCards[index])
+        }
+    }
+    
+    func delayedAnimation(_ delay: Double, action: @escaping () -> ()) async {
+        try? await Task.sleep(for: .seconds(delay))
+        withAnimation(.smooth) {
+            action()
+        }
+    }
+}
+
+// MARK: - Teymia Expense OnBoarding
+struct TeymiaOnBoardingView: View {
+    let onComplete: () -> Void
+    
+    var body: some View {
+        OnBoardingView(
+            tint: AccountColors.color(at: 0),
+            title: "Welcome to Teymia Expense"
+        ) {
+            // App Icon с закруглением
+            Image("app_icon_main")
+                .resizable()
+                .frame(width: 100, height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .frame(height: 180)
+        } cards: {
+            OnBoardingCard(
+                symbol: "category.management",
+                title: "Stay Organized",
+                subTitle: "Categorize expenses and see where your money goes"
+            )
             
-            /// Continue Button
-            Button(action: onTap) {
-                Text(buttonTitle)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: 300)
-                    .padding(.vertical, 2)
+            OnBoardingCard(
+                symbol: "cards.blank",
+                title: "Multiple Accounts",
+                subTitle: "Manage all your accounts in one place"
+            )
+            
+            OnBoardingCard(
+                symbol: "bitcoin.symbol",
+                title: "Multi-Currency Support",
+                subTitle: "Track expenses in 200+ fiat and crypto currencies"
+            )
+        } footer: {
+            VStack(alignment: .leading, spacing: 6) {
+                Image("user.shield")
+                    .resizable()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(AccountColors.color(at: 0))
+                
+                Text("Your financial data stays on your device and is never shared.")
+                    .font(.caption2)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.gray)
             }
-            .tint(tint.opacity(0.7))
-            .buttonStyle(.glassProminent)
-        }
-        .frame(height: 320)
-        .presentationDetents([.height(320)])
-        .interactiveDismissDisabled()
-        .task {
-            await loopSymbols()
-        }
-        .onDisappear {
-            isDisappeared = true
+            .padding(.vertical, 15)
+        } onContinue: {
+            onComplete()
         }
     }
-    
-    func loopSymbols() async {
-        for index in data.indices {
-            await loopSymbol(index)
-        }
-        
-        guard !isDisappeared else { return }
-        /// Delay to finish the final Draw-off effect
-        try? await Task.sleep(for: .seconds(loopDelay))
-        await loopSymbols()
-    }
-    
-    func loopSymbol(_ index: Int) async {
-        let symbolData = data[index]
-        /// Applying Pre-Delay
-        try? await Task.sleep(for: .seconds(symbolData.preDelay))
-        /// Drawing Symbol
-        data[index].drawOn = true
-        /// Updating Current Index
-        currentIndex = index
-        /// Applying Post-Delay
-        try? await Task.sleep(for: .seconds(symbolData.postDelay))
-        /// Removing Symbol
-        data[index].drawOn = false
-    }
-    
-    struct SymbolData: Identifiable {
-        var id: UUID = UUID()
-        /// Properties
-        var name: String
-        var title: String
-        var subtitle: String
-        var symbolSize: CGFloat = 70
-        var preDelay: CGFloat = 1
-        var postDelay: CGFloat = 2
-        var drawOn: Bool = false
+}
+
+// MARK: - View Extension
+extension View {
+    @ViewBuilder
+    func blurSlide(_ show: Bool) -> some View {
+        self
+            .compositingGroup()
+            .blur(radius: show ? 0 : 10)
+            .opacity(show ? 1 : 0)
+            .offset(y: show ? 0 : 100)
     }
 }

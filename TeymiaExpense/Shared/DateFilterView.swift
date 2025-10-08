@@ -146,16 +146,29 @@ enum CustomMenuStyle: String, CaseIterable {
     case glassProminent = "Glass Prominent"
 }
 
+// MARK: - Style Extension with iOS 26 Fallback
+
 fileprivate extension View {
     @ViewBuilder
     func applyStyle(_ style: CustomMenuStyle) -> some View {
-        switch style {
-        case .glass:
+        if #available(iOS 26, *) {
+            // iOS 26: Native glass styles
+            switch style {
+            case .glass:
+                self.buttonStyle(.glass)
+            case .glassProminent:
+                self.buttonStyle(.glassProminent)
+            }
+        } else {
             self
-                .buttonStyle(.glass)
-        case .glassProminent:
-            self
-                .buttonStyle(.glassProminent)
+                .buttonStyle(.borderless)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(.clear)
+                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                }
         }
     }
 }

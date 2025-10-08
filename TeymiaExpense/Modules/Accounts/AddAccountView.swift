@@ -179,15 +179,15 @@ struct AddAccountView: View {
             .navigationTitle(isEditMode ? "Edit Account" : "Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .cancel) {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(role: .confirm) {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         isEditMode ? updateAccount() : saveAccount()
                     } label: {
                         Image(systemName: "checkmark")

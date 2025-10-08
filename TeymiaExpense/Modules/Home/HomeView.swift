@@ -3,6 +3,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var currencies: [Currency]
     @Query private var accounts: [Account]
@@ -11,7 +12,6 @@ struct HomeView: View {
         sort: \Transaction.date,
         order: .reverse
     ) private var allTransactions: [Transaction]
-    @StateObject private var firstLaunchManager = FirstLaunchManager()
     
     @State private var showingAccountsManagement = false
     @State private var editingTransaction: Transaction?
@@ -25,6 +25,7 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
+            // ScrollView с контентом
             ScrollView(.vertical) {
                 LazyVStack(spacing: 15) {
                     // Accounts Carousel
@@ -36,8 +37,8 @@ struct HomeView: View {
                     )
                     .zIndex(-1)
                     
-                    // Transactions Section
-                    TransactionsListView(
+                    // Glass Transactions Section
+                    GlassTransactionsListView(
                         transactions: filteredTransactions,
                         startDate: $startDate,
                         endDate: $endDate,
@@ -53,7 +54,6 @@ struct HomeView: View {
                 }
             }
             .safeAreaPadding(15)
-            .background(Color.mainBackground)
             .onScrollGeometryChange(for: ScrollGeometry.self) {
                 $0
             } action: { oldValue, newValue in
@@ -68,8 +68,21 @@ struct HomeView: View {
                         Image("cards.blank")
                             .resizable()
                             .frame(width: 24, height: 24)
+                            .padding(8)
+                            .background {
+                                TransparentBlurView(removeAllFilters: false)
+                                    .background(Color.white.opacity(0.05))
+                            }
+                            .clipShape(Circle())
+                            .overlay {
+                                Circle()
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            }
                     }
                 }
+            }
+            .background {
+                LivelyFloatingBlobsBackground()
             }
         }
         .sheet(isPresented: $showingAccountsManagement) {
@@ -79,12 +92,6 @@ struct HomeView: View {
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
                 .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
-            OnboardingView(onComplete: {
-                firstLaunchManager.completeOnboarding()
-            })
-            .presentationDetents([.medium])
         }
     }
     

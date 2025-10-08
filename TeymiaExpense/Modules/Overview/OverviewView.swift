@@ -72,7 +72,9 @@ struct OverviewView: View {
                 }
                 .padding(.vertical, 20)
             }
-            .background(Color.mainBackground)
+            .background {
+                AnimatedBlobBackground()
+            }
         }
         .sheet(item: $selectedCategoryGroup) { categoryGroup in
             NavigationStack {

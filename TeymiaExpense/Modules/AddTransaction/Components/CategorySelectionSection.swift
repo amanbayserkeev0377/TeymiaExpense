@@ -149,12 +149,9 @@ struct CategorySelectionView: View {
                     .background(
                         Circle()
                             .fill(localSelectedCategoryGroup?.id == categoryGroup.id
-                                  ? Color.clear
+                                  ? .primary
                                   : Color.mainRowBackground)
                     )
-                    .glassEffect(localSelectedCategoryGroup?.id == categoryGroup.id
-                                 ? .regular.tint(.primary)
-                                 : .regular)
                 
                 Text(categoryGroup.name)
                     .font(.system(.caption, design: .rounded))

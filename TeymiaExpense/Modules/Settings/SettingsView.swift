@@ -15,6 +15,9 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Button("Reset Onboarding") {
+                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+                }
                 Section {
                     Button {
                         changeTheme.toggle()

@@ -45,8 +45,7 @@ struct CustomSegmentedControl<T: Hashable>: View {
                     .background {
                         if selection == option {
                             Capsule()
-                                .fill(.clear)
-                                .glassEffect(.regular.tint(Color.mainRowBackground))
+                                .fill(Color.gray.opacity(0.4))
                                 .matchedGeometryEffect(id: "selection", in: namespace)
                         }
                     }
@@ -55,10 +54,6 @@ struct CustomSegmentedControl<T: Hashable>: View {
             }
         }
         .padding(4)
-        .background {
-            Capsule()
-                .fill(Color.gray.opacity(0.1))
-        }
     }
     
     // MARK: - Private Properties

@@ -90,15 +90,16 @@ struct CategoryFormView: View {
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .cancel) {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(role: .confirm) {
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         save()
                     } label: {
                         Image(systemName: "checkmark")

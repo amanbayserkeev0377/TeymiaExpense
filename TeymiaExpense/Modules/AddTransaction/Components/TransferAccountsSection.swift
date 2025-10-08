@@ -44,7 +44,7 @@ struct TransferAccountsSection: View {
                 .buttonStyle(.plain)
             }
         }
-        .listRowBackground(Color.mainRowBackground)
+        .listRowBackground(Color.gray.opacity(0.1))
         
         Section("to_account".localized) {
             let availableToAccounts = accounts.filter { $0 != fromAccount }
@@ -93,6 +93,6 @@ struct TransferAccountsSection: View {
                 }
             }
         }
-        .listRowBackground(Color.mainRowBackground)
+        .listRowBackground(Color.gray.opacity(0.1))
     }
 }

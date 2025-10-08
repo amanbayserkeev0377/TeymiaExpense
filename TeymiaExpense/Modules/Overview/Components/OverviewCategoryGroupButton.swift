@@ -20,7 +20,6 @@ struct OverviewCategoryGroupButton: View {
                     Circle()
                         .fill(Color.mainRowBackground)
                 )
-                .glassEffect(.regular)
             
             Text(categoryGroup.name)
                 .font(.system(.caption, design: .rounded))

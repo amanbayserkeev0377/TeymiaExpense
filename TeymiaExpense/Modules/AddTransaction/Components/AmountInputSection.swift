@@ -27,7 +27,7 @@ struct AmountInputSection: View {
                 selection: $selectedTransactionType
             )
         }
-        .listRowBackground(Color.mainRowBackground)
+        .listRowBackground(Color.gray.opacity(0.1))
     }
 }
 

@@ -58,7 +58,7 @@ struct AddTransactionView: View {
                             CategorySelectionRow(selectedCategory: selectedCategory)
                         }
                     }
-                    .listRowBackground(Color.mainRowBackground)
+                    .listRowBackground(Color.gray.opacity(0.1))
                 }
                 
                 // Account/Transfer Section
@@ -80,28 +80,21 @@ struct AddTransactionView: View {
                 DateNoteSection(date: $date, note: $note)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.mainBackground.ignoresSafeArea())
+            .background(Color.clear.ignoresSafeArea())
             .navigationTitle(isEditMode ? "Edit Transaction" : selectedType.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
-                    Button { isAmountFieldFocused = false } label: {
-                        Image(systemName: "keyboard.chevron.compact.down")
-                    }
-                }
-                
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .cancel) { dismiss() } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(role: .confirm) {
+//                    Button { isAmountFieldFocused = false } label: {
+//                        Image(systemName: "keyboard.chevron.compact.down")
+//                    }
+                    Button {
                         isEditMode ? updateTransaction() : saveTransaction()
                     } label: {
-                        Image(systemName: "checkmark")
+                        Text("Save")
+                            .fontDesign(.rounded)
+                            .fontWeight(.bold)
                     }
                     .disabled(!canSave)
                 }

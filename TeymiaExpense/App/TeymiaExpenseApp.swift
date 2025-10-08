@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct TeymiaExpenseApp: App {
     @State private var userPreferences = UserPreferences()
+    @StateObject private var firstLaunchManager = FirstLaunchManager()
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     
     var sharedModelContainer: ModelContainer = {
@@ -37,6 +38,11 @@ struct TeymiaExpenseApp: App {
             MainTabView()
                 .environment(userPreferences)
                 .preferredColorScheme(userTheme.colorScheme)
+                .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
+                    TeymiaOnBoardingView {
+                        firstLaunchManager.completeOnboarding()
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
     }
