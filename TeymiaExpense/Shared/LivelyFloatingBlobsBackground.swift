@@ -16,8 +16,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 0,
                     color: colorScheme == .dark
-                        ? Color.mint
-                    : Color.mint.opacity(0.5),
+                    ? Color.mint.opacity(0.4)
+                    : Color.mint.opacity(0.2),
                     size: 210,
                     positions: [
                         CGPoint(x: geo.size.width * 0.15, y: geo.size.height * 0.2),  // Левый верх
@@ -34,8 +34,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 1,
                     color: colorScheme == .dark
-                    ? Color.purple.opacity(0.8)
-                    : Color.purple.opacity(0.5),
+                    ? Color.indigo.opacity(0.6)
+                    : Color.indigo.opacity(0.4),
                     size: 190,
                     positions: [
                         CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25), // Правый верх
@@ -52,8 +52,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 2,
                     color: colorScheme == .dark
-                        ? Color.blue.opacity(0.8)
-                    : Color.blue.opacity(0.5),
+                        ? Color.blue.opacity(0.4)
+                    : Color.blue.opacity(0.4),
                     size: 170,
                     positions: [
                         CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),   // Верх центр
@@ -140,19 +140,19 @@ struct LivelyBlob: View {
 #Preview("With Content") {
     ZStack {
         LivelyFloatingBlobsBackground()
-            .preferredColorScheme(.dark)
         
         VStack(spacing: 20) {
             Text("Content on top")
                 .font(.largeTitle)
-                .foregroundStyle(.white)
+                .fontDesign(.rounded)
+                .foregroundStyle(Color.primary)
             
             RoundedRectangle(cornerRadius: 20)
-                .fill(.white.opacity(0.1))
+                .fill(.gray.opacity(0.1))
                 .frame(height: 200)
                 .overlay {
                     Text("Glass Card")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.primary)
                 }
         }
         .padding()

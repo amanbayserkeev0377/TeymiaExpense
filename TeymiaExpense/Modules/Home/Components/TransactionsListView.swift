@@ -135,9 +135,9 @@ struct GlassDayTransactionsView: View {
                     .blur(radius: 10, opaque: true)
                     .background(Color.white.opacity(0.05))
             }
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .stroke(
                         LinearGradient(colors: [
                             .white.opacity(0.5),
@@ -201,8 +201,7 @@ struct GlassTransactionRow: View {
 #Preview {
     ZStack {
         // Background gradient
-        Image("neon-dark")
-            .resizable()
+        Color.mainBackground
             .ignoresSafeArea()
         
         ScrollView {

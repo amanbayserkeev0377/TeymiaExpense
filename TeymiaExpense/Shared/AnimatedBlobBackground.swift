@@ -4,54 +4,61 @@ import SwiftUI
 
 struct AnimatedBlobBackground: View {
     @State private var blobOffsets: [CGSize] = []
+    @State private var isReady = false
     
     var body: some View {
-        Rectangle()
-            .fill(.linearGradient(
-                colors: [
-                    Color(#colorLiteral(red: 0.3137254902, green: 0.8352941176, blue: 0.7176470588, alpha: 1)),
-                    Color(#colorLiteral(red: 0.02352941176, green: 0.4901960784, blue: 0.4078431373, alpha: 1))
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            ))
-            .mask {
-                TimelineView(.animation(minimumInterval: 4.0, paused: false)) { timeline in
-                    Canvas { context, size in
-                        // MARK: Adding Filters for gooey effect
-                        context.addFilter(.alphaThreshold(min: 0.5, color: .white))
-                        context.addFilter(.blur(radius: 30))
-                        
-                        // MARK: Drawing Layer
-                        context.drawLayer { ctx in
-                            // MARK: Placing Symbols
-                            for index in 1...15 {
-                                if let resolvedView = context.resolveSymbol(id: index) {
-                                    ctx.draw(resolvedView, at: CGPoint(x: size.width / 2, y: size.height / 2))
+        ZStack {
+            Color.mainBackground
+                .ignoresSafeArea()
+            
+            Rectangle()
+                .fill(.linearGradient(
+                    colors: [
+                        Color(#colorLiteral(red: 0.3137254902, green: 0.8352941176, blue: 0.7176470588, alpha: 1)),
+                        Color(#colorLiteral(red: 0.02352941176, green: 0.4901960784, blue: 0.4078431373, alpha: 1))
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ))
+                .mask {
+                    TimelineView(.animation(minimumInterval: 5.0, paused: false)) { timeline in
+                        Canvas { context, size in
+                            context.addFilter(.alphaThreshold(min: 0.5, color: .white))
+                            context.addFilter(.blur(radius: 30))
+                            context.drawLayer { ctx in
+                                for index in 1...15 {
+                                    if let resolvedView = context.resolveSymbol(id: index) {
+                                        ctx.draw(resolvedView, at: CGPoint(x: size.width / 2, y: size.height / 2))
+                                    }
                                 }
                             }
+                        } symbols: {
+                            ForEach(1...15, id: \.self) { index in
+                                BlobRectangle(
+                                    offset: blobOffsets.indices.contains(index - 1)
+                                    ? blobOffsets[index - 1]
+                                    : .zero
+                                )
+                                .tag(index)
+                            }
                         }
-                    } symbols: {
-                        // MARK: Generate 15 blobs with offsets from state
-                        ForEach(1...15, id: \.self) { index in
-                            BlobRectangle(
-                                offset: blobOffsets.indices.contains(index - 1)
-                                ? blobOffsets[index - 1]
-                                : .zero
-                            )
-                            .tag(index)
+                        .onChange(of: timeline.date) { oldValue, newValue in
+                            generateNewOffsets()
                         }
-                    }
-                    .onChange(of: timeline.date) { oldValue, newValue in
-                        // Generate new random positions (never return to center)
-                        generateNewOffsets()
                     }
                 }
-            }
-            .ignoresSafeArea()
-            .onAppear {
-                generateNewOffsets()
-            }
+                .blur(radius: 4)
+                .opacity(isReady ? 0.1 : 0)
+                .animation(.easeIn(duration: 2.0), value: isReady)
+                .ignoresSafeArea()
+                .task {
+                    generateNewOffsets()
+                    try? await Task.sleep(for: .milliseconds(50))
+                    generateNewOffsets()
+                    try? await Task.sleep(for: .milliseconds(1000))
+                    isReady = true
+                }
+        }
     }
     
     // MARK: - Generate Random Offsets
@@ -70,7 +77,7 @@ struct AnimatedBlobBackground: View {
             .fill(.white)
             .frame(width: 80, height: 80)
             .offset(offset)
-            .animation(.easeInOut(duration: 6), value: offset)
+            .animation(.easeInOut(duration: 8), value: offset)
     }
 }
 
