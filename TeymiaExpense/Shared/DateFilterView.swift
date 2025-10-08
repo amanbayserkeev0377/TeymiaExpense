@@ -165,10 +165,26 @@ fileprivate extension View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(.clear)
-                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                    TransparentBlurView(removeAllFilters: true)
+                        .blur(radius: 10, opaque: true)
+                        .background(Color.mainRowBackground.opacity(0.8))
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .stroke(
+                            LinearGradient(colors: [
+                                .white.opacity(0.5),
+                                .white.opacity(0.1),
+                                .white.opacity(0.2),
+                                .white.opacity(0.3),
+                                .white.opacity(0.5)
+                                
+                            ], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            lineWidth: 0.4
+                        )
+                }
+                .shadow(color: .black.opacity(0.05), radius: 4)
         }
     }
 }

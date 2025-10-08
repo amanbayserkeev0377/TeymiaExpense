@@ -68,16 +68,6 @@ struct HomeView: View {
                         Image("cards.blank")
                             .resizable()
                             .frame(width: 24, height: 24)
-                            .padding(8)
-                            .background {
-                                TransparentBlurView(removeAllFilters: false)
-                                    .background(Color.white.opacity(0.05))
-                            }
-                            .clipShape(Circle())
-                            .overlay {
-                                Circle()
-                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                            }
                     }
                 }
             }

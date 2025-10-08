@@ -14,7 +14,7 @@ struct OverviewCategoryGroupButton: View {
                 // Glass effect background
                 TransparentBlurView(removeAllFilters: true)
                     .blur(radius: 10, opaque: true)
-                    .background(Color.white.opacity(0.05))
+                    .background(Color.mainRowBackground.opacity(0.8))
                     .clipShape(Circle())
                     .overlay(
                         Circle()

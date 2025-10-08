@@ -25,6 +25,7 @@ struct AddTransactionView: View {
     @State private var toAccount: Account?
     
     @State private var showingAddAccount = false
+    @State private var keyboardHeight: CGFloat = 0
     @FocusState private var isAmountFieldFocused: Bool
     
     // MARK: - Initializers
@@ -35,70 +36,100 @@ struct AddTransactionView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                AmountInputSection(
-                    amount: $amount,
-                    selectedTransactionType: $selectedType,
-                    isAmountFieldFocused: $isAmountFieldFocused,
-                    currencySymbol: currencySymbol
-                )
-                
-                // Category Section (only for income/expense)
-                if selectedType != .transfer {
-                    Section {
-                        NavigationLink {
-                            CategorySelectionView(
-                                transactionType: selectedType == .income ? .income : .expense,
-                                selectedCategory: selectedCategory,
-                                onSelectionChanged: { category in
-                                    selectedCategory = category
-                                }
-                            )
-                        } label: {
-                            CategorySelectionRow(selectedCategory: selectedCategory)
+            ZStack(alignment: .bottom) {
+                // Main Form Content
+                Form {
+                    AmountInputSection(
+                        amount: $amount,
+                        selectedTransactionType: $selectedType,
+                        isAmountFieldFocused: $isAmountFieldFocused,
+                        currencySymbol: currencySymbol
+                    )
+                    
+                    // Category Section (only for income/expense)
+                    if selectedType != .transfer {
+                        Section {
+                            NavigationLink {
+                                CategorySelectionView(
+                                    transactionType: selectedType == .income ? .income : .expense,
+                                    selectedCategory: selectedCategory,
+                                    onSelectionChanged: { category in
+                                        selectedCategory = category
+                                    }
+                                )
+                            } label: {
+                                CategorySelectionRow(selectedCategory: selectedCategory)
+                            }
                         }
+                        .listRowBackground(Color.mainRowBackground)
                     }
-                    .listRowBackground(Color.gray.opacity(0.1))
+                    
+                    // Account/Transfer Section
+                    if selectedType == .transfer {
+                        TransferAccountsSection(
+                            fromAccount: $fromAccount,
+                            toAccount: $toAccount,
+                            accounts: accounts,
+                            onAddAccountTapped: { showingAddAccount = true }
+                        )
+                    } else {
+                        AccountSelectionSection(
+                            selectedAccount: $selectedAccount,
+                            accounts: accounts
+                        )
+                    }
+                    
+                    // Date & Note
+                    DateNoteSection(date: $date, note: $note)
+                    
+                    // Bottom padding for floating button
+                    Color.clear
+                        .frame(height: 80)
+                        .listRowBackground(Color.clear)
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color.mainBackground)
                 
-                // Account/Transfer Section
-                if selectedType == .transfer {
-                    TransferAccountsSection(
-                        fromAccount: $fromAccount,
-                        toAccount: $toAccount,
-                        accounts: accounts,
-                        onAddAccountTapped: { showingAddAccount = true }
-                    )
-                } else {
-                    AccountSelectionSection(
-                        selectedAccount: $selectedAccount,
-                        accounts: accounts
-                    )
-                }
-                
-                // Date & Note
-                DateNoteSection(date: $date, note: $note)
+                // Floating Save Button
+                FloatingSaveButton(
+                    isEnabled: canSave,
+                    action: {
+                        isEditMode ? updateTransaction() : saveTransaction()
+                    }
+                )
+                .padding(.horizontal, 15)
+                .padding(.bottom, keyboardHeight > 0 ? keyboardHeight + 8 : 20)
+                .animation(.easeOut(duration: 0.25), value: keyboardHeight)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.clear.ignoresSafeArea())
             .navigationTitle(isEditMode ? "Edit Transaction" : selectedType.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                
+                // Keyboard toolbar - только кнопка скрыть клавиатуру
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
-//                    Button { isAmountFieldFocused = false } label: {
-//                        Image(systemName: "keyboard.chevron.compact.down")
-//                    }
                     Button {
-                        isEditMode ? updateTransaction() : saveTransaction()
+                        isAmountFieldFocused = false
                     } label: {
-                        Text("Save")
-                            .fontDesign(.rounded)
-                            .fontWeight(.bold)
+                        Image(systemName: "keyboard.chevron.compact.down")
                     }
-                    .disabled(!canSave)
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
+            if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardHeight = keyboardFrame.height
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardHeight = 0
         }
         .onAppear { setupInitialValues() }
         .onChange(of: selectedType) { oldValue, newValue in
@@ -274,5 +305,44 @@ struct AddTransactionView: View {
             print("Error updating transaction: \(error)")
             // TODO: Show user-friendly error alert
         }
+    }
+}
+
+// MARK: - Floating Save Button Component
+
+struct FloatingSaveButton: View {
+    let isEnabled: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 16, weight: .semibold))
+                
+                Text("Save")
+                    .font(.system(.body, design: .rounded, weight: .semibold))
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background {
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .fill(
+                        isEnabled
+                        ? AccountColors.color(at: 0)
+                        : Color.gray.opacity(0.3)
+                    )
+            }
+            .shadow(
+                color: isEnabled
+                ? AccountColors.color(at: 0).opacity(0.3)
+                : Color.clear,
+                radius: 12,
+                y: 4
+            )
+        }
+        .disabled(!isEnabled)
+        .animation(.easeInOut(duration: 0.2), value: isEnabled)
     }
 }

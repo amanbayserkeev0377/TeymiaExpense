@@ -39,6 +39,6 @@ struct AccountSelectionSection: View {
                 .buttonStyle(.plain)
             }
         }
-        .listRowBackground(Color.gray.opacity(0.1))
+        .listRowBackground(Color.mainRowBackground)
     }
 }

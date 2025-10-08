@@ -85,6 +85,7 @@ struct CategoryIconSelectionView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 20)
             }
+            .background(Color.mainBackground)
             .navigationTitle("Icon")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -122,7 +123,7 @@ struct CategoryIconSelectionView: View {
                 .padding(10)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary : Color.mainRowBackground)
                 )
         }
         .buttonStyle(.plain)

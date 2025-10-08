@@ -73,7 +73,7 @@ struct OverviewView: View {
                 .padding(.vertical, 20)
             }
             .background {
-                AnimatedBlobBackground()
+                LivelyFloatingBlobsBackground()
             }
         }
         .sheet(item: $selectedCategoryGroup) { categoryGroup in

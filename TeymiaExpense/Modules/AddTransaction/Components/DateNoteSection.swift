@@ -21,6 +21,6 @@ struct DateNoteSection: View {
                 TextField("note".localized, text: $note, axis: .vertical)
             }
         }
-        .listRowBackground(Color.gray.opacity(0.1))
+        .listRowBackground(Color.mainRowBackground)
     }
 }

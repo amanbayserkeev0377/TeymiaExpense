@@ -5,44 +5,47 @@ import SwiftUI
 struct TransparentBlurView: UIViewRepresentable {
     var removeAllFilters: Bool = false
     
-    func makeUIView(context: Context) -> TransparentBlurViewHelper {
-        return TransparentBlurViewHelper(removeAllFilters: removeAllFilters)
+    func makeUIView(context: Context) -> CustomBlurView {
+        let view = CustomBlurView(effect: .init(style: .systemUltraThinMaterial))
+        view.backgroundColor = .clear
+        return view
     }
     
-    func updateUIView(_ uiView: TransparentBlurViewHelper, context: Context) {
+    func updateUIView(_ uiView: CustomBlurView, context: Context) {
         // No updates needed
     }
 }
 
 // MARK: - Helper Class
 
-class TransparentBlurViewHelper: UIVisualEffectView {
-    init(removeAllFilters: Bool) {
-        super.init(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+class CustomBlurView: UIVisualEffectView {
+    init(effect: UIBlurEffect) {
+        super.init(effect: effect)
+        setup()
+    }
+    
+    func setup() {
+        removeFilters()
         
-        // Remove background view if available
-        if subviews.indices.contains(1) {
-            subviews[1].alpha = 0
-        }
-        
-        if let backdropLayer = layer.sublayers?.first {
-            if removeAllFilters {
-                backdropLayer.filters = []
-            } else {
-                // Remove all filters except blur
-                backdropLayer.filters?.removeAll(where: { filter in
-                    String(describing: filter) != "gaussianBlur"
-                })
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _) in
+            DispatchQueue.main.async {
+                self.removeFilters()
             }
         }
+    }
+    
+    func hideView(_ status: Bool) {
+        alpha = status ? 0 : 1
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Disable trait changes to prevent blur from changing
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        // Do nothing - keeps blur consistent
+    // Removing all filters
+    private func removeFilters() {
+        if let filterLayer = layer.sublayers?.first {
+            filterLayer.filters = []
+        }
     }
 }

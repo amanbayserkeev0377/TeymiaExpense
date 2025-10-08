@@ -12,6 +12,11 @@ struct GlassTransactionsListView: View {
     
     var body: some View {
         VStack(spacing: 16) {
+            TransactionsHeaderView(
+                startDate: $startDate,
+                endDate: $endDate
+            )
+            
             if transactions.isEmpty {
                 TransactionEmptyStateView()
             } else {
@@ -22,6 +27,48 @@ struct GlassTransactionsListView: View {
                     onEditTransaction: onEditTransaction,
                     onHideTransaction: onHideTransaction,
                     onDeleteTransaction: onDeleteTransaction
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Transactions Header
+struct TransactionsHeaderView: View {
+    @Binding var startDate: Date
+    @Binding var endDate: Date
+    
+    private var dateRangeText: String {
+        DateFormatter.formatDateRange(startDate: startDate, endDate: endDate)
+    }
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Transactions")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.primary)
+                
+                Text(dateRangeText)
+                    .font(.caption)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+            
+            // Date Filter Menu
+            CustomMenuView(style: .glass) {
+                Image("calendar")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .frame(width: 40, height: 30)
+            } content: {
+                DateFilterView(
+                    startDate: $startDate,
+                    endDate: $endDate
                 )
             }
         }
@@ -133,7 +180,7 @@ struct GlassDayTransactionsView: View {
             .background {
                 TransparentBlurView(removeAllFilters: true)
                     .blur(radius: 10, opaque: true)
-                    .background(Color.white.opacity(0.05))
+                    .background(Color.mainRowBackground.opacity(0.7))
             }
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .overlay {
@@ -141,12 +188,13 @@ struct GlassDayTransactionsView: View {
                     .stroke(
                         LinearGradient(colors: [
                             .white.opacity(0.5),
-                            .clear,
+                            .white.opacity(0.1),
                             .white.opacity(0.2),
+                            .white.opacity(0.3),
                             .white.opacity(0.5)
                             
                         ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 0.8
+                        lineWidth: 0.4
                     )
             }
             .shadow(color: .black.opacity(0.1), radius: 10)
@@ -193,29 +241,5 @@ struct GlassTransactionRow: View {
                     resetPosition.toggle()
                 }
             }
-    }
-}
-
-// MARK: - Preview
-
-#Preview {
-    ZStack {
-        // Background gradient
-        Color.mainBackground
-            .ignoresSafeArea()
-        
-        ScrollView {
-            GlassTransactionsListView(
-                transactions: [],
-                startDate: .constant(Date.startOfCurrentMonth),
-                endDate: .constant(Date.endOfCurrentMonth),
-                userPreferences: UserPreferences(),
-                currencies: [],
-                onEditTransaction: { _ in },
-                onHideTransaction: { _ in },
-                onDeleteTransaction: { _ in }
-            )
-            .padding()
-        }
     }
 }
