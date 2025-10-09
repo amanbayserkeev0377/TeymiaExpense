@@ -35,8 +35,10 @@ struct TipsView: View {
                     tip: tipsManager.lastPurchasedTip,
                     isShowing: $tipsManager.showThankYou
                 )
+                .transition(.opacity.combined(with: .scale(0.8)))
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: tipsManager.showThankYou)
     }
 }
 
@@ -44,7 +46,7 @@ struct TipsView: View {
 struct InfoSection: View {
     var body: some View {
         VStack(spacing: 0) {
-            Image("plantImage")
+            Image("plant.image")
                 .resizable()
                 .frame(width: 200, height: 200)
             
@@ -208,27 +210,21 @@ struct ThankYouOverlay: View {
     
     var body: some View {
         ZStack {
-            // Dimmed background
-            Color.black.opacity(0.8)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    withAnimation {
-                        isShowing = false
-                    }
-                }
-            
             // Thank you card
             VStack(spacing: 20) {
-                Text(tip?.image ?? "❤️")
-                    .font(.system(size: 60))
+                Image(tip?.image ?? "tip.fallback")
+                    .resizable()
+                    .frame(width: 100, height: 100)
                 
                 VStack(spacing: 8) {
                     Text("Thank You!")
                         .font(.title.bold())
+                        .fontDesign(.rounded)
                         .foregroundStyle(.white)
                     
-                    Text("Your support means the world to me!\nIt helps keep the app free for everyone.")
+                    Text("Every tip helps Teymia Expense grow and stay free.")
                         .font(.subheadline)
+                        .fontDesign(.rounded)
                         .foregroundStyle(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
                 }
@@ -241,22 +237,39 @@ struct ThankYouOverlay: View {
                     Text("Continue")
                         .font(.headline)
                         .foregroundStyle(.white)
+                        .fontDesign(.rounded)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 12)
                         .background(
-                            RoundedRectangle(cornerRadius: 30)
+                            RoundedRectangle(cornerRadius: 40)
                                 .fill(Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1)))
                         )
                 }
             }
             .padding(30)
-            .background(
+            .background {
+                TransparentBlurView(removeAllFilters: true)
+                    .blur(radius: 10, opaque: true)
+                    .clipShape(RoundedRectangle(cornerRadius: 40))
+            }
+            .background {
                 RoundedRectangle(cornerRadius: 40)
-                    .fill(.ultraThinMaterial.opacity(0.9))
-            )
+                    .fill(Color.white.opacity(0.05))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 40, style: .continuous)
+                    .stroke(
+                        LinearGradient(colors: [
+                            .white.opacity(0.5),
+                            .white.opacity(0.15),
+                            .white.opacity(0.15),
+                            .white.opacity(0.5)
+                        ], startPoint: .topLeading, endPoint: .bottomTrailing),
+                        lineWidth: 0.8
+                    )
+            }
             .padding(.horizontal, 40)
         }
-        .transition(.opacity)
     }
 }
 
@@ -264,11 +277,10 @@ struct ThankYouOverlay: View {
     TipsView()
 }
 
-//#Preview {
-//    @Previewable @State var tipsManager = TipsManager()
-//
-//    ThankYouOverlay(
-//        tip: tipsManager.lastPurchasedTip,
-//        isShowing: $tipsManager.showThankYou
-//    )
-//}
+#Preview {
+    @Previewable @State var tipsManager = TipsManager()
+    ThankYouOverlay(
+        tip: tipsManager.lastPurchasedTip,
+        isShowing: $tipsManager.showThankYou
+    )
+}

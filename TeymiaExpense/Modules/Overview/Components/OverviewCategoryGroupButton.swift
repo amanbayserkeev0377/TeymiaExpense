@@ -33,7 +33,7 @@ struct OverviewCategoryGroupButton: View {
                             )
                     )
                     .frame(width: 60, height: 60)
-                    .shadow(color: .black.opacity(0.1), radius: 4)
+                    .shadow(color: .black.opacity(0.07), radius: 6)
                 
                 // Icon on top
                 Image(categoryGroup.iconName)
