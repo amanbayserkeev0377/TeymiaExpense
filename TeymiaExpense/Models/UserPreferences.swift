@@ -64,4 +64,14 @@ class UserPreferences {
         
         return CurrencyFormatter.format(amount, currency: currency)
     }
+
+    func formatAmountWithoutCurrency(_ amount: Decimal, currencies: [Currency]) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = " "
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        
+        return formatter.string(from: amount as NSDecimalNumber) ?? "0"
+    }
 }

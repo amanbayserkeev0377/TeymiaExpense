@@ -1,0 +1,100 @@
+{
+  "identifier" : "TipsConfiguration",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "tip_cookie",
+      "localizations" : [
+        {
+          "description" : "Thanks for the app!",
+          "displayName" : "Cookie",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Спасибо за приложение!",
+          "displayName" : "Печенька",
+          "locale" : "ru"
+        }
+      ],
+      "productID" : "tip_cookie",
+      "referenceName" : "Cookie Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "tip_coffee",
+      "localizations" : [
+        {
+          "description" : "Great app, love it!",
+          "displayName" : "Coffee",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Отличное приложение!",
+          "displayName" : "Кофе",
+          "locale" : "ru"
+        }
+      ],
+      "productID" : "tip_coffee",
+      "referenceName" : "Coffee Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "tip_burger",
+      "localizations" : [
+        {
+          "description" : "Amazing work, thank you!",
+          "displayName" : "Burger",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Потрясающая работа!",
+          "displayName" : "Бургер",
+          "locale" : "ru"
+        }
+      ],
+      "productID" : "tip_burger",
+      "referenceName" : "Burger Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "tip_pizza",
+      "localizations" : [
+        {
+          "description" : "You're the best!",
+          "displayName" : "Pizza",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Вы лучшие!",
+          "displayName" : "Пицца",
+          "locale" : "ru"
+        }
+      ],
+      "productID" : "tip_pizza",
+      "referenceName" : "Pizza Tip",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "askToBuyEnabled" : false,
+    "billingIssueEnabled" : false,
+    "renewalBillingIssueCount" : 0,
+    "subscriptionOffersEnabled" : false
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

@@ -18,6 +18,7 @@ struct SettingsView: View {
                 Button("Reset Onboarding") {
                     UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
                 }
+                TipsSection()
                 Section {
                     Button {
                         changeTheme.toggle()
@@ -44,43 +45,6 @@ struct SettingsView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                }
-                .listRowBackground(Color.mainRowBackground)
-                
-                // Data Management Section
-                Section {
-                    NavigationLink {
-                        AccountsManagementView()
-                    } label: {
-                        HStack {
-                            Image("cards.blank")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.primary)
-                            
-                            Text("Accounts")
-                            
-                            Spacer()
-                            
-                            Text("\(accounts.count)")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    
-                    NavigationLink {
-                        CategoryManagementView()
-                    } label: {
-                        HStack {
-                            Image("category.management")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.primary)
-                            
-                            Text("categories".localized)
-                        }
-                    }
                     
                     NavigationLink {
                         CurrencySettingsView()

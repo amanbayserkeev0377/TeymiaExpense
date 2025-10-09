@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var showingAddTransaction = false
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack {
@@ -29,15 +27,6 @@ struct MainTabView: View {
                     .tag(2)
             }
             .tint(AccountColors.color(at: 0))
-            
-            // Floating Plus Button
-            FloatingPlusButton {
-                showingAddTransaction = true
-            }
-        }
-        .sheet(isPresented: $showingAddTransaction) {
-            AddTransactionView()
-                .presentationDragIndicator(.visible)
         }
     }
 }

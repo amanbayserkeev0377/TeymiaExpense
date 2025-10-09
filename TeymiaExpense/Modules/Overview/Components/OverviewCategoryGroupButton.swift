@@ -7,6 +7,7 @@ struct OverviewCategoryGroupButton: View {
     let color: Color
     let currencies: [Currency]
     let userPreferences: UserPreferences
+    let animation: Namespace.ID
     
     var body: some View {
         VStack(spacing: 8) {
@@ -31,8 +32,8 @@ struct OverviewCategoryGroupButton: View {
                                 lineWidth: 1.2
                             )
                     )
-                    .frame(width: 52, height: 52)
-                    .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    .frame(width: 60, height: 60)
+                    .shadow(color: .black.opacity(0.1), radius: 4)
                 
                 // Icon on top
                 Image(categoryGroup.iconName)
@@ -41,25 +42,29 @@ struct OverviewCategoryGroupButton: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
             }
-            
-            // Текстовое содержимое
+            .padding(2)
+            .clipShape(Circle())
+            .contentShape(Circle())
+            .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
+
             VStack(spacing: 4) {
                 Text(categoryGroup.name)
-                    .font(.system(.footnote, design: .rounded))
+                    .font(.system(.body, design: .rounded))
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .minimumScaleFactor(0.8)
                 
-                Text(userPreferences.formatAmount(totalAmount, currencies: currencies))
-                    .font(.system(.caption, design: .rounded))
+                Text(userPreferences.formatAmountWithoutCurrency(totalAmount, currencies: currencies))
+                    .font(.system(.callout, design: .rounded))
                     .fontWeight(.semibold)
                     .foregroundStyle(color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
         }
-        .padding(20)
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .frame(minWidth: 140)
     }
 }

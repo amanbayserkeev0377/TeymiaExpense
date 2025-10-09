@@ -36,7 +36,7 @@ struct OverviewTransactionSection: View {
             
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
-                spacing: 16
+                spacing: 8
             ) {
                 ForEach(groups) { categoryGroup in
                     Button {
@@ -47,11 +47,11 @@ struct OverviewTransactionSection: View {
                             totalAmount: getTotalAmount(for: categoryGroup),
                             color: color,
                             currencies: currencies,
-                            userPreferences: userPreferences
+                            userPreferences: userPreferences,
+                            animation: animation
                         )
                     }
                     .buttonStyle(.plain)
-                    .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
                 }
             }
             .padding(.horizontal, 20)
