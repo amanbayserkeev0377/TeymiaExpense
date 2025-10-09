@@ -15,7 +15,7 @@ struct TipsView: View {
                     .frame(width: 30, height: 30)
             } else {
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: 40) {
                         // Info Section
                         InfoSection()
                         
@@ -55,14 +55,17 @@ struct InfoSection: View {
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.4), radius: 3)
                 
                 Text("You can leave a tip to support ongoing development and future updates.")
                     .fontDesign(.rounded)
                     .foregroundStyle(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
+                    .shadow(color: .black.opacity(0.4), radius: 3)
+
             }
-            .padding(.top, -10)
+            .padding(.top, -15)
         }
     }
 }
@@ -112,11 +115,14 @@ struct TipCard: View {
                         .font(.headline)
                         .fontDesign(.rounded)
                         .foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.4), radius: 3)
+
                     
                     Text(tip.message)
                         .font(.subheadline)
                         .fontDesign(.rounded)
                         .foregroundStyle(.white.opacity(0.7))
+                        .shadow(color: .black.opacity(0.4), radius: 3)
                 }
                 
                 Spacer()
@@ -130,6 +136,7 @@ struct TipCard: View {
                         .font(.title3.bold())
                         .foregroundStyle(.white)
                         .fontDesign(.rounded)
+                        .shadow(color: .black.opacity(0.4), radius: 3)
                 }
             }
             .padding(20)
@@ -142,15 +149,15 @@ struct TipCard: View {
                 RoundedRectangle(cornerRadius: 40, style: .continuous)
                     .stroke(
                         LinearGradient(colors: [
-                            .white.opacity(0.4),
-                            .white.opacity(0.1),
-                            .white.opacity(0.2),
-                            .white.opacity(0.2)
-                        ], startPoint: .topLeading, endPoint: .bottom),
-                        lineWidth: 1
+                            .white.opacity(0.6),
+                            Color(#colorLiteral(red: 0, green: 0.8159179091, blue: 0.5566406846, alpha: 1)).opacity(0.2),
+                            Color(#colorLiteral(red: 0, green: 0.8159179091, blue: 0.5566406846, alpha: 1)).opacity(0.3),
+                            .white.opacity(0.1)
+                        ], startPoint: .top, endPoint: .bottom),
+                        lineWidth: 0.5
                     )
             }
-            .shadow(color: .white.opacity(0.2), radius: 5)
+            .shadow(color: .white.opacity(0.4), radius: 5)
         }
         .buttonStyle(.plain)
         .disabled(isPurchasing)

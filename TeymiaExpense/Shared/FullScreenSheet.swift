@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 extension View {
     @ViewBuilder
@@ -34,7 +33,7 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
     var body: some View {
         content(safeArea)
             .scrollDisabled(scrollDisabled)
-            /// Test "geometryGroup" modifier with your use cases, and if there is any animation glitch try comment/uncomment it out!
+            /// Test "geometryGroup" modifier, if there is any animation glitch try comment/uncomment
             .geometryGroup()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(.rect)
@@ -54,6 +53,8 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
                     case .changed:
                         guard scrollDisabled else { return }
                         offset = translation
+                        
+                        resizeWindow(windowProgress)
                     case .ended, .cancelled, .failed:
                         /// Disabling gesture until the animation get's completed
                         gesture.isEnabled = false
@@ -64,9 +65,11 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
                                 offset = windowSize.height
                             }
                             
+                            resetWindowWithAnimation()
+                            
                             Task {
                                 try? await Task.sleep(for: .seconds(0.3))
-                                var transaction = SwiftUI.Transaction() // "SwiftUI" because I have model Transaction
+                                var transaction = SwiftUI.Transaction()
                                 transaction.disablesAnimations = true
                                 withTransaction(transaction) {
                                     dismiss()
@@ -76,6 +79,10 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
                             /// Resetting
                             withAnimation(.snappy(duration: 0.3, extraBounce: 0)) {
                                 offset = 0
+                            }
+                            
+                            UIView.animate(withDuration: 0.3) {
+                                resizeWindow(0.1)
                             }
                             
                             Task {
@@ -90,10 +97,27 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
             )
             .presentationBackground {
                 background
-                    /// Moving the background as well!
+                    /// Moving the background
                     .offset(y: offset)
             }
             .ignoresSafeArea(.container, edges: ignoresSafeArea ? .all : [])
+            /// For Window Resizing
+            .onAppear {
+                guard !isLoaded else { return }
+                UIView.animate(withDuration: 0.3) {
+                    resizeWindow(0.1)
+                }
+                isLoaded = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                presentingView?.transform = .identity
+            }
+            .onChange(of: isPresented) { oldValue, newValue in
+                if !scrollDisabled, !newValue {
+                    print("Closed from Outside")
+                    resetWindowWithAnimation()
+                }
+            }
     }
     
     var windowSize: CGSize {
@@ -110,6 +134,38 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
         }
         
         return .zero
+    }
+    
+    /// Window Resizing Helpers
+    var windowProgress: CGFloat {
+        return 0.1 - max(min(offset / windowSize.height, 1), 0) * 0.1
+    }
+    
+    func resizeWindow(_ progress: CGFloat) {
+        if let presentingView {
+            let offsetY = (windowSize.height * progress) / 2
+            
+            /// Custom Corner Radius
+            presentingView.layer.cornerRadius = (progress / 0.1) * 50
+            presentingView.layer.masksToBounds = true
+            
+            presentingView.transform = .identity.scaledBy(x: 1 - progress, y: 1 - progress).translatedBy(x: 0, y: offsetY)
+        }
+    }
+    
+    func resetWindowWithAnimation() {
+        UIView.animate(withDuration: 0.3) {
+            presentingView?.layer.cornerRadius = 0
+            presentingView?.transform = .identity
+        }
+    }
+    
+    var mainWindow: UIWindow? {
+        (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.keyWindow
+    }
+    
+    var presentingView: UIView? {
+        mainWindow?.subviews.first
     }
 }
 
@@ -140,7 +196,7 @@ fileprivate struct CustomPanGesture: UIGestureRecognizerRepresentable {
                 return false
             }
             
-            /// Used to know the direction of the drag!
+            /// Used to know the direction of the drag
             let velocity = panGesture.velocity(in: panGesture.view).y
             var offset: CGFloat = 0
             

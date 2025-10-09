@@ -57,7 +57,7 @@ struct TipsSection: View {
                 }
                 .clipShape(Background())
         } background: {
-            Background()
+            Color.clear
         }
     }
     
