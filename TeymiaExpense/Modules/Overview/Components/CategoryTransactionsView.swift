@@ -19,7 +19,7 @@ struct CategoryTransactionsView: View {
         let startOfStartDate = calendar.startOfDay(for: startDate)
         let endOfEndDate = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
         
-        return category.transactions.filter { transaction in
+        return (category.transactions ?? []).filter { transaction in
             !transaction.isHidden &&
             transaction.date >= startOfStartDate &&
             transaction.date < endOfEndDate
@@ -47,7 +47,8 @@ struct CategoryTransactionsView: View {
             Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Total \(category.categoryGroup.type == .income ? "Income" : "Expense")")
+                        let groupType = category.categoryGroup?.type ?? .expense
+                        Text("Total \(groupType == .income ? "Income" : "Expense")")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
@@ -55,7 +56,7 @@ struct CategoryTransactionsView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
-                            .foregroundStyle(category.categoryGroup.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
+                            .foregroundStyle(groupType == .income ? Color("IncomeColor") : Color("ExpenseColor"))
                     }
                     
                     Spacer()

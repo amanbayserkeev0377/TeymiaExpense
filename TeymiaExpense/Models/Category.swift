@@ -3,17 +3,23 @@ import SwiftData
 
 @Model
 final class Category {
-    var name: String
-    var iconName: String
-    var sortOrder: Int
-    var isDefault: Bool
-    var createdAt: Date
-    var categoryGroup: CategoryGroup
+    var name: String = ""
+    var iconName: String = ""
+    var sortOrder: Int = 0
+    var isDefault: Bool = false
+    var createdAt: Date = Date()
+    var categoryGroup: CategoryGroup? = nil
     
     @Relationship(deleteRule: .cascade, inverse: \Transaction.category)
-    var transactions: [Transaction] = []
+    var transactions: [Transaction]? = []
     
-    init(name: String, iconName: String, categoryGroup: CategoryGroup, sortOrder: Int = 0, isDefault: Bool = false) {
+    init(
+        name: String,
+        iconName: String,
+        categoryGroup: CategoryGroup,
+        sortOrder: Int = 0,
+        isDefault: Bool = false
+    ) {
         self.name = name
         self.iconName = iconName
         self.categoryGroup = categoryGroup
@@ -24,7 +30,6 @@ final class Category {
 }
 
 extension Category {
-    
     static func createDefaults(context: ModelContext) {
         let categoryGroupDescriptor = FetchDescriptor<CategoryGroup>()
         let categoryGroups = (try? context.fetch(categoryGroupDescriptor)) ?? []
@@ -42,7 +47,10 @@ extension Category {
         createIncomeCategories(findCategoryGroup: findCategoryGroup, context: context)
     }
     
-    private static func createExpenseCategories(findCategoryGroup: (String, GroupType) -> CategoryGroup?, context: ModelContext) {
+    private static func createExpenseCategories(
+        findCategoryGroup: (String, GroupType) -> CategoryGroup?,
+        context: ModelContext
+    ) {
         let categoryData: [(groupName: String, categories: [(String, String)])] = [
             ("food.drinks".localized, [
                 ("delivery".localized, "delivery"),
@@ -149,7 +157,10 @@ extension Category {
         }
     }
     
-    private static func createIncomeCategories(findCategoryGroup: (String, GroupType) -> CategoryGroup?, context: ModelContext) {
+    private static func createIncomeCategories(
+        findCategoryGroup: (String, GroupType) -> CategoryGroup?,
+        context: ModelContext
+    ) {
         let categoryData: [(groupName: String, categories: [(String, String)])] = [
             ("salary".localized, [
                 ("monthly.salary".localized, "monthly.salary"),

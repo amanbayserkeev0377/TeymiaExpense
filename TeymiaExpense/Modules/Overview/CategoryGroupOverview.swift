@@ -16,7 +16,7 @@ struct CategoryGroupOverviewView: View {
     
     private var groupCategories: [Category] {
         categories
-            .filter { $0.categoryGroup.id == categoryGroup.id }
+            .filter { $0.categoryGroup?.id == categoryGroup.id }
             .filter { getTransactionCount(for: $0) > 0 } // Show only categories with transactions
             .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) } // Sort by amount descending
     }
@@ -119,7 +119,7 @@ struct CategoryOverviewRow: View {
                 .font(.body)
                 .fontWeight(.semibold)
                 .fontDesign(.rounded)
-                .foregroundStyle(category.categoryGroup.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
+                .foregroundStyle(category.categoryGroup?.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
         }
         .padding(.vertical, 4)
     }

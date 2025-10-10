@@ -117,9 +117,9 @@ struct AddTransactionView: View {
     
     private var currencySymbol: String {
         if selectedType == .transfer {
-            return fromAccount?.currency.symbol ?? "$"
+            return fromAccount?.currency?.symbol ?? "$"
         }
-        return selectedAccount?.currency.symbol ?? "$"
+        return selectedAccount?.currency?.symbol ?? "$"
     }
     
     private var canSave: Bool {

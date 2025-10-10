@@ -61,7 +61,7 @@ struct OverviewTransactionSection: View {
     // MARK: - Helper Methods
     
     private func getTotalAmount(for categoryGroup: CategoryGroup) -> Decimal {
-        let groupCategories = categories.filter { $0.categoryGroup.id == categoryGroup.id }
+        let groupCategories = categories.filter { $0.categoryGroup?.id == categoryGroup.id }
         let categoryIds = Set(groupCategories.map { $0.id })
         
         return filteredTransactions.filter { transaction in

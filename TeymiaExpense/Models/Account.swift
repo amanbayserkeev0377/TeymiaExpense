@@ -3,39 +3,50 @@ import SwiftData
 
 @Model
 final class Account {
-    var name: String
-    var balance: Decimal
-    var isDefault: Bool
-    var createdAt: Date
+    var name: String = ""
+    var balance: Decimal = 0
+    var isDefault: Bool = false
+    var createdAt: Date = Date()
     
-    var designIndex: Int
-    var customIcon: String
-    var designType: AccountDesignType
+    var designIndex: Int = 0
+    var customIcon: String = "cash"
+    private var designTypeRawValue: String = "image"
     
-    // Relationships
+    var designType: AccountDesignType {
+        get { AccountDesignType(rawValue: designTypeRawValue) ?? .image }
+        set { designTypeRawValue = newValue.rawValue }
+    }
+    
+    var currency: Currency? = nil
+    
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
-    var transactions: [Transaction] = []
+    var transactions: [Transaction]? = []
     
     @Relationship(deleteRule: .cascade, inverse: \Transaction.toAccount)
-    var incomingTransfers: [Transaction] = []
+    var incomingTransfers: [Transaction]? = []
     
-    var currency: Currency
-    
-    init(name: String, balance: Decimal, currency: Currency, isDefault: Bool = false, designIndex: Int = 0, customIcon: String = "cash", designType: AccountDesignType = .image) {
+    init(
+        name: String,
+        balance: Decimal,
+        currency: Currency,
+        isDefault: Bool = false,
+        designIndex: Int = 0,
+        customIcon: String = "cash",
+        designType: AccountDesignType = .image
+    ) {
         self.name = name
         self.balance = balance
         self.currency = currency
         self.isDefault = isDefault
         self.designIndex = designIndex
         self.customIcon = customIcon
-        self.designType = designType
+        self.designTypeRawValue = designType.rawValue
         self.createdAt = Date()
     }
 }
 
 extension Account {
     static func createDefault(context: ModelContext) {
-        // Get default currency (USD)
         let currencyDescriptor = FetchDescriptor<Currency>()
         let currencies = (try? context.fetch(currencyDescriptor)) ?? []
         

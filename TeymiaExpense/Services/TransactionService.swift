@@ -121,23 +121,23 @@ struct TransactionService {
         switch type {
         case .income:
             return categories.first { category in
-                category.categoryGroup.type == .income &&
-                category.categoryGroup.name.lowercased().contains("salary") &&
+                category.categoryGroup?.type == .income &&
+                (category.categoryGroup?.name.lowercased().contains("salary") ?? false) &&
                 category.name.lowercased().contains("monthly.salary")
             } ?? categories.first { category in
-                category.categoryGroup.type == .income &&
-                category.categoryGroup.name.lowercased().contains("salary")
-            } ?? categories.first { $0.categoryGroup.type == .income }
+                category.categoryGroup?.type == .income &&
+                (category.categoryGroup?.name.lowercased().contains("salary") ?? false)
+            } ?? categories.first { $0.categoryGroup?.type == .income }
             
         case .expense:
             return categories.first { category in
-                category.categoryGroup.type == .expense &&
-                category.categoryGroup.name.lowercased().contains("other") &&
+                category.categoryGroup?.type == .expense &&
+                (category.categoryGroup?.name.lowercased().contains("other") ?? false) &&
                 category.name.lowercased().contains("general")
             } ?? categories.first { category in
-                category.categoryGroup.type == .expense &&
-                category.categoryGroup.name.lowercased().contains("other")
-            } ?? categories.first { $0.categoryGroup.type == .expense }
+                category.categoryGroup?.type == .expense &&
+                (category.categoryGroup?.name.lowercased().contains("other") ?? false)
+            } ?? categories.first { $0.categoryGroup?.type == .expense }
             
         case .transfer:
             return nil

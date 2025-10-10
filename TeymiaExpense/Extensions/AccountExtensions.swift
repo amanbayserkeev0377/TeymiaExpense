@@ -6,7 +6,13 @@ import SwiftData
 extension Account {
     
     var formattedBalance: String {
-        CurrencyFormatter.format(balance, currency: currency)
+        let currency = self.currency ?? Currency(
+            code: "USD",
+            symbol: "$",
+            name: "US Dollar",
+            type: .fiat
+        )
+        return CurrencyFormatter.format(balance, currency: currency)
     }
     
     var cardColor: Color {

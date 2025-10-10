@@ -96,12 +96,12 @@ struct AccountsManagementView: View {
     // MARK: - Helper Methods
     
     private func confirmDeleteAccount(_ account: Account) {
-        let transactionCount = account.transactions.count
+        let transactionCount = account.transactions?.count ?? 0
         
         if transactionCount > 0 {
             deleteAlertMessage = "This account has \(transactionCount) transactions. Deleting it will also delete all associated transactions."
         } else {
-            deleteAlertMessage = "Are you sure you want to delete this account?"
+            deleteAlertMessage = "This will delete the account."
         }
         
         pendingDeleteAction = {

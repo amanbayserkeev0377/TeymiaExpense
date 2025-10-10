@@ -3,20 +3,34 @@ import SwiftData
 
 @Model
 final class CategoryGroup {
-    var name: String
-    var iconName: String
-    var type: GroupType
-    var sortOrder: Int
-    var isDefault: Bool
-    var createdAt: Date
+    var name: String = ""
+    var iconName: String = ""
+    private var typeRawValue: String = "expense"
+    var sortOrder: Int = 0
+    var isDefault: Bool = false
+    var createdAt: Date = Date()
+    
+    var type: GroupType {
+        get { GroupType(rawValue: typeRawValue) ?? .expense }
+        set { typeRawValue = newValue.rawValue }
+    }
     
     @Relationship(deleteRule: .cascade, inverse: \Category.categoryGroup)
-    var categories: [Category] = []
+    var categories: [Category]? = []
     
-    init(name: String, iconName: String, type: GroupType, sortOrder: Int = 0, isDefault: Bool = false) {
+    @Relationship(deleteRule: .nullify, inverse: \Transaction.categoryGroup)
+    var transactions: [Transaction]? = []
+    
+    init(
+        name: String,
+        iconName: String,
+        type: GroupType,
+        sortOrder: Int = 0,
+        isDefault: Bool = false
+    ) {
         self.name = name
         self.iconName = iconName
-        self.type = type
+        self.typeRawValue = type.rawValue
         self.sortOrder = sortOrder
         self.isDefault = isDefault
         self.createdAt = Date()
@@ -24,10 +38,9 @@ final class CategoryGroup {
 }
 
 extension CategoryGroup {
-    
     static func createDefaults(context: ModelContext) {
         let expenseGroups = [
-            ("other".localized, "other", 0), // default category group
+            ("other".localized, "other", 0),
             ("food.drinks".localized, "food.drinks", 1),
             ("transport".localized, "transport", 2),
             ("entertainment".localized, "entertainment", 3),
@@ -52,13 +65,13 @@ extension CategoryGroup {
             context.insert(categoryGroup)
         }
         
-        // Default income groups
         let incomeGroups = [
-            ("salary".localized, "salary", 0), // default category group
+            ("salary".localized, "salary", 0),
             ("gift".localized, "gift", 1),
             ("bonuses".localized, "bonuses", 2),
             ("business".localized, "business", 3),
             ("investment".localized, "investment", 4),
+            ("other".localized, "other", 5)
         ]
         
         for (name, iconName, sortOrder) in incomeGroups {

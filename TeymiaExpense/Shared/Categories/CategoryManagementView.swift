@@ -164,7 +164,7 @@ struct CategoryManagementView: View {
     }
     
     private func confirmDeleteGroup(_ group: CategoryGroup) {
-        let categoryCount = group.categories.count
+        let categoryCount = group.categories?.count ?? 0
         if categoryCount > 0 {
             deleteAlertMessage = "This will delete the group and its \(categoryCount) categories. All associated transactions will also be deleted."
         } else {

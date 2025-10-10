@@ -129,7 +129,7 @@ struct CategoryFormView: View {
             existingCategory.iconName = selectedIcon
         } else {
             // Create new category
-            let sortOrder = categories.filter { $0.categoryGroup.id == selectedCategoryGroup.id }.count
+            let sortOrder = categories.filter { $0.categoryGroup?.id == selectedCategoryGroup.id }.count
             let newCategory = Category(
                 name: trimmedName,
                 iconName: selectedIcon,

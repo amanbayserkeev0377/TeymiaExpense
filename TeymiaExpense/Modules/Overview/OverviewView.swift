@@ -165,7 +165,7 @@ struct OverviewView: View {
     // MARK: - Helper Methods
     
     private func hasTransactions(for categoryGroup: CategoryGroup) -> Bool {
-        let groupCategories = categories.filter { $0.categoryGroup.id == categoryGroup.id }
+        let groupCategories = categories.filter { $0.categoryGroup?.id == categoryGroup.id }
         let categoryIds = Set(groupCategories.map { $0.id })
         
         return filteredTransactions.contains { transaction in

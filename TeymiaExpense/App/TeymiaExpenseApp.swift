@@ -16,20 +16,51 @@ struct TeymiaExpenseApp: App {
             Currency.self
         ])
         
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false
-        )
-
+        // Try CloudKit first with detailed error logging
         do {
-            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let cloudKitConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .automatic
+            )
             
-            // Create default data synchronously if needed
+            let container = try ModelContainer(for: schema, configurations: [cloudKitConfig])
+            print("✅ CloudKit ModelContainer created successfully")
+            
             createDefaultDataIfNeeded(context: container.mainContext)
-            
             return container
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            
+        } catch let error as NSError {
+            print("❌ CloudKit Error Details:")
+            print("   Domain: \(error.domain)")
+            print("   Code: \(error.code)")
+            print("   Description: \(error.localizedDescription)")
+            print("   User Info: \(error.userInfo)")
+            
+            // Try local storage as fallback
+            print("⚠️ Trying local storage fallback...")
+            
+            do {
+                let localConfig = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: false
+                )
+                
+                let container = try ModelContainer(for: schema, configurations: [localConfig])
+                print("✅ Local ModelContainer created successfully")
+                
+                createDefaultDataIfNeeded(context: container.mainContext)
+                return container
+                
+            } catch let localError as NSError {
+                print("❌ Local Storage Error Details:")
+                print("   Domain: \(localError.domain)")
+                print("   Code: \(localError.code)")
+                print("   Description: \(localError.localizedDescription)")
+                print("   User Info: \(localError.userInfo)")
+                
+                fatalError("Could not create ModelContainer even with local storage: \(localError)")
+            }
         }
     }()
 

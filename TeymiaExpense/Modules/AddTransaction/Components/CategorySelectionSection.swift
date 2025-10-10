@@ -18,7 +18,7 @@ struct CategorySelectionRow: View {
             
             if let category = selectedCategory {
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(category.categoryGroup.name)
+                    Text(category.categoryGroup?.name ?? "other".localized)
                         .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
@@ -54,7 +54,7 @@ struct CategorySelectionView: View {
         guard let selectedGroup = localSelectedCategoryGroup else { return [] }
         
         return categories
-            .filter { $0.categoryGroup.id == selectedGroup.id }
+            .filter { $0.categoryGroup?.id == selectedGroup.id }
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     

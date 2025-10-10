@@ -17,7 +17,7 @@ struct CategoryGroupRowView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 
-                Text("\(group.categories.count) categories")
+                Text("\(group.categories?.count ?? 0) categories")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

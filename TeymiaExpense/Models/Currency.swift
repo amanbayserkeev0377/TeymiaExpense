@@ -3,21 +3,31 @@ import SwiftData
 
 @Model
 final class Currency {
-    var code: String
-    var symbol: String
-    var name: String
-    var type: CurrencyType
-    var isDefault: Bool
-    var createdAt: Date
-    
+    var code: String = ""
+    var symbol: String = ""
+    var name: String = ""
+    private var typeRawValue: String = "fiat"
+    var isDefault: Bool = false
+    var createdAt: Date = Date()
+
     @Relationship(deleteRule: .nullify, inverse: \Account.currency)
-    var accounts: [Account] = []
+    var accounts: [Account]? = []
+    var type: CurrencyType {
+        get { CurrencyType(rawValue: typeRawValue) ?? .fiat }
+        set { typeRawValue = newValue.rawValue }
+    }
     
-    init(code: String, symbol: String, name: String, type: CurrencyType, isDefault: Bool = false) {
+    init(
+        code: String,
+        symbol: String,
+        name: String,
+        type: CurrencyType,
+        isDefault: Bool = false
+    ) {
         self.code = code
         self.symbol = symbol
         self.name = name
-        self.type = type
+        self.typeRawValue = type.rawValue
         self.isDefault = isDefault
         self.createdAt = Date()
     }

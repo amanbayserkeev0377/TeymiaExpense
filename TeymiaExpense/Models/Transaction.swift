@@ -3,24 +3,37 @@ import SwiftData
 
 @Model
 final class Transaction {
-    var amount: Decimal
-    var note: String?
-    var date: Date
-    var type: TransactionType
+    var amount: Decimal = 0
+    var note: String? = nil
+    var date: Date = Date()
+    private var typeRawValue: String = "expense"
     var isHidden: Bool = false
-    var createdAt: Date
+    var createdAt: Date = Date()
+    var type: TransactionType {
+        get { TransactionType(rawValue: typeRawValue) ?? .expense }
+        set { typeRawValue = newValue.rawValue }
+    }
     
-    // Relationships
-    var categoryGroup: CategoryGroup?
-    var category: Category?
-    var account: Account?
-    var toAccount: Account?
+    var categoryGroup: CategoryGroup? = nil
+    var category: Category? = nil
+    var account: Account? = nil
+    var toAccount: Account? = nil
     
-    init(amount: Decimal, note: String? = nil, date: Date = Date(), type: TransactionType, categoryGroup: CategoryGroup? = nil, category: Category? = nil, account: Account? = nil, toAccount: Account? = nil, isHidden: Bool = false) {
+    init(
+        amount: Decimal,
+        note: String? = nil,
+        date: Date = Date(),
+        type: TransactionType,
+        categoryGroup: CategoryGroup? = nil,
+        category: Category? = nil,
+        account: Account? = nil,
+        toAccount: Account? = nil,
+        isHidden: Bool = false
+    ) {
         self.amount = amount
         self.note = note
         self.date = date
-        self.type = type
+        self.typeRawValue = type.rawValue
         self.isHidden = isHidden
         self.categoryGroup = categoryGroup
         self.category = category

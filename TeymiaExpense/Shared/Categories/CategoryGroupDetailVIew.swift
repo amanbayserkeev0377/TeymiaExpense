@@ -27,7 +27,7 @@ struct CategoryGroupDetailView: View {
     
     private var groupCategories: [Category] {
         categories
-            .filter { $0.categoryGroup.id == categoryGroup.id }
+            .filter { $0.categoryGroup?.id == categoryGroup.id }
             .sorted { $0.sortOrder < $1.sortOrder }
     }
     
