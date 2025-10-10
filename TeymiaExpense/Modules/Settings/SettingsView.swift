@@ -19,51 +19,38 @@ struct SettingsView: View {
                     UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
                 }
                 TipsSection()
+                
                 Section {
                     Button {
                         changeTheme.toggle()
                     } label: {
                         HStack {
-                            Image(themeIcon)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.primary)
-                            
-                            Text("Appearance")
-                                .foregroundStyle(.primary)
+                            Label(
+                                title: { Text("Appearance") },
+                                icon: {
+                                    Image(themeIcon)
+                                        .resizable()
+                                        .frame(width: 18, height: 18)
+                                        .foregroundStyle(.primary)
+                                }
+                            )
                             
                             Spacer()
                             
                             Text(userTheme.rawValue)
                                 .foregroundStyle(.secondary)
                             
-                            Image(systemName: "chevron.right")
-                                .font(.footnote)
-                                .fontWeight(.bold)
+                            Image("chevron.right")
+                                .resizable()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.tertiary)
                         }
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     
-                    NavigationLink {
-                        CurrencySettingsView()
-                    } label: {
-                        HStack {
-                            Image("dollar")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.primary)
-                            
-                            Text("currency".localized)
-                            
-                            Spacer()
-                            
-                            Text(userPreferences.baseCurrencyCode)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    AppIconRowView()
+                    CurrencySettingsRowView()
                 }
                 .listRowBackground(Color.mainRowBackground)
             }

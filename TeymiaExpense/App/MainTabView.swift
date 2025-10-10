@@ -10,6 +10,7 @@ struct MainTabView: View {
                         Image("home.fill")
                         Text("Home")
                     }
+                    .fontDesign(.rounded)
                     .tag(0)
                 
                 OverviewView()
@@ -17,6 +18,7 @@ struct MainTabView: View {
                         Image("overview.fill")
                         Text("Overview")
                     }
+                    .fontDesign(.rounded)
                     .tag(1)
                 
                 SettingsView()
@@ -24,6 +26,7 @@ struct MainTabView: View {
                         Image("settings.fill")
                         Text("Settings")
                     }
+                    .fontDesign(.rounded)
                     .tag(2)
             }
             .tint(AccountColors.color(at: 0))

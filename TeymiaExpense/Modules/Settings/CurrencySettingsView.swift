@@ -1,6 +1,41 @@
 import SwiftUI
 import SwiftData
 
+struct CurrencySettingsRowView: View {
+    @Environment(UserPreferences.self) private var userPreferences
+    
+    var body: some View {
+        ZStack {
+            NavigationLink(destination: CurrencySettingsView()) {
+                EmptyView()
+            }
+            .opacity(0)
+                HStack {
+                    Label(
+                        title: { Text("Currency") },
+                        icon: {
+                            Image("dollar")
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .foregroundStyle(.primary)
+                        }
+                    )
+                    
+                    Spacer()
+                    
+                    Text(userPreferences.baseCurrencyCode)
+                        .foregroundStyle(.secondary)
+                    
+                    Image("chevron.right")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(Rectangle())
+        }
+    }
+}
+
 struct CurrencySettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(UserPreferences.self) private var userPreferences

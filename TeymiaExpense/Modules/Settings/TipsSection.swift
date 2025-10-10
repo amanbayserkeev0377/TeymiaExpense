@@ -8,31 +8,41 @@ struct TipsSection: View {
             Button {
                 showingTips = true
             } label: {
-                HStack(spacing: 12) {
-                    // Icon
-                        Image("gift.fill")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        Color(#colorLiteral(red: 0.4470213652, green: 1, blue: 0.6704101562, alpha: 1)),
-                                        Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
+                HStack {
+                    Label(
+                        title: {
+                            Text("Buy me a matcha")
+                                .fontWeight(.medium)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [
+                                            Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1)),
+                                            Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
                                 )
-                            )
-                    
-                        Text("Buy me a coffee")
-                            .font(.body)
-                            .fontDesign(.rounded)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
+                        },
+                        icon: {
+                            Image("gift.fill")
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [
+                                            Color(#colorLiteral(red: 0.4470213652, green: 1, blue: 0.6704101562, alpha: 1)),
+                                            Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                        }
+                    )
                     
                     Spacer()
                     
-                    // Chevron
                     Image("chevron.right")
                         .resizable()
                         .frame(width: 20, height: 20)
@@ -44,7 +54,7 @@ struct TipsSection: View {
         }
         .listRowBackground(Color.mainRowBackground)
         .fullScreenSheet(ignoresSafeArea: true, isPresented: $showingTips) { safeArea in
-                TipsView()
+            TipsView()
                 .safeAreaPadding(.top, safeArea.top + 35)
                 .overlay(alignment: .top) {
                     Capsule()

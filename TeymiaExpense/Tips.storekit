@@ -1,25 +1,28 @@
 {
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
   "identifier" : "TipsConfiguration",
-  "nonRenewingSubscriptions" : [],
+  "nonRenewingSubscriptions" : [
+
+  ],
   "products" : [
     {
       "displayPrice" : "0.99",
       "familyShareable" : false,
       "internalID" : "tip_cookie",
       "localizations" : [
-        {
-          "description" : "Thanks for the app!",
-          "displayName" : "Cookie",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Спасибо за приложение!",
-          "displayName" : "Печенька",
-          "locale" : "ru"
-        }
+
       ],
-      "productID" : "tip_cookie",
-      "referenceName" : "Cookie Tip",
+      "productID" : "tip_apple",
+      "referenceName" : "Apple Tip",
       "type" : "Consumable"
     },
     {
@@ -27,19 +30,10 @@
       "familyShareable" : false,
       "internalID" : "tip_coffee",
       "localizations" : [
-        {
-          "description" : "Great app, love it!",
-          "displayName" : "Coffee",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Отличное приложение!",
-          "displayName" : "Кофе",
-          "locale" : "ru"
-        }
+
       ],
-      "productID" : "tip_coffee",
-      "referenceName" : "Coffee Tip",
+      "productID" : "tip_matcha",
+      "referenceName" : "Matcha Tip",
       "type" : "Consumable"
     },
     {
@@ -47,19 +41,10 @@
       "familyShareable" : false,
       "internalID" : "tip_burger",
       "localizations" : [
-        {
-          "description" : "Amazing work, thank you!",
-          "displayName" : "Burger",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Потрясающая работа!",
-          "displayName" : "Бургер",
-          "locale" : "ru"
-        }
+
       ],
-      "productID" : "tip_burger",
-      "referenceName" : "Burger Tip",
+      "productID" : "tip_salad",
+      "referenceName" : "Salad Tip",
       "type" : "Consumable"
     },
     {
@@ -67,32 +52,69 @@
       "familyShareable" : false,
       "internalID" : "tip_pizza",
       "localizations" : [
-        {
-          "description" : "You're the best!",
-          "displayName" : "Pizza",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Вы лучшие!",
-          "displayName" : "Пицца",
-          "locale" : "ru"
-        }
+
       ],
-      "productID" : "tip_pizza",
-      "referenceName" : "Pizza Tip",
+      "productID" : "tip_bowl",
+      "referenceName" : "Bowl Tip",
       "type" : "Consumable"
     }
   ],
   "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
     "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ],
+    "_timeRate" : 0,
     "askToBuyEnabled" : false,
     "billingIssueEnabled" : false,
     "renewalBillingIssueCount" : 0,
     "subscriptionOffersEnabled" : false
   },
-  "subscriptionGroups" : [],
+  "subscriptionGroups" : [
+
+  ],
   "version" : {
     "major" : 4,
     "minor" : 0

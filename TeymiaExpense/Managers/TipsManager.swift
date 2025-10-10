@@ -9,10 +9,10 @@ struct Tip: Identifiable {
     let message: String
     
     static let allTips: [Tip] = [
-        Tip(id: "tip_cookie", image: "tip.cookie", name: "Cookie", message: "Tip mini"),
-        Tip(id: "tip_coffee", image: "tip.coffee", name: "Coffee", message: "Tip"),
-        Tip(id: "tip_burger", image: "tip.burger", name: "Burger", message: "Tip Pro"),
-        Tip(id: "tip_pizza", image: "tip.pizza", name: "Pizza", message: "Tip Pro Max")
+        Tip(id: "tip_apple", image: "tip.apple", name: "Apple", message: "Tip mini"),
+        Tip(id: "tip_matcha", image: "tip.matcha", name: "Matcha", message: "Tip"),
+        Tip(id: "tip_salad", image: "tip.salad", name: "Salad", message: "Tip Pro"),
+        Tip(id: "tip_bowl", image: "tip.bowl", name: "Bowl", message: "Tip Pro Max")
     ]
 }
 
@@ -31,7 +31,7 @@ class TipsManager {
     var showThankYou = false
     
     // Product IDs
-    static let tipIDs = ["tip_cookie", "tip_coffee", "tip_burger", "tip_pizza"]
+    static let tipIDs = ["tip_apple", "tip_matcha", "tip_salad", "tip_bowl"]
     
     // MARK: - Initialization
     

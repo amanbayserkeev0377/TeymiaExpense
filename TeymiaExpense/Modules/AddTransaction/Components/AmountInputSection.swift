@@ -50,9 +50,9 @@ private extension TransactionType {
     
     var backgroundGradient: LinearGradient {
         LinearGradient(
-            colors: [darkColor, lightColor],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            colors: [lightColor, darkColor],
+            startPoint: .top,
+            endPoint: .bottom
         )
     }
 }
