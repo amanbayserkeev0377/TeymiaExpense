@@ -4,51 +4,37 @@ import SwiftUI
 final class AppColorManager {
     static let shared = AppColorManager()
     
-    var selectedColorIndex: Int = UserDefaults.standard.integer(forKey: "selectedAppColorIndex") {
+    // Separate indices for AppTint and Account Cards
+    var selectedTintColorIndex: Int = UserDefaults.standard.integer(forKey: "selectedAppTintColorIndex") {
         didSet {
-            UserDefaults.standard.set(selectedColorIndex, forKey: "selectedAppColorIndex")
+            UserDefaults.standard.set(selectedTintColorIndex, forKey: "selectedAppTintColorIndex")
         }
     }
     
-    var currentColor: Color {
-        AccountColors.color(at: selectedColorIndex)
-    }
-    
-    var currentGradient: LinearGradient {
-        AccountColors.gradient(at: selectedColorIndex)
+    // Current AppTint color
+    var currentTintColor: Color {
+        AppTintColors.color(at: selectedTintColorIndex)
     }
     
     private init() {}
 }
 
+// MARK: - Global Access Helpers
+
 struct AppColor {
-    static var current: Color {
-        AppColorManager.shared.currentColor
-    }
-    
-    static var currentGradient: LinearGradient {
-        AppColorManager.shared.currentGradient
+    static var tint: Color {
+        AppColorManager.shared.currentTintColor
     }
 }
 
 extension Color {
     static var appTint: Color {
-        AppColor.current
-    }
-    
-    static var appGradient: LinearGradient {
-        AppColor.currentGradient
+        AppColor.tint
     }
 }
 
 extension ShapeStyle where Self == Color {
     static var appTint: Color {
         Color.appTint
-    }
-}
-
-extension LinearGradient {
-    static var appGradient: LinearGradient {
-        AppColor.currentGradient
     }
 }

@@ -15,7 +15,6 @@ struct CardDesignSelectionView: View {
             }
             .listRowBackground(Color.clear)
             
-            // Контент в секции с фоном
             Section {
                 if selectedDesignType == .color {
                     colorSelectionView

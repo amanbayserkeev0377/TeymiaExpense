@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import SwiftData
 
 // MARK: - Account Extensions
 extension Account {
@@ -15,16 +14,16 @@ extension Account {
         return CurrencyFormatter.format(balance, currency: currency)
     }
     
-    var cardColor: Color {
-        return AccountColors.color(at: designIndex)
-    }
-    
     var cardDarkColor: Color {
         return AccountColors.darkColor(at: designIndex)
     }
     
     var cardLightColor: Color {
         return AccountColors.lightColor(at: designIndex)
+    }
+    
+    var cardGradient: LinearGradient {
+        return AccountColors.gradient(at: designIndex)
     }
     
     var cardIcon: String {

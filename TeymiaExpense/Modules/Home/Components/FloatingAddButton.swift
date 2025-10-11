@@ -38,7 +38,7 @@ struct FloatingPlusButton: View {
             .applyGlassEffect()
             .clipShape(Circle())
             .contentShape(Circle())
-            .shadow(color: AccountColors.color(at: 0).opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.appTint.opacity(0.4), radius: 8, x: 0, y: 4)
             .matchedTransitionSource(id: "AddTransaction", in: animation)
         } else {
             Button(action: action) {
@@ -48,7 +48,7 @@ struct FloatingPlusButton: View {
             .applyGlassEffect()
             .clipShape(Circle())
             .contentShape(Circle())
-            .shadow(color: AccountColors.color(at: 0).opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.appTint.opacity(0.4), radius: 8, x: 0, y: 4)
         }
     }
     
@@ -66,11 +66,11 @@ extension View {
     @ViewBuilder
     func applyGlassEffect() -> some View {
         if #available(iOS 26.0, *) {
-            self.glassEffect(.regular.tint(AccountColors.color(at: 0).opacity(0.8)).interactive(), in: .circle)
+            self.glassEffect(.regular.tint(Color.appTint).interactive(), in: .circle)
         } else {
             self.background(
                 Circle()
-                    .fill(AccountColors.color(at: 0).opacity(0.8))
+                    .fill(Color.appTint)
             )
         }
     }

@@ -1,52 +1,33 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Account Colors (для карточек)
 struct AccountColors {
     static let colors: [AccountColor] = [
-        .mint,
-        .primary,
-        .red,
-        .orange,
-        .yellow,
-        .green,
-        .blue,
-        .purple,
-        .pink,
-        .brown,
-        .gray,
-        .softLavender,
-        .sky,
-        .coral,
-        .bluePink,
-        .antarctica,
-        .sweetMorning,
-        .lusciousLime,
-        .celestial,
-        .yellowOrange,
-        .candy
+        .mint, .primary, .red, .orange, .yellow, .green,
+        .blue, .purple, .pink, .brown, .gray, .softLavender,
+        .sky, .coral, .bluePink, .antarctica, .sweetMorning,
+        .lusciousLime, .celestial, .yellowOrange, .candy
     ]
-
     
-    static func color(at index: Int) -> Color {
-        let accountColor = colors[index % colors.count]
-        return accountColor.color
-    }
-        
+    // Dark color for gradients
     static func darkColor(at index: Int) -> Color {
         let accountColor = colors[index % colors.count]
         return accountColor.darkColor
     }
     
+    // Light color for gradients
     static func lightColor(at index: Int) -> Color {
         let accountColor = colors[index % colors.count]
         return accountColor.lightColor
     }
     
+    // Gradient for cards
     static func gradient(at index: Int) -> LinearGradient {
         return LinearGradient(
             colors: [
-                AccountColors.darkColor(at: index),
-                AccountColors.lightColor(at: index)
+                darkColor(at: index),
+                lightColor(at: index)
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -54,31 +35,88 @@ struct AccountColors {
     }
 }
 
+// MARK: - App Tint Colors (для акцентов в UI)
+struct AppTintColors {
+    static let colors: [AppTintColor] = [
+        .mint, .primary, .red, .orange, .yellow, .green,
+        .blue, .purple, .pink, .brown, .gray, .softLavender,
+        .sky, .coral, .bluePink, .antarctica, .sweetMorning,
+        .lusciousLime, .celestial, .yellowOrange, .candy
+    ]
+    
+    static func color(at index: Int) -> Color {
+        let tintColor = colors[index % colors.count]
+        return tintColor.color
+    }
+}
+
+// MARK: - Account Color (для карточек)
 enum AccountColor: String, CaseIterable, Codable {
-    case mint = "mint"
-    case primary = "primary"
-    case red = "red"
-    case orange = "orange"
-    case yellow = "yellow"
-    case green = "green"
-    case blue = "blue"
-    case purple = "purple"
-    case pink = "pink"
-    case brown = "brown"
-    case gray = "gray"
-    case softLavender = "softLavender"
-    case sky = "sky"
-    case coral = "coral"
-    case bluePink = "bluePink"
-    case antarctica = "antarctica"
-    case sweetMorning = "sweetMorning"
-    case lusciousLime = "lusciousLime"
-    case celestial = "celestial"
-    case yellowOrange = "yellowOrange"
-    case candy = "candy"
+    case mint, primary, red, orange, yellow, green
+    case blue, purple, pink, brown, gray, softLavender
+    case sky, coral, bluePink, antarctica, sweetMorning
+    case lusciousLime, celestial, yellowOrange, candy
     
+    var darkColor: Color {
+        switch self {
+        case .mint: return Color(#colorLiteral(red: 0.05, green: 0.5, blue: 0.42, alpha: 1))
+        case .primary: return Color(#colorLiteral(red: 0.1803921569, green: 0.1803921569, blue: 0.1803921569, alpha: 1))
+        case .red: return Color(#colorLiteral(red: 0.65, green: 0.15, blue: 0.12, alpha: 1))
+        case .orange: return Color(#colorLiteral(red: 0.7843, green: 0.3922, blue: 0, alpha: 1))
+        case .yellow: return Color(#colorLiteral(red: 0.75, green: 0.55, blue: 0.05, alpha: 1))
+        case .green: return Color(#colorLiteral(red: 0.12, green: 0.5, blue: 0.28, alpha: 1))
+        case .blue: return Color(#colorLiteral(red: 0.12, green: 0.35, blue: 0.6, alpha: 1))
+        case .purple: return Color(#colorLiteral(red: 0.45, green: 0.25, blue: 0.55, alpha: 1))
+        case .softLavender: return Color(#colorLiteral(red: 0.4, green: 0.42, blue: 0.65, alpha: 1))
+        case .pink: return Color(#colorLiteral(red: 0.75, green: 0.3, blue: 0.5, alpha: 1))
+        case .sky: return Color(#colorLiteral(red: 0.15, green: 0.5, blue: 0.75, alpha: 1))
+        case .brown: return Color(#colorLiteral(red: 0.45, green: 0.32, blue: 0.26, alpha: 1))
+        case .gray: return Color(#colorLiteral(red: 0.15, green: 0.2, blue: 0.45, alpha: 1))
+        case .coral: return Color(#colorLiteral(red: 0.7098039216, green: 0.1215686275, blue: 0.1019607843, alpha: 1))
+        case .bluePink: return Color(#colorLiteral(red: 0.2705882353, green: 0.4078431373, blue: 0.862745098, alpha: 1))
+        case .antarctica: return Color(#colorLiteral(red: 0.1176470588, green: 0.6823529412, blue: 0.5960784314, alpha: 1))
+        case .sweetMorning: return Color(#colorLiteral(red: 1, green: 0.3725490196, blue: 0.4274509804, alpha: 1))
+        case .lusciousLime: return Color(#colorLiteral(red: 0, green: 0.5725490196, blue: 0.2705882353, alpha: 1))
+        case .celestial: return Color(#colorLiteral(red: 0.2705882353, green: 0.3529411765, blue: 0.3921568627, alpha: 1))
+        case .yellowOrange: return Color(#colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1))
+        case .candy: return Color(#colorLiteral(red: 0.03529411765, green: 0.1254901961, blue: 0.2470588235, alpha: 1))
+        }
+    }
     
-    // for App Tint
+    var lightColor: Color {
+        switch self {
+        case .mint: return Color(#colorLiteral(red: 0.25, green: 0.85, blue: 0.75, alpha: 1))
+        case .primary: return Color(#colorLiteral(red: 0.7540688515, green: 0.7540867925, blue: 0.7540771365, alpha: 1))
+        case .red: return Color(#colorLiteral(red: 0.95, green: 0.5, blue: 0.45, alpha: 1))
+        case .orange: return Color(#colorLiteral(red: 1, green: 0.706, blue: 0, alpha: 1))
+        case .yellow: return Color(#colorLiteral(red: 0.95, green: 0.85, blue: 0.15, alpha: 1))
+        case .green: return Color(#colorLiteral(red: 0.35, green: 0.85, blue: 0.55, alpha: 1))
+        case .blue: return Color(#colorLiteral(red: 0.4, green: 0.7, blue: 0.95, alpha: 1))
+        case .purple: return Color(#colorLiteral(red: 0.75, green: 0.55, blue: 0.9, alpha: 1))
+        case .softLavender: return Color(#colorLiteral(red: 0.75, green: 0.77, blue: 0.9, alpha: 1))
+        case .pink: return Color(#colorLiteral(red: 0.95, green: 0.7, blue: 0.85, alpha: 1))
+        case .sky: return Color(#colorLiteral(red: 0.45, green: 0.85, blue: 0.95, alpha: 1))
+        case .brown: return Color(#colorLiteral(red: 0.85, green: 0.7, blue: 0.6, alpha: 1))
+        case .gray: return Color(#colorLiteral(red: 0.55, green: 0.6, blue: 0.9, alpha: 1))
+        case .coral: return Color(#colorLiteral(red: 0.9764705882, green: 0.5568627451, blue: 0.9647058824, alpha: 1))
+        case .bluePink: return Color(#colorLiteral(red: 0.6901960784, green: 0.4156862745, blue: 0.7019607843, alpha: 1))
+        case .antarctica: return Color(#colorLiteral(red: 0.8470588235, green: 0.7098039216, blue: 1, alpha: 1))
+        case .sweetMorning: return Color(#colorLiteral(red: 1, green: 0.7647058824, blue: 0.4431372549, alpha: 1))
+        case .lusciousLime: return Color(#colorLiteral(red: 0.9882352941, green: 0.9333333333, blue: 0.1294117647, alpha: 1))
+        case .celestial: return Color(#colorLiteral(red: 0.6901960784, green: 0.7450980392, blue: 0.7725490196, alpha: 1))
+        case .yellowOrange: return Color(#colorLiteral(red: 1, green: 0.706, blue: 0, alpha: 1))
+        case .candy: return Color(#colorLiteral(red: 0.3254901961, green: 0.4705882353, blue: 0.5843137255, alpha: 1))
+        }
+    }
+}
+
+// MARK: - App Tint Color (для UI акцентов)
+enum AppTintColor: String, CaseIterable, Codable {
+    case mint, primary, red, orange, yellow, green
+    case blue, purple, pink, brown, gray, softLavender
+    case sky, coral, bluePink, antarctica, sweetMorning
+    case lusciousLime, celestial, yellowOrange, candy
+    
     var color: Color {
         switch self {
         case .mint:
@@ -207,100 +245,6 @@ enum AccountColor: String, CaseIterable, Codable {
                 ? #colorLiteral(red: 0.7475101948, green: 0.7774429917, blue: 0.8837624788, alpha: 1)
                 : #colorLiteral(red: 0.7620564103, green: 0.6589847207, blue: 0.7723631263, alpha: 1)
             })
-        }
-    }
-        
-    var darkColor: Color {
-        switch self {
-        case .mint:
-            return Color(#colorLiteral(red: 0.05, green: 0.5, blue: 0.42, alpha: 1))
-        case .primary:
-            return Color(#colorLiteral(red: 0.1803921569, green: 0.1803921569, blue: 0.1803921569, alpha: 1))
-        case .red:
-            return Color(#colorLiteral(red: 0.65, green: 0.15, blue: 0.12, alpha: 1))
-        case .orange:
-            return Color(#colorLiteral(red: 0.7843, green: 0.3922, blue: 0, alpha: 1))
-        case .yellow:
-            return Color(#colorLiteral(red: 0.75, green: 0.55, blue: 0.05, alpha: 1))
-        case .green:
-            return Color(#colorLiteral(red: 0.12, green: 0.5, blue: 0.28, alpha: 1))
-        case .blue:
-            return Color(#colorLiteral(red: 0.12, green: 0.35, blue: 0.6, alpha: 1))
-        case .purple:
-            return Color(#colorLiteral(red: 0.45, green: 0.25, blue: 0.55, alpha: 1))
-        case .softLavender:
-            return Color(#colorLiteral(red: 0.4, green: 0.42, blue: 0.65, alpha: 1))
-        case .pink:
-            return Color(#colorLiteral(red: 0.75, green: 0.3, blue: 0.5, alpha: 1))
-        case .sky:
-            return Color(#colorLiteral(red: 0.15, green: 0.5, blue: 0.75, alpha: 1))
-        case .brown:
-            return Color(#colorLiteral(red: 0.45, green: 0.32, blue: 0.26, alpha: 1))
-        case .gray:
-            return Color(#colorLiteral(red: 0.15, green: 0.2, blue: 0.45, alpha: 1))
-        case .coral:
-            return Color(#colorLiteral(red: 0.7098039216, green: 0.1215686275, blue: 0.1019607843, alpha: 1))
-        case .bluePink:
-            return Color(#colorLiteral(red: 0.2705882353, green: 0.4078431373, blue: 0.862745098, alpha: 1))
-        case .antarctica:
-            return Color(#colorLiteral(red: 0.1176470588, green: 0.6823529412, blue: 0.5960784314, alpha: 1))
-        case .sweetMorning:
-            return Color(#colorLiteral(red: 1, green: 0.3725490196, blue: 0.4274509804, alpha: 1))
-        case .lusciousLime:
-            return Color(#colorLiteral(red: 0, green: 0.5725490196, blue: 0.2705882353, alpha: 1))
-        case .celestial:
-            return Color(#colorLiteral(red: 0.2705882353, green: 0.3529411765, blue: 0.3921568627, alpha: 1))
-        case .yellowOrange:
-            return Color(#colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1))
-        case .candy:
-            return Color(#colorLiteral(red: 0.03529411765, green: 0.1254901961, blue: 0.2470588235, alpha: 1))
-        }
-    }
-    
-    var lightColor: Color {
-        switch self {
-        case .mint:
-            return Color(#colorLiteral(red: 0.25, green: 0.85, blue: 0.75, alpha: 1))
-        case .primary:
-            return Color(#colorLiteral(red: 0.7540688515, green: 0.7540867925, blue: 0.7540771365, alpha: 1))
-        case .red:
-            return Color(#colorLiteral(red: 0.95, green: 0.5, blue: 0.45, alpha: 1))
-        case .orange:
-            return Color(#colorLiteral(red: 1, green: 0.706, blue: 0, alpha: 1))
-        case .yellow:
-            return Color(#colorLiteral(red: 0.95, green: 0.85, blue: 0.15, alpha: 1))
-        case .green:
-            return Color(#colorLiteral(red: 0.35, green: 0.85, blue: 0.55, alpha: 1))
-        case .blue:
-            return Color(#colorLiteral(red: 0.4, green: 0.7, blue: 0.95, alpha: 1))
-        case .purple:
-            return Color(#colorLiteral(red: 0.75, green: 0.55, blue: 0.9, alpha: 1))
-        case .softLavender:
-            return Color(#colorLiteral(red: 0.75, green: 0.77, blue: 0.9, alpha: 1))
-        case .pink:
-            return Color(#colorLiteral(red: 0.95, green: 0.7, blue: 0.85, alpha: 1))
-        case .sky:
-            return Color(#colorLiteral(red: 0.45, green: 0.85, blue: 0.95, alpha: 1))
-        case .brown:
-            return Color(#colorLiteral(red: 0.85, green: 0.7, blue: 0.6, alpha: 1))
-        case .gray:
-            return Color(#colorLiteral(red: 0.55, green: 0.6, blue: 0.9, alpha: 1))
-        case .coral:
-            return Color(#colorLiteral(red: 0.9764705882, green: 0.5568627451, blue: 0.9647058824, alpha: 1))
-        case .bluePink:
-            return Color(#colorLiteral(red: 0.6901960784, green: 0.4156862745, blue: 0.7019607843, alpha: 1))
-        case .antarctica:
-            return Color(#colorLiteral(red: 0.8470588235, green: 0.7098039216, blue: 1, alpha: 1))
-        case .sweetMorning:
-            return Color(#colorLiteral(red: 1, green: 0.7647058824, blue: 0.4431372549, alpha: 1))
-        case .lusciousLime:
-            return Color(#colorLiteral(red: 0.9882352941, green: 0.9333333333, blue: 0.1294117647, alpha: 1))
-        case .celestial:
-            return Color(#colorLiteral(red: 0.6901960784, green: 0.7450980392, blue: 0.7725490196, alpha: 1))
-        case .yellowOrange:
-            return Color(#colorLiteral(red: 1, green: 0.706, blue: 0, alpha: 1))
-        case .candy:
-            return Color(#colorLiteral(red: 0.3254901961, green: 0.4705882353, blue: 0.5843137255, alpha: 1))
         }
     }
 }

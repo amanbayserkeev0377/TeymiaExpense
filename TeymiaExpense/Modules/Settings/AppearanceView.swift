@@ -49,7 +49,7 @@ struct AppearanceView: View {
             .listRowBackground(Color.mainRowBackground)
             
             Section("App Color") {
-                ColorPickerSection()
+                AppTintColorPickerSection()
             }
             .listRowBackground(Color.mainRowBackground)
         }
@@ -57,7 +57,7 @@ struct AppearanceView: View {
         .background(Color.mainBackground)
         .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.large)
-        .tint(colorManager.currentColor)
+        .tint(colorManager.currentTintColor) // Updated
     }
 }
 
@@ -97,7 +97,7 @@ struct AppIconButton: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(isSelected ? .gray : .gray.opacity(0.3),
+                        .stroke(isSelected ? .appTint : .gray.opacity(0.3),
                                lineWidth: isSelected ? 2 : 0.3)
                 )
         }
@@ -105,17 +105,19 @@ struct AppIconButton: View {
     }
 }
 
-struct ColorPickerSection: View {
+// MARK: - App Tint Color Picker
+
+struct AppTintColorPickerSection: View {
     @Environment(AppColorManager.self) private var colorManager
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: spacing) {
-            ForEach(0..<AccountColors.colors.count, id: \.self) { index in
-                ColorButton(
-                    color: AccountColors.color(at: index),
-                    isSelected: colorManager.selectedColorIndex == index,
+            ForEach(0..<AppTintColors.colors.count, id: \.self) { index in
+                AppTintColorButton(
+                    color: AppTintColors.color(at: index),
+                    isSelected: colorManager.selectedTintColorIndex == index,
                     onTap: {
-                        colorManager.selectedColorIndex = index
+                        colorManager.selectedTintColorIndex = index
                     }
                 )
             }
@@ -124,11 +126,10 @@ struct ColorPickerSection: View {
     }
     
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 7)
-    private let buttonSize: CGFloat = 32
     private let spacing: CGFloat = 12
 }
 
-struct ColorButton: View {
+struct AppTintColorButton: View {
     let color: Color
     let isSelected: Bool
     let onTap: () -> Void

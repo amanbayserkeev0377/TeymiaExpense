@@ -181,7 +181,7 @@ struct TeymiaOnBoardingView: View {
     
     var body: some View {
         OnBoardingView(
-            tint: AccountColors.color(at: 0),
+            tint: Color.appTint,
             title: "Welcome to Teymia Expense"
         ) {
             // App Icon с закруглением
@@ -213,7 +213,7 @@ struct TeymiaOnBoardingView: View {
                 Image("user.shield")
                     .resizable()
                     .frame(width: 18, height: 18)
-                    .foregroundStyle(AccountColors.color(at: 0))
+                    .foregroundStyle(Color.appTint)
                 
                 Text("Your financial data stays on your device and is never shared.")
                     .font(.caption2)

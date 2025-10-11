@@ -30,7 +30,7 @@ struct MainTabView: View {
                     .fontDesign(.rounded)
                     .tag(2)
             }
-            .tint(colorManager.currentColor)
+            .tint(colorManager.currentTintColor)
         }
     }
 }

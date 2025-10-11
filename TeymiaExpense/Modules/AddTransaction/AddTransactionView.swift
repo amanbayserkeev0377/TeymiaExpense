@@ -287,37 +287,37 @@ struct FloatingSaveButton: View {
     let isEnabled: Bool
     let action: () -> Void
     
-    private var backgroundGradient: LinearGradient {
-        isEnabled ? .appGradient : disabledGradient
-    }
-    
-    private var disabledGradient: LinearGradient {
-        LinearGradient(
-            colors: [Color.gray.opacity(0.3)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+    private var buttonColor: Color {
+        isEnabled ? .appTint : .gray.opacity(0.3)
     }
     
     private var shadowColor: Color {
         isEnabled ? .appTint.opacity(0.3) : .clear
     }
     
+    private var textColor: Color {
+        isEnabled ? .white : .gray.opacity(0.6)
+    }
+    
     var body: some View {
         Button(action: action) {
             Text("Save")
                 .font(.system(.body, design: .rounded, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(textColor)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
                 .background {
                     if #available(iOS 26, *) {
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(backgroundGradient)
-                            .glassEffect(.regular.tint(.appTint).interactive())
+                            .fill(buttonColor)
+                            .glassEffect(
+                                isEnabled
+                                ? .regular.tint(.appTint).interactive()
+                                : .regular.tint(.gray.opacity(0.3))
+                            )
                     } else {
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(backgroundGradient)
+                            .fill(buttonColor)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
