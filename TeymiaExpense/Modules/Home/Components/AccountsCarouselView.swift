@@ -79,20 +79,30 @@ struct CarouselBackdropView: View {
                 ForEach(accounts.reversed()) { account in
                     let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
                     
-                    switch account.designType {
-                    case .image:
-                        Image(account.cardImage)
+                    // Check for custom image first
+                    if account.designIndex == -1, let image = account.customUIImage {
+                        Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: size.width, height: size.height)
                             .clipped()
                             .opacity(index - scrollProgressX)
-                        
-                    case .color:
-                        Rectangle()
-                            .fill(AccountColors.gradient(at: account.designIndex))
-                            .frame(width: size.width, height: size.height)
-                            .opacity(index - scrollProgressX)
+                    } else {
+                        switch account.designType {
+                        case .image:
+                            Image(account.cardImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: size.width, height: size.height)
+                                .clipped()
+                                .opacity(index - scrollProgressX)
+                            
+                        case .color:
+                            Rectangle()
+                                .fill(AccountColors.gradient(at: account.designIndex))
+                                .frame(width: size.width, height: size.height)
+                                .opacity(index - scrollProgressX)
+                        }
                     }
                 }
             }

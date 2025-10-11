@@ -1,8 +1,15 @@
 import SwiftUI
+import PhotosUI
 
 struct CardDesignSelectionView: View {
+    @Environment(\.dismiss) private var dismiss
     @Binding var selectedDesignType: AccountDesignType
     @Binding var selectedDesignIndex: Int
+    @Binding var customImage: UIImage?
+    @Binding var shouldShowCropper: Bool // Signal to parent
+    @Binding var imageForCropping: UIImage?
+    
+    @State private var showingPhotoPicker = false
     
     var body: some View {
         Form {
@@ -27,6 +34,20 @@ struct CardDesignSelectionView: View {
         .listStyle(.plain)
         .listSectionSpacing(0)
         .scrollContentBackground(.hidden)
+        .sheet(isPresented: $showingPhotoPicker) {
+            PhotoPicker { image in
+                imageForCropping = image
+                showingPhotoPicker = false
+                
+                // Close this sheet first, then signal parent
+                dismiss()
+            }
+        }
+        .onChange(of: customImage) { oldValue, newValue in
+            if newValue != nil {
+                selectedDesignIndex = -1
+            }
+        }
     }
     
     // MARK: - Image Selection Grid
@@ -39,8 +60,54 @@ struct CardDesignSelectionView: View {
             ForEach(Array(AccountImageData.images.enumerated()), id: \.element.id) { index, imageData in
                 imageDesignButton(index: index, imageData: imageData)
             }
+            
+            customPhotoButton
         }
         .padding(.vertical, 8)
+    }
+    
+    // MARK: - Custom Photo Button
+    @ViewBuilder
+    private var customPhotoButton: some View {
+        Button {
+            showingPhotoPicker = true
+        } label: {
+            ZStack {
+                if let image = customImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(
+                                    selectedDesignIndex == -1 ? .appTint : .clear,
+                                    lineWidth: 3
+                                )
+                        )
+                        .clipped()
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.1))
+                        .frame(height: 60)
+                        .overlay {
+                            Image(systemName: "plus")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundStyle(.appTint)
+                        }
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.appTint.opacity(0.3), style: StrokeStyle(lineWidth: 2, dash: [6]))
+                        )
+                }
+            }
+            .frame(height: 60)
+            .scaleEffect((selectedDesignIndex == -1 && customImage != nil) ? 1.05 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: selectedDesignIndex)
+            .animation(.easeInOut(duration: 0.2), value: customImage)
+        }
+        .buttonStyle(.plain)
     }
     
     // MARK: - Color Selection View
@@ -63,6 +130,7 @@ struct CardDesignSelectionView: View {
         Button {
             selectedDesignIndex = index
             selectedDesignType = .image
+            customImage = nil
         } label: {
             Image(imageData.imageName)
                 .resizable()
@@ -89,6 +157,7 @@ struct CardDesignSelectionView: View {
         Button {
             selectedDesignIndex = index
             selectedDesignType = .color
+            customImage = nil
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)

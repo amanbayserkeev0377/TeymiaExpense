@@ -1,6 +1,5 @@
 import SwiftUI
 
-// MARK: - Account Card with Images
 struct AccountCardView: View {
     let account: Account
     @AppStorage("hideBalance") private var hideBalance: Bool = false
@@ -8,25 +7,34 @@ struct AccountCardView: View {
     var body: some View {
         ZStack {
             // Background based on design type
-            switch account.designType {
-            case .image:
-                Image(AccountImageData.image(at: account.designIndex).imageName)
+            // Check for custom image first (designIndex == -1)
+            if account.designIndex == -1, let image = account.customUIImage {
+                Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .containerRelativeFrame(.horizontal)
                     .frame(height: 220)
                     .clipShape(.rect(cornerRadius: 20))
-            case .color:
-                Rectangle()
-                    .fill(AccountColors.gradient(at: account.designIndex))
-                    .containerRelativeFrame(.horizontal)
-                    .frame(height: 220)
-                    .clipShape(.rect(cornerRadius: 20))
+            } else {
+                // Standard backgrounds
+                switch account.designType {
+                case .image:
+                    Image(AccountImageData.image(at: account.designIndex).imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .containerRelativeFrame(.horizontal)
+                        .frame(height: 220)
+                        .clipShape(.rect(cornerRadius: 20))
+                case .color:
+                    Rectangle()
+                        .fill(AccountColors.gradient(at: account.designIndex))
+                        .containerRelativeFrame(.horizontal)
+                        .frame(height: 220)
+                        .clipShape(.rect(cornerRadius: 20))
+                }
             }
             
-            // Content
             VStack(spacing: 0) {
-                // Top section with icon
                 HStack {
                     Image(account.cardIcon)
                         .resizable()
@@ -46,7 +54,6 @@ struct AccountCardView: View {
                 
                 Spacer()
                 
-                // Bottom section with balance and hide button
                 HStack(alignment: .bottom, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(account.name)

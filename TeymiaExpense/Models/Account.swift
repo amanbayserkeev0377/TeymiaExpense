@@ -12,6 +12,8 @@ final class Account {
     var customIcon: String = "cash"
     private var designTypeRawValue: String = "image"
     
+    var customImageData: Data? = nil
+    
     var designType: AccountDesignType {
         get { AccountDesignType(rawValue: designTypeRawValue) ?? .image }
         set { designTypeRawValue = newValue.rawValue }
@@ -32,7 +34,8 @@ final class Account {
         isDefault: Bool = false,
         designIndex: Int = 0,
         customIcon: String = "cash",
-        designType: AccountDesignType = .image
+        designType: AccountDesignType = .image,
+        customImageData: Data? = nil
     ) {
         self.name = name
         self.balance = balance
@@ -41,18 +44,18 @@ final class Account {
         self.designIndex = designIndex
         self.customIcon = customIcon
         self.designTypeRawValue = designType.rawValue
+        self.customImageData = customImageData
         self.createdAt = Date()
     }
 }
 
 extension Account {
     static func createDefault(context: ModelContext) {
-        // Check if any accounts exist
         let accountDescriptor = FetchDescriptor<Account>()
         let existingAccounts = (try? context.fetch(accountDescriptor)) ?? []
         
         if !existingAccounts.isEmpty {
-            return  // Already have accounts, don't create
+            return
         }
         
         let currencyDescriptor = FetchDescriptor<Currency>()

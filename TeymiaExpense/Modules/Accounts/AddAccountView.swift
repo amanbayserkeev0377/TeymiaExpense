@@ -17,10 +17,15 @@ struct AddAccountView: View {
     @State private var selectedCurrency: Currency?
     @State private var selectedDesignType: AccountDesignType = .image
     @State private var selectedDesignIndex: Int = 0
+    @State private var customImage: UIImage?
     @State private var selectedIcon: String = "cash"
     @State private var showingCurrencySelection = false
     @State private var showingIconSelection = false
     @State private var showingCardDesignSelection = false
+    @State private var showingImageCropper = false
+    @State private var imageForCropping: UIImage?
+    @State private var shouldShowCropper = false
+
     
     @FocusState private var isAccountNameFocused: Bool
     @FocusState private var isInitialBalanceFocused: Bool
@@ -41,7 +46,8 @@ struct AddAccountView: View {
                         designType: selectedDesignType,
                         designIndex: selectedDesignIndex,
                         icon: selectedIcon,
-                        currencyCode: selectedCurrency?.code ?? "USD"
+                        currencyCode: selectedCurrency?.code ?? "USD",
+                        customImage: customImage
                     )
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
                     .animation(.smooth(duration: 0.4), value: selectedDesignType)
@@ -225,12 +231,36 @@ struct AddAccountView: View {
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingCardDesignSelection) {
+            if imageForCropping != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    showingImageCropper = true
+                }
+            }
+        } content: {
             CardDesignSelectionView(
                 selectedDesignType: $selectedDesignType,
-                selectedDesignIndex: $selectedDesignIndex
+                selectedDesignIndex: $selectedDesignIndex,
+                customImage: $customImage,
+                shouldShowCropper: $shouldShowCropper,
+                imageForCropping: $imageForCropping
             )
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
+        }
+        .fullScreenCover(isPresented: $showingImageCropper) {
+            if let image = imageForCropping {
+                ImageCropperView(originalImage: image) { croppedImage in
+                    customImage = croppedImage
+                    selectedDesignIndex = -1
+                    imageForCropping = nil
+                }
+            }
+        }
+        .onChange(of: imageForCropping) { oldValue, newValue in
+            print("📸 imageForCropping changed: \(newValue != nil)")
+        }
+        .onChange(of: showingImageCropper) { oldValue, newValue in
+            print("🎬 showingImageCropper: \(newValue)")
         }
     }
     
@@ -249,13 +279,17 @@ struct AddAccountView: View {
     }
     
     private func setupEditMode(with account: Account) {
-        // Populate fields with existing account data
         accountName = account.name
         initialBalance = String(describing: account.balance)
         selectedCurrency = account.currency
         selectedDesignType = account.designType
         selectedDesignIndex = account.designIndex
         selectedIcon = account.customIcon
+        
+        // Load custom image if exists
+        if let imageData = account.customImageData {
+            customImage = UIImage(data: imageData)
+        }
     }
     
     private func setupCreateMode() {
@@ -267,21 +301,31 @@ struct AddAccountView: View {
         }
     }
     
-    // MARK: - Save/Update Methods
+    // MARK: - Save Account
     private func saveAccount() {
         guard let currency = selectedCurrency else { return }
         
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let balance = Decimal(string: initialBalance) ?? 0
         
+        // Convert UIImage to Data if custom image exists
+        var imageData: Data?
+        var finalDesignIndex = selectedDesignIndex
+        
+        if let image = customImage {
+            imageData = image.jpegData(compressionQuality: 0.8)
+            finalDesignIndex = -1 // Special index for custom image
+        }
+        
         let account = Account(
             name: trimmedName,
             balance: balance,
             currency: currency,
             isDefault: false,
-            designIndex: selectedDesignIndex,
+            designIndex: finalDesignIndex,
             customIcon: selectedIcon,
-            designType: selectedDesignType
+            designType: selectedDesignType,
+            customImageData: imageData
         )
         
         modelContext.insert(account)
@@ -293,7 +337,8 @@ struct AddAccountView: View {
             print("Error saving account: \(error)")
         }
     }
-    
+
+    // MARK: - Update Account
     private func updateAccount() {
         guard let account = editingAccount,
               let currency = selectedCurrency else { return }
@@ -301,13 +346,23 @@ struct AddAccountView: View {
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let newBalance = Decimal(string: initialBalance) ?? 0
         
+        // Convert UIImage to Data if custom image exists
+        var imageData: Data?
+        var finalDesignIndex = selectedDesignIndex
+        
+        if let image = customImage {
+            imageData = image.jpegData(compressionQuality: 0.8)
+            finalDesignIndex = -1 // Special index for custom image
+        }
+        
         // Update account properties
         account.name = trimmedName
         account.balance = newBalance
         account.currency = currency
-        account.designIndex = selectedDesignIndex
+        account.designIndex = finalDesignIndex
         account.customIcon = selectedIcon
         account.designType = selectedDesignType
+        account.customImageData = imageData
         
         do {
             try modelContext.save()

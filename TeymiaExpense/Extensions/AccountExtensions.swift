@@ -29,4 +29,9 @@ extension Account {
     var cardIcon: String {
         return customIcon
     }
+    
+    var customUIImage: UIImage? {
+        guard let imageData = customImageData else { return nil }
+        return UIImage(data: imageData)
+    }
 }
