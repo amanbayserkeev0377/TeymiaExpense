@@ -73,7 +73,7 @@ struct CardDesignSelectionView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(
-                            (selectedDesignType == .image && selectedDesignIndex == index) ? .app : .clear,
+                            (selectedDesignType == .image && selectedDesignIndex == index) ? .appTint : .clear,
                             lineWidth: 3
                         )
                 )
@@ -98,7 +98,7 @@ struct CardDesignSelectionView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                (selectedDesignType == .color && selectedDesignIndex == index) ? .app : .clear,
+                                (selectedDesignType == .color && selectedDesignIndex == index) ? .appTint : .clear,
                                 lineWidth: 3
                             )
                     )

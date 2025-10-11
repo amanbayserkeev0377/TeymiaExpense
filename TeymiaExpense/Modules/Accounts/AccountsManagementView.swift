@@ -60,6 +60,7 @@ struct AccountsManagementView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
                 
@@ -68,6 +69,7 @@ struct AccountsManagementView: View {
                         showingAddAccount = true
                     } label: {
                         Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
                 }
             }

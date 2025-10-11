@@ -18,7 +18,7 @@ struct SettingsView: View {
                 Button("Reset Onboarding") {
                     UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
                 }
-                TipsSection()
+                TipsRowView()
                 
                 Section {
                     Button {
@@ -26,11 +26,11 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Label(
-                                title: { Text("Appearance") },
+                                title: { Text("Theme") },
                                 icon: {
                                     Image(themeIcon)
                                         .resizable()
-                                        .frame(width: 18, height: 18)
+                                        .frame(width: 20, height: 20)
                                         .foregroundStyle(.primary)
                                 }
                             )
@@ -49,8 +49,9 @@ struct SettingsView: View {
                     }
                     .buttonStyle(.plain)
                     
-                    AppIconRowView()
+                    AppearanceRowView()
                     CurrencySettingsRowView()
+                    CloudKitSyncRowView()
                 }
                 .listRowBackground(Color.mainRowBackground)
             }

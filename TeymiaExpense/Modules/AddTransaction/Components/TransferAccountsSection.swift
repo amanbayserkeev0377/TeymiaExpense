@@ -34,7 +34,7 @@ struct TransferAccountsSection: View {
                         
                         if fromAccount == account {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.app)
+                                .foregroundStyle(.appTint)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
                         }
@@ -54,7 +54,8 @@ struct TransferAccountsSection: View {
                     onAddAccountTapped()
                 } label: {
                     Label("Add another account for transfers", systemImage: "plus")
-                        .foregroundStyle(.app)
+                        .foregroundStyle(.appTint)
+                        .fontWeight(.semibold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.plain)
@@ -82,7 +83,7 @@ struct TransferAccountsSection: View {
                             
                             if toAccount == account {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.app)
+                                    .foregroundStyle(.appTint)
                                     .fontWeight(.bold)
                                     .fontDesign(.rounded)
                             }

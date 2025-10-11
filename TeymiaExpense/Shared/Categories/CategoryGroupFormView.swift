@@ -65,12 +65,14 @@ struct CategoryGroupFormView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
                         save()
                     }
+                    .fontWeight(.semibold)
                     .disabled(!canSave)
                 }
             }

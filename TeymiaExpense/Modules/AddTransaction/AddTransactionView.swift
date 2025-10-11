@@ -99,6 +99,7 @@ struct AddTransactionView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
             }
@@ -286,6 +287,22 @@ struct FloatingSaveButton: View {
     let isEnabled: Bool
     let action: () -> Void
     
+    private var backgroundGradient: LinearGradient {
+        isEnabled ? .appGradient : disabledGradient
+    }
+    
+    private var disabledGradient: LinearGradient {
+        LinearGradient(
+            colors: [Color.gray.opacity(0.3)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    private var shadowColor: Color {
+        isEnabled ? .appTint.opacity(0.3) : .clear
+    }
+    
     var body: some View {
         Button(action: action) {
             Text("Save")
@@ -296,37 +313,15 @@ struct FloatingSaveButton: View {
                 .background {
                     if #available(iOS 26, *) {
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(
-                                isEnabled
-                                ? AccountColors.gradient(at: 0)
-                                : LinearGradient(
-                                    colors: [Color.gray.opacity(0.3)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .glassEffect(.regular.tint(.accentColor).interactive())
+                            .fill(backgroundGradient)
+                            .glassEffect(.regular.tint(.appTint).interactive())
                     } else {
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(
-                                isEnabled
-                                ? AccountColors.gradient(at: 0)
-                                : LinearGradient(
-                                    colors: [Color.gray.opacity(0.3)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                            .fill(backgroundGradient)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .shadow(
-                    color: isEnabled
-                    ? AccountColors.color(at: 0).opacity(0.3)
-                    : Color.clear,
-                    radius: 12,
-                    y: 4
-                )
+                .shadow(color: shadowColor, radius: 12, y: 4)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)

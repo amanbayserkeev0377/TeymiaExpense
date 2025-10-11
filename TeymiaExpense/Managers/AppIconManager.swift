@@ -1,10 +1,11 @@
 import SwiftUI
 import UIKit
 
-class AppIconManager: ObservableObject {
+@Observable
+final class AppIconManager {
     static let shared = AppIconManager()
     
-    @Published private(set) var currentIcon: AppIcon
+    private(set) var currentIcon: AppIcon
     
     private init() {
         currentIcon = Self.getCurrentAppIcon()

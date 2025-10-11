@@ -141,7 +141,7 @@ struct CurrencyRowView: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.app)
+                        .foregroundStyle(.appTint)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
                 }

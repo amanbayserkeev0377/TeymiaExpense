@@ -16,7 +16,6 @@ struct TeymiaExpenseApp: App {
             Currency.self
         ])
         
-        // Try CloudKit first with detailed error logging
         do {
             let cloudKitConfig = ModelConfiguration(
                 schema: schema,
@@ -30,16 +29,8 @@ struct TeymiaExpenseApp: App {
             createDefaultDataIfNeeded(context: container.mainContext)
             return container
             
-        } catch let error as NSError {
-            print("❌ CloudKit Error Details:")
-            print("   Domain: \(error.domain)")
-            print("   Code: \(error.code)")
-            print("   Description: \(error.localizedDescription)")
-            print("   User Info: \(error.userInfo)")
-            
-            // Try local storage as fallback
-            print("⚠️ Trying local storage fallback...")
-            
+        } catch {
+            print("⚠️ CloudKit failed, falling back to local storage: \(error)")
             do {
                 let localConfig = ModelConfiguration(
                     schema: schema,
@@ -52,14 +43,8 @@ struct TeymiaExpenseApp: App {
                 createDefaultDataIfNeeded(context: container.mainContext)
                 return container
                 
-            } catch let localError as NSError {
-                print("❌ Local Storage Error Details:")
-                print("   Domain: \(localError.domain)")
-                print("   Code: \(localError.code)")
-                print("   Description: \(localError.localizedDescription)")
-                print("   User Info: \(localError.userInfo)")
-                
-                fatalError("Could not create ModelContainer even with local storage: \(localError)")
+            } catch {
+                fatalError("Could not create ModelContainer: \(error)")
             }
         }
     }()
@@ -68,6 +53,8 @@ struct TeymiaExpenseApp: App {
         WindowGroup {
             MainTabView()
                 .environment(userPreferences)
+                .environment(AppColorManager.shared)
+                .environment(AppIconManager.shared)
                 .preferredColorScheme(userTheme.colorScheme)
                 .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
                     TeymiaOnBoardingView {
@@ -79,7 +66,7 @@ struct TeymiaExpenseApp: App {
     }
 }
 
-// MARK: - Synchronous Default Data Creation
+// MARK: - Default Data Creation
 private func createDefaultDataIfNeeded(context: ModelContext) {
     let categoryDescriptor = FetchDescriptor<Category>()
     let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []

@@ -95,6 +95,7 @@ struct CategoryFormView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
                 
@@ -103,6 +104,7 @@ struct CategoryFormView: View {
                         save()
                     } label: {
                         Image(systemName: "checkmark")
+                            .fontWeight(.semibold)
                     }
                     .disabled(!canSave)
                 }

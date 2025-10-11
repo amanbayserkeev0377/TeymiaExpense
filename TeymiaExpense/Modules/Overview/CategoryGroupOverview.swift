@@ -61,6 +61,7 @@ struct CategoryGroupOverviewView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
+                        .fontWeight(.semibold)
                 }
             }
         }

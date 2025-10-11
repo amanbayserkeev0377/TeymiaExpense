@@ -47,6 +47,14 @@ final class Account {
 
 extension Account {
     static func createDefault(context: ModelContext) {
+        // Check if any accounts exist
+        let accountDescriptor = FetchDescriptor<Account>()
+        let existingAccounts = (try? context.fetch(accountDescriptor)) ?? []
+        
+        if !existingAccounts.isEmpty {
+            return  // Already have accounts, don't create
+        }
+        
         let currencyDescriptor = FetchDescriptor<Currency>()
         let currencies = (try? context.fetch(currencyDescriptor)) ?? []
         

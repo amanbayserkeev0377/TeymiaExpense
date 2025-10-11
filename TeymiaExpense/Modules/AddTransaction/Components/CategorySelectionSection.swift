@@ -112,6 +112,7 @@ struct CategorySelectionView: View {
                     showingCategoryManagement = true
                 } label: {
                     Image(systemName: "pencil")
+                        .fontWeight(.semibold)
                 }
             }
         }
@@ -185,7 +186,7 @@ struct CategorySelectionView: View {
                 
                 if selectedCategory?.id == category.id {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.app)
+                        .foregroundStyle(.appTint)
                         .fontWeight(.bold)
                         .fontDesign(.rounded)
                 }

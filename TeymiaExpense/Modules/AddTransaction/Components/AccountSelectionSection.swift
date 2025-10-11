@@ -29,7 +29,7 @@ struct AccountSelectionSection: View {
                         
                         if selectedAccount == account {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.app)
+                                .foregroundStyle(.appTint)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
                         }

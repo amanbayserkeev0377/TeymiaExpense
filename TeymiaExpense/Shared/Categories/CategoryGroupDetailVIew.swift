@@ -98,6 +98,7 @@ struct CategoryGroupDetailView: View {
                 }
             } label: {
                 Image(systemName: isEditMode ? "checkmark" : "pencil")
+                    .fontWeight(.semibold)
             }
         }
         
@@ -106,6 +107,7 @@ struct CategoryGroupDetailView: View {
                 showingAddCategory = true
             } label: {
                 Image(systemName: "plus")
+                    .fontWeight(.semibold)
             }
         }
     }

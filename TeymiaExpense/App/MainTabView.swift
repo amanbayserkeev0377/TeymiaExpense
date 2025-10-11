@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct MainTabView: View {
-    
+    @Environment(AppColorManager.self) private var colorManager
+
     var body: some View {
         ZStack {
             TabView {
@@ -29,7 +30,7 @@ struct MainTabView: View {
                     .fontDesign(.rounded)
                     .tag(2)
             }
-            .tint(AccountColors.color(at: 0))
+            .tint(colorManager.currentColor)
         }
     }
 }

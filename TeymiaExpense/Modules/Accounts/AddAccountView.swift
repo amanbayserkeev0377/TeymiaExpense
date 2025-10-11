@@ -184,6 +184,7 @@ struct AddAccountView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -191,6 +192,7 @@ struct AddAccountView: View {
                         isEditMode ? updateAccount() : saveAccount()
                     } label: {
                         Image(systemName: "checkmark")
+                            .fontWeight(.semibold)
                     }
                     .disabled(!canSave)
                 }

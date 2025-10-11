@@ -78,7 +78,7 @@ enum AccountColor: String, CaseIterable, Codable {
     case candy = "candy"
     
     
-    // for future
+    // for App Tint
     var color: Color {
         switch self {
         case .mint:

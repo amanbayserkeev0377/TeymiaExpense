@@ -56,6 +56,7 @@ struct AccountTransactionsView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
                     }
                 }
                 
@@ -64,6 +65,7 @@ struct AccountTransactionsView: View {
                         showingAddTransaction = true
                     } label: {
                         Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
                 }
             }

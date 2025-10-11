@@ -127,6 +127,7 @@ struct CategoryManagementView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
+                        .fontWeight(.semibold)
                 }
             }
         }
@@ -138,6 +139,7 @@ struct CategoryManagementView: View {
                 }
             } label: {
                 Image(systemName: isEditMode ? "checkmark" : "pencil")
+                    .fontWeight(.semibold)
             }
         }
         
@@ -146,6 +148,7 @@ struct CategoryManagementView: View {
                 showingAddGroup = true
             } label: {
                 Image(systemName: "plus")
+                    .fontWeight(.semibold)
             }
         }
     }
