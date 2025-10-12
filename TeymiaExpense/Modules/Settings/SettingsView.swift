@@ -52,6 +52,7 @@ struct SettingsView: View {
                     AppearanceRowView()
                     CurrencySettingsRowView()
                     CloudKitSyncRowView()
+                    HiddenTransactionsRowView()
                 }
                 .listRowBackground(Color.mainRowBackground)
             }

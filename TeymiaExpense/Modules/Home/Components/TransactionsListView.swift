@@ -160,7 +160,6 @@ struct GlassDayTransactionsView: View {
             }
             .padding(.horizontal, 4)
             
-            // Unified Glass Card со всеми транзакциями
             VStack(spacing: 0) {
                 ForEach(Array(transactions.enumerated()), id: \.element.id) { index, transaction in
                     GlassTransactionRow(
@@ -169,8 +168,28 @@ struct GlassDayTransactionsView: View {
                         onHide: { onHideTransaction(transaction) },
                         onDelete: { onDeleteTransaction(transaction) }
                     )
+                    .swipeActions(config: .init(leadingPadding: 0, trailingPadding: 24, spacing: 10)) {
+                        Action(
+                            imageName: "eye.crossed",
+                            tint: .white,
+                            background: .gray,
+                            size: .init(width: 40, height: 40)
+                        ) { resetPosition in
+                            onHideTransaction(transaction)
+                            resetPosition.toggle()
+                        }
+                        
+                        Action(
+                            imageName: "trash",
+                            tint: .white,
+                            background: .red,
+                            size: .init(width: 40, height: 40)
+                        ) { resetPosition in
+                            onDeleteTransaction(transaction)
+                            resetPosition.toggle()
+                        }
+                    }
                     
-                    // Divider между транзакциями (кроме последней)
                     if index < transactions.count - 1 {
                         Divider()
                             .padding(.horizontal, 16)
@@ -192,7 +211,6 @@ struct GlassDayTransactionsView: View {
                             .white.opacity(0.2),
                             .white.opacity(0.3),
                             .white.opacity(0.5)
-                            
                         ], startPoint: .topLeading, endPoint: .bottomTrailing),
                         lineWidth: 0.4
                     )
@@ -202,7 +220,7 @@ struct GlassDayTransactionsView: View {
     }
 }
 
-// MARK: - Glass Transaction Row (внутри unified card)
+// MARK: - Glass Transaction Row
 
 struct GlassTransactionRow: View {
     let transaction: Transaction
@@ -217,29 +235,6 @@ struct GlassTransactionRow: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 onEdit()
-            }
-            .swipeActions {
-                // Hide action
-                Action(
-                    imageName: "eye.crossed",
-                    tint: .white,
-                    background: .gray,
-                    size: .init(width: 40, height: 40)
-                ) { resetPosition in
-                    onHide()
-                    resetPosition.toggle()
-                }
-                
-                // Delete action
-                Action(
-                    imageName: "trash",
-                    tint: .white,
-                    background: .red,
-                    size: .init(width: 40, height: 40)
-                ) { resetPosition in
-                    onDelete()
-                    resetPosition.toggle()
-                }
             }
     }
 }

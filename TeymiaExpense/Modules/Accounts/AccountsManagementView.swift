@@ -4,13 +4,14 @@ import SwiftData
 struct AccountsManagementView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Query private var accounts: [Account]
+    @Query(sort: \Account.sortOrder) private var accounts: [Account]
     
     @State private var showingAddAccount = false
     @State private var editingAccount: Account?
     @State private var showingDeleteAlert = false
     @State private var deleteAlertMessage = ""
     @State private var pendingDeleteAction: (() -> Void)?
+    @State private var isEditMode = false
     
     var body: some View {
         NavigationStack {
@@ -25,7 +26,9 @@ struct AccountsManagementView: View {
                         ForEach(accounts, id: \.id) { account in
                             AccountRowView(account: account)
                                 .onTapGesture {
-                                    editingAccount = account
+                                    if !isEditMode {
+                                        editingAccount = account
+                                    }
                                 }
                                 .swipeActions {
                                     Button(role: .destructive) {
@@ -34,22 +37,14 @@ struct AccountsManagementView: View {
                                         Image("trash.swipe")
                                     }
                                     .tint(.red)
-                                    Button {
-                                        editingAccount = account
-                                    } label: {
-                                        Image("edit")
-                                    }
-                                    .tint(.blue)
                                 }
                         }
-                    } footer: {
-                        Text("Tap to edit or swipe left for more options.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        .onMove(perform: isEditMode ? moveAccounts : nil)
                     }
                     .listRowBackground(Color.mainRowBackground)
                 }
             }
+            .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
             .scrollContentBackground(.hidden)
             .background(Color.mainBackground)
             .navigationTitle("Accounts")
@@ -60,6 +55,17 @@ struct AccountsManagementView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
+                            .fontWeight(.semibold)
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isEditMode.toggle()
+                        }
+                    } label: {
+                        Image(systemName: isEditMode ? "checkmark" : "pencil")
                             .fontWeight(.semibold)
                     }
                 }
@@ -97,6 +103,18 @@ struct AccountsManagementView: View {
     
     // MARK: - Helper Methods
     
+    private func moveAccounts(from source: IndexSet, to destination: Int) {
+        var accountsArray = accounts
+        accountsArray.move(fromOffsets: source, toOffset: destination)
+        
+        // Update sortOrder for all accounts
+        for (index, account) in accountsArray.enumerated() {
+            account.sortOrder = index
+        }
+        
+        try? modelContext.save()
+    }
+    
     private func confirmDeleteAccount(_ account: Account) {
         let transactionCount = account.transactions?.count ?? 0
         
@@ -108,7 +126,6 @@ struct AccountsManagementView: View {
         
         pendingDeleteAction = {
             withAnimation {
-                // Note: SwiftData cascade delete will handle transactions automatically
                 modelContext.delete(account)
                 try? modelContext.save()
             }

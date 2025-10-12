@@ -40,6 +40,13 @@ enum CurrencyType: String, CaseIterable, Codable {
 
 extension Currency {
     static func createDefaults(context: ModelContext) {
+        let descriptor = FetchDescriptor<Currency>()
+        let existing = (try? context.fetch(descriptor)) ?? []
+        
+        if !existing.isEmpty {
+            return
+        }
+        
         let currencies = CurrencyService.createDefaultCurrencies()
         
         for currency in currencies {

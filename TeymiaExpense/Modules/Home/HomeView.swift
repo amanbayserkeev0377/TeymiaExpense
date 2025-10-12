@@ -8,7 +8,7 @@ struct HomeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var currencies: [Currency]
-    @Query private var accounts: [Account]
+    @Query(sort: \Account.sortOrder) private var accounts: [Account]
     @Query(
         filter: #Predicate<Transaction> { !$0.isHidden },
         sort: \Transaction.date,

@@ -34,12 +34,27 @@ struct CategoryGroupNavigationRow: View {
     let onDelete: () -> Void
     
     var body: some View {
-        NavigationLink {
-            CategoryGroupDetailView(categoryGroup: group)
-        } label: {
-            CategoryGroupRowView(group: group)
+        ZStack {
+            NavigationLink(destination: CategoryGroupDetailView(categoryGroup: group)) {
+                EmptyView()
+            }
+            .opacity(0)
+            .disabled(isEditModeActive)
+            
+            HStack {
+                CategoryGroupRowView(group: group)
+                
+                Spacer()
+                
+                if !isEditModeActive {
+                    Image("chevron.right")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .contentShape(Rectangle())
         }
-        .disabled(isEditModeActive)
         .swipeActions {
             Button(role: .destructive, action: onDelete) {
                 Image("trash.swipe")

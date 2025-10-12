@@ -39,6 +39,13 @@ final class CategoryGroup {
 
 extension CategoryGroup {
     static func createDefaults(context: ModelContext) {
+        let descriptor = FetchDescriptor<CategoryGroup>()
+        let existing = (try? context.fetch(descriptor)) ?? []
+        
+        if !existing.isEmpty {
+            return
+        }
+        
         let expenseGroups = [
             ("other".localized, "other", 0),
             ("food.drinks".localized, "food.drinks", 1),

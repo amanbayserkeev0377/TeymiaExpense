@@ -68,13 +68,6 @@ struct TeymiaExpenseApp: App {
 
 // MARK: - Default Data Creation
 private func createDefaultDataIfNeeded(context: ModelContext) {
-    let categoryDescriptor = FetchDescriptor<Category>()
-    let existingCategories = (try? context.fetch(categoryDescriptor)) ?? []
-    
-    if !existingCategories.isEmpty {
-        return
-    }
-    
     Currency.createDefaults(context: context)
     CategoryGroup.createDefaults(context: context)
     Category.createDefaults(context: context)

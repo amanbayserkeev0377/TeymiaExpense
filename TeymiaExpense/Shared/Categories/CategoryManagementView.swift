@@ -112,8 +112,6 @@ struct CategoryManagementView: View {
                     )
                 }
                 .onMove(perform: isEditMode ? moveGroups : nil)
-            } footer: {
-                Text("Swipe left to edit or delete it.")
             }
             .listRowBackground(Color.mainRowBackground)
         }

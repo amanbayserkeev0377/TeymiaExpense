@@ -7,17 +7,17 @@ final class Account {
     var balance: Decimal = 0
     var isDefault: Bool = false
     var createdAt: Date = Date()
-    
     var designIndex: Int = 0
     var customIcon: String = "cash"
-    private var designTypeRawValue: String = "image"
-    
     var customImageData: Data? = nil
+    var sortOrder: Int = 0
     
     var designType: AccountDesignType {
         get { AccountDesignType(rawValue: designTypeRawValue) ?? .image }
         set { designTypeRawValue = newValue.rawValue }
     }
+    
+    private var designTypeRawValue: String = "image"
     
     var currency: Currency? = nil
     
@@ -35,7 +35,8 @@ final class Account {
         designIndex: Int = 0,
         customIcon: String = "cash",
         designType: AccountDesignType = .image,
-        customImageData: Data? = nil
+        customImageData: Data? = nil,
+        sortOrder: Int = 0
     ) {
         self.name = name
         self.balance = balance
@@ -46,6 +47,7 @@ final class Account {
         self.designTypeRawValue = designType.rawValue
         self.customImageData = customImageData
         self.createdAt = Date()
+        self.sortOrder = sortOrder
     }
 }
 
@@ -73,7 +75,8 @@ extension Account {
             isDefault: true,
             designIndex: 0,
             customIcon: "cash",
-            designType: .image
+            designType: .image,
+            sortOrder: 0
         )
         
         context.insert(mainAccount)

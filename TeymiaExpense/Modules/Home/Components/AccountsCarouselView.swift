@@ -12,42 +12,47 @@ struct AccountsCarouselView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            ScrollView(.horizontal) {
-                LazyHStack(spacing: spacing) {
-                    ForEach(accounts) { account in
-                        AccountCardView(account: account)
-                            .matchedTransitionSource(id: account.id, in: animation)
-                            .onTapGesture {
-                                selectedAccount = account
-                            }
+            if accounts.isEmpty {
+                EmptyAccountsCarouselView()
+                    .frame(height: 220)
+            } else {
+                // Accounts carousel
+                ScrollView(.horizontal) {
+                    LazyHStack(spacing: spacing) {
+                        ForEach(accounts) { account in
+                            AccountCardView(account: account)
+                                .matchedTransitionSource(id: account.id, in: animation)
+                                .onTapGesture {
+                                    selectedAccount = account
+                                }
+                        }
                     }
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
-            }
-            .frame(height: 220)
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
-            .onScrollGeometryChange(for: CGFloat.self) {
-                let offsetX = $0.contentOffset.x + $0.contentInsets.leading
-                let width = $0.containerSize.width + spacing
+                .frame(height: 220)
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+                .onScrollGeometryChange(for: CGFloat.self) {
+                    let offsetX = $0.contentOffset.x + $0.contentInsets.leading
+                    let width = $0.containerSize.width + spacing
+                    
+                    return offsetX / width
+                } action: { oldValue, newValue in
+                    let maxValue = CGFloat(max(accounts.count - 1, 0))
+                    scrollProgressX = min(max(newValue, 0), maxValue)
+                }
                 
-                return offsetX / width
-            } action: { oldValue, newValue in
-                let maxValue = CGFloat(max(accounts.count - 1, 0))
-                scrollProgressX = min(max(newValue, 0), maxValue)
-            }
-            
-            // Page indicators
-            if accounts.count > 1 {
-                HStack(spacing: 8) {
-                    ForEach(0..<accounts.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == Int(scrollProgressX.rounded()) ? Color.primary : Color.secondary.opacity(0.5))
-                            .frame(width: 6, height: 6)
-                            .animation(.easeInOut(duration: 0.3), value: scrollProgressX)
+                if accounts.count > 1 {
+                    HStack(spacing: 8) {
+                        ForEach(0..<accounts.count, id: \.self) { index in
+                            Circle()
+                                .fill(index == Int(scrollProgressX.rounded()) ? Color.primary : Color.secondary.opacity(0.5))
+                                .frame(width: 6, height: 6)
+                                .animation(.easeInOut(duration: 0.3), value: scrollProgressX)
+                        }
                     }
+                    .padding(.top, 16)
                 }
-                .padding(.top, 16)
             }
         }
         .background(CarouselBackdropView(
@@ -64,6 +69,34 @@ struct AccountsCarouselView: View {
     }
 }
 
+// MARK: - Empty Accounts Carousel View
+struct EmptyAccountsCarouselView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image("wallet")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundStyle(.white.opacity(0.8))
+            
+            VStack(spacing: 8) {
+                Text("No Accounts")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.white)
+                
+                Text("Tap the cards icon above to create your first account")
+                    .font(.subheadline)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
 // MARK: - Carousel Backdrop View
 struct CarouselBackdropView: View {
     let accounts: [Account]
@@ -75,53 +108,81 @@ struct CarouselBackdropView: View {
         GeometryReader {
             let size = $0.size
             
-            ZStack {
-                ForEach(accounts.reversed()) { account in
-                    let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
-                    
-                    // Check for custom image first
-                    if account.designIndex == -1, let image = account.customUIImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: size.width, height: size.height)
-                            .clipped()
-                            .opacity(index - scrollProgressX)
-                    } else {
-                        switch account.designType {
-                        case .image:
-                            Image(account.cardImage)
+            if accounts.isEmpty {
+                // Empty state backdrop - simple gradient
+                Rectangle()
+                    .fill(.linearGradient(colors: [
+                        Color.primary.opacity(0.3),
+                        Color.primary.opacity(0.2),
+                        Color.primary.opacity(0.1)
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: size.width, height: size.height)
+                    .blur(radius: 25, opaque: true)
+                    .overlay {
+                        Rectangle()
+                            .fill(.black.opacity(0.25))
+                    }
+                    .mask {
+                        Rectangle()
+                            .fill(.linearGradient(colors: [
+                                .black,
+                                .black.opacity(0.7),
+                                .black.opacity(0.6),
+                                .black.opacity(0.3),
+                                .black.opacity(0.25),
+                                .clear
+                            ], startPoint: .top, endPoint: .bottom))
+                    }
+            } else {
+                // Normal backdrop with account images
+                ZStack {
+                    ForEach(accounts.reversed()) { account in
+                        let index = CGFloat(accounts.firstIndex(where: { $0.id == account.id }) ?? 0) + 1
+                        
+                        // Check for custom image first
+                        if account.designIndex == -1, let image = account.customUIImage {
+                            Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: size.width, height: size.height)
                                 .clipped()
                                 .opacity(index - scrollProgressX)
-                            
-                        case .color:
-                            Rectangle()
-                                .fill(AccountColor.gradient(at: account.designIndex))
-                                .frame(width: size.width, height: size.height)
-                                .opacity(index - scrollProgressX)
+                        } else {
+                            switch account.designType {
+                            case .image:
+                                Image(account.cardImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: size.width, height: size.height)
+                                    .clipped()
+                                    .opacity(index - scrollProgressX)
+                                
+                            case .color:
+                                Rectangle()
+                                    .fill(AccountColor.gradient(at: account.designIndex))
+                                    .frame(width: size.width, height: size.height)
+                                    .opacity(index - scrollProgressX)
+                            }
                         }
                     }
                 }
-            }
-            .compositingGroup()
-            .blur(radius: 25, opaque: true)
-            .overlay {
-                Rectangle()
-                    .fill(.black.opacity(0.25))
-            }
-            .mask {
-                Rectangle()
-                    .fill(.linearGradient(colors: [
-                        .black,
-                        .black.opacity(0.7),
-                        .black.opacity(0.6),
-                        .black.opacity(0.3),
-                        .black.opacity(0.25),
-                        .clear
-                    ], startPoint: .top, endPoint: .bottom))
+                .compositingGroup()
+                .blur(radius: 25, opaque: true)
+                .overlay {
+                    Rectangle()
+                        .fill(.black.opacity(0.25))
+                }
+                .mask {
+                    Rectangle()
+                        .fill(.linearGradient(colors: [
+                            .black,
+                            .black.opacity(0.7),
+                            .black.opacity(0.6),
+                            .black.opacity(0.3),
+                            .black.opacity(0.25),
+                            .clear
+                        ], startPoint: .top, endPoint: .bottom))
+                }
             }
         }
         .containerRelativeFrame(.horizontal)

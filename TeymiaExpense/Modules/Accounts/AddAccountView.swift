@@ -325,7 +325,8 @@ struct AddAccountView: View {
             designIndex: finalDesignIndex,
             customIcon: selectedIcon,
             designType: selectedDesignType,
-            customImageData: imageData
+            customImageData: imageData,
+            sortOrder: accounts.count
         )
         
         modelContext.insert(account)

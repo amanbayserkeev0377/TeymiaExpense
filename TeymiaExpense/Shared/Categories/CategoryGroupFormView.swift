@@ -52,7 +52,6 @@ struct CategoryGroupFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                typeSection
                 detailsSection
             }
             .scrollContentBackground(.hidden)
@@ -86,28 +85,6 @@ struct CategoryGroupFormView: View {
     // MARK: - View Components
     
     @ViewBuilder
-    private var typeSection: some View {
-        Section {
-            HStack {
-                Text("Type")
-                    .foregroundStyle(.primary)
-                
-                Spacer()
-                
-                Text(groupType == .expense ? "Expense" : "Income")
-                    .foregroundStyle(.secondary)
-            }
-        } footer: {
-            if isEditing {
-                Text("Type cannot be changed when editing a group.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .listRowBackground(Color.mainRowBackground)
-    }
-    
-    @ViewBuilder
     private var detailsSection: some View {
         Section {
             TextField("Group Name", text: $groupName)
@@ -132,8 +109,15 @@ struct CategoryGroupFormView: View {
                         .frame(width: 20, height: 20)
                         .foregroundStyle(.tertiary)
                 }
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+        } header: {
+            Text(groupType == .expense ? "Expense" : "Income")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+                .textCase(nil)
         }
         .listRowBackground(Color.mainRowBackground)
     }

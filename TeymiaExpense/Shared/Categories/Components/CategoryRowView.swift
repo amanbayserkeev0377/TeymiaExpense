@@ -9,7 +9,7 @@ struct CategoryRowView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
             
             Text(category.name)
                 .font(.body)
@@ -34,11 +34,6 @@ struct CategoryActionRow: View {
                     Image("trash.swipe")
                 }
                 .tint(.red)
-                
-                Button(action: onEdit) {
-                    Image("edit")
-                }
-                .tint(.gray)
             }
     }
 }

@@ -48,10 +48,6 @@ struct CategoryGroupDetailView: View {
                         )
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
-                } footer: {
-                    Text("Tap to edit or swipe left for more options.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
                 .listRowBackground(Color.mainRowBackground)
             }
