@@ -117,7 +117,7 @@ struct CardDesignSelectionView: View {
             columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
             spacing: 16
         ) {
-            ForEach(0..<AccountColors.colors.count, id: \.self) { index in
+            ForEach(AccountColor.allCases.indices, id: \.self) { index in
                 colorDesignButton(index: index)
             }
         }
@@ -161,7 +161,7 @@ struct CardDesignSelectionView: View {
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(AccountColors.gradient(at: index))
+                    .fill(AccountColor.gradient(at: index))
                     .frame(height: 50)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)

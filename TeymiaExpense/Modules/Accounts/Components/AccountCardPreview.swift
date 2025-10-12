@@ -90,7 +90,7 @@ struct AccountCardPreview: View {
                     .clipShape(.rect(cornerRadius: 20))
             case .color:
                 Rectangle()
-                    .fill(AccountColors.gradient(at: designIndex))
+                    .fill(AccountColor.gradient(at: designIndex))
                     .frame(height: 220)
                     .clipShape(.rect(cornerRadius: 20))
             }

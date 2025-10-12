@@ -2,15 +2,8 @@ import SwiftUI
 
 // MARK: - App Tint Colors
 struct AppTintColors {
-    static let colors: [AppTintColor] = [
-        .tint1, .tint2, .tint3, .tint4, .tint5, .tint6,
-        .tint7, .tint8, .tint9, .tint10, .tint11, .tint12,
-        .tint13, .tint14, .tint15, .tint16, .tint17,
-        .tint18, .tint19, .tint20, .tint21
-    ]
-    
     static func color(at index: Int) -> Color {
-        let tintColor = colors[index % colors.count]
+        let tintColor = AppTintColor.allCases[index % AppTintColor.allCases.count]
         return tintColor.color
     }
 }
@@ -19,8 +12,9 @@ struct AppTintColors {
 enum AppTintColor: String, CaseIterable, Codable {
     case tint1, tint2, tint3, tint4, tint5, tint6
     case tint7, tint8, tint9, tint10, tint11, tint12
-    case tint13, tint14, tint15, tint16, tint17
-    case tint18, tint19, tint20, tint21
+    case tint13, tint14, tint15, tint16, tint17, tint18
+    case tint19, tint20, tint21, tint22, tint23
+    case tint24, tint25, tint26, tint27, tint28
     
     var color: Color {
         switch self {
@@ -45,8 +39,8 @@ enum AppTintColor: String, CaseIterable, Codable {
         case .tint4:
             return Color(uiColor: UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark
-                ? #colorLiteral(red: 1, green: 0.6235294118, blue: 0.03921568627, alpha: 1)
-                : #colorLiteral(red: 0.9019607843, green: 0.5490196078, blue: 0, alpha: 1)
+                ? #colorLiteral(red: 0.9844796062, green: 0.7052091956, blue: 0.1644336283, alpha: 1)
+                : #colorLiteral(red: 0.9626899362, green: 0.5305011868, blue: 0.1816505194, alpha: 1)
             })
         case .tint5:
             return Color(uiColor: UIColor { traitCollection in
@@ -129,8 +123,8 @@ enum AppTintColor: String, CaseIterable, Codable {
         case .tint18:
             return Color(uiColor: UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark
-                ? #colorLiteral(red: 0.3529411765, green: 0.7490196078, blue: 0.1490196078, alpha: 1)
-                : #colorLiteral(red: 0.2352941176, green: 0.4823529412, blue: 0.1019607843, alpha: 1)
+                ? #colorLiteral(red: 0.9450980392, green: 0.4862745098, blue: 0.2862745098, alpha: 1)
+                : #colorLiteral(red: 1, green: 0.6196078431, blue: 0.4549019608, alpha: 1)
             })
         case .tint19:
             return Color(uiColor: UIColor { traitCollection in
@@ -141,14 +135,56 @@ enum AppTintColor: String, CaseIterable, Codable {
         case .tint20:
             return Color(uiColor: UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark
-                ? #colorLiteral(red: 0.9844796062, green: 0.7052091956, blue: 0.1644336283, alpha: 1)
-                : #colorLiteral(red: 0.9626899362, green: 0.5305011868, blue: 0.1816505194, alpha: 1)
+                ? #colorLiteral(red: 0.9707030654, green: 0.5556641221, blue: 0.5283203125, alpha: 1)
+                : #colorLiteral(red: 0.9550781846, green: 0.6220703721, blue: 0.5986327529, alpha: 1)
             })
         case .tint21:
             return Color(uiColor: UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.9980469346, green: 0.7749022245, blue: 0.1878663301, alpha: 1)
+                : #colorLiteral(red: 0.9160156846, green: 0.6655272841, blue: 0, alpha: 1)
+            })
+        case .tint22:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.4658201933, green: 0.6967772841, blue: 0.2778320014, alpha: 1)
+                : #colorLiteral(red: 0.5673828125, green: 0.7475585341, blue: 0.4226074517, alpha: 1)
+            })
+        case .tint23:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.3681639433, green: 0.5869141221, blue: 0.7944336534, alpha: 1)
+                : #colorLiteral(red: 0.3796386719, green: 0.5205078125, blue: 0.6577149034, alpha: 1)
+            })
+        case .tint24:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.02743448317, green: 0.5361328125, blue: 0.3640137315, alpha: 1)
+                : #colorLiteral(red: 0.1328122914, green: 0.5205078721, blue: 0.3911133111, alpha: 1)
+            })
+        case .tint25:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.8315429688, green: 0.2661132812, blue: 0.2856445014, alpha: 1)
+                : #colorLiteral(red: 0.5932617784, green: 0.2797851264, blue: 0.4050292969, alpha: 1)
+            })
+        case .tint26:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
                 ? #colorLiteral(red: 0.7475101948, green: 0.7774429917, blue: 0.8837624788, alpha: 1)
                 : #colorLiteral(red: 0.7620564103, green: 0.6589847207, blue: 0.7723631263, alpha: 1)
+            })
+        case .tint27:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.768627451, green: 0.662745098, blue: 0.862745098, alpha: 1)
+                : #colorLiteral(red: 0.537254902, green: 0.4039215686, blue: 0.7019607843, alpha: 1)
+            })
+        case .tint28:
+            return Color(uiColor: UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? #colorLiteral(red: 0.8078431373, green: 0.8078431373, blue: 0.8039215686, alpha: 1)
+                : #colorLiteral(red: 0.7490196078, green: 0.7490196078, blue: 0.7490196078, alpha: 1)
             })
         }
     }

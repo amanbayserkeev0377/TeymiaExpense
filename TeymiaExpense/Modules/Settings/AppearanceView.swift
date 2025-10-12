@@ -112,7 +112,7 @@ struct AppTintColorPickerSection: View {
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: spacing) {
-            ForEach(0..<AppTintColors.colors.count, id: \.self) { index in
+            ForEach(0..<AppTintColor.allCases.count, id: \.self) { index in
                 AppTintColorButton(
                     color: AppTintColors.color(at: index),
                     isSelected: colorManager.selectedTintColorIndex == index,
@@ -130,6 +130,8 @@ struct AppTintColorPickerSection: View {
 }
 
 struct AppTintColorButton: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     let color: Color
     let isSelected: Bool
     let onTap: () -> Void
@@ -145,7 +147,10 @@ struct AppTintColorButton: View {
                 
                 if isSelected {
                     Circle()
-                        .stroke(Color.white, lineWidth: 3)
+                        .stroke(
+                            colorScheme == .dark ? Color.black : Color.white,
+                            lineWidth: 3
+                        )
                         .frame(width: buttonSize - 4, height: buttonSize - 4)
                     
                     Circle()

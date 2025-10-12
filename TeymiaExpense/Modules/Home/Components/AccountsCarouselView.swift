@@ -99,7 +99,7 @@ struct CarouselBackdropView: View {
                             
                         case .color:
                             Rectangle()
-                                .fill(AccountColors.gradient(at: account.designIndex))
+                                .fill(AccountColor.gradient(at: account.designIndex))
                                 .frame(width: size.width, height: size.height)
                                 .opacity(index - scrollProgressX)
                         }

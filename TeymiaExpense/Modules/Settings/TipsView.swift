@@ -165,7 +165,7 @@ struct TipsGrid: View {
                         product: product,
                         isPurchasing: tipsManager.isPurchasing
                     ) {
-                        await tipsManager.purchaseTip(product)
+                        _ = await tipsManager.purchaseTip(product)
                     }
                 }
             }

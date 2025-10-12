@@ -134,7 +134,7 @@ struct AccountRowView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(AccountColors.gradient(at: account.designIndex))
+                        .fill(AccountColor.gradient(at: account.designIndex))
                         .frame(width: 50, height: 32)
                 }
             }

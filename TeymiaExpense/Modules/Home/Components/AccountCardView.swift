@@ -27,7 +27,7 @@ struct AccountCardView: View {
                         .clipShape(.rect(cornerRadius: 20))
                 case .color:
                     Rectangle()
-                        .fill(AccountColors.gradient(at: account.designIndex))
+                        .fill(AccountColor.gradient(at: account.designIndex))
                         .containerRelativeFrame(.horizontal)
                         .frame(height: 220)
                         .clipShape(.rect(cornerRadius: 20))
