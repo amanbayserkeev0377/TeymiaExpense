@@ -56,8 +56,8 @@ struct TeymiaExpenseApp: App {
                 .environment(AppColorManager.shared)
                 .environment(AppIconManager.shared)
                 .preferredColorScheme(userTheme.colorScheme)
-                .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
-                    TeymiaOnBoardingView {
+                .fullScreenCover(isPresented: $firstLaunchManager.shouldShowOnboarding) {
+                    OnBoardingView() {
                         firstLaunchManager.completeOnboarding()
                     }
                 }
