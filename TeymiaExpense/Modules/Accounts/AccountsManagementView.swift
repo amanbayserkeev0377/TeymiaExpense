@@ -179,7 +179,7 @@ struct AccountRowView: View {
 struct EmptyAccountsView: View {
     var body: some View {
         VStack(spacing: 16) {
-            Image("wallet")
+            Image("credit.card")
                 .resizable()
                 .frame(width: 40, height: 40)
                 .foregroundStyle(.secondary)
@@ -188,10 +188,12 @@ struct EmptyAccountsView: View {
                 Text("No Accounts")
                     .font(.headline)
                     .fontWeight(.medium)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Text("Create your first account to start tracking expenses")
                     .font(.subheadline)
+                    .fontDesign(.rounded)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }

@@ -26,6 +26,7 @@ struct AddTransactionView: View {
     
     @State private var showingAddAccount = false
     @FocusState private var isAmountFieldFocused: Bool
+    @State private var isInitialized = false
     
     // MARK: - Initializers
     init(editingTransaction: Transaction? = nil, preselectedAccount: Account? = nil) {
@@ -35,61 +36,71 @@ struct AddTransactionView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                AmountInputSection(
-                    amount: $amount,
-                    selectedTransactionType: $selectedType,
-                    isAmountFieldFocused: $isAmountFieldFocused,
-                    currencySymbol: currencySymbol
-                )
-                
-                // Category Section (only for income/expense)
-                if selectedType != .transfer {
-                    Section {
-                        NavigationLink {
-                            CategorySelectionView(
-                                transactionType: selectedType == .income ? .income : .expense,
-                                selectedCategory: selectedCategory,
-                                onSelectionChanged: { category in
-                                    selectedCategory = category
-                                }
-                            )
-                        } label: {
-                            CategorySelectionRow(selectedCategory: selectedCategory)
+            ZStack(alignment: .bottom) {
+                Form {
+                    AmountInputSection(
+                        amount: $amount,
+                        selectedTransactionType: $selectedType,
+                        isAmountFieldFocused: $isAmountFieldFocused,
+                        currencySymbol: currencySymbol
+                    )
+                    
+                    // Category Section (only for income/expense)
+                    if selectedType != .transfer {
+                        Section {
+                            NavigationLink {
+                                CategorySelectionView(
+                                    transactionType: selectedType == .income ? .income : .expense,
+                                    selectedCategory: selectedCategory,
+                                    onSelectionChanged: { category in
+                                        selectedCategory = category
+                                    }
+                                )
+                            } label: {
+                                CategorySelectionRow(selectedCategory: selectedCategory)
+                            }
                         }
+                        .listRowBackground(Color.mainRowBackground)
                     }
-                    .listRowBackground(Color.mainRowBackground)
-                }
-                
-                // Account/Transfer Section
-                if selectedType == .transfer {
-                    TransferAccountsSection(
-                        fromAccount: $fromAccount,
-                        toAccount: $toAccount,
-                        accounts: accounts,
-                        onAddAccountTapped: { showingAddAccount = true }
-                    )
-                } else {
-                    AccountSelectionSection(
-                        selectedAccount: $selectedAccount,
-                        accounts: accounts
-                    )
-                }
-                
-                // Date & Note
-                DateNoteSection(date: $date, note: $note)
-            }
-            .scrollContentBackground(.hidden)
-            .background(Color.mainBackground)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                FloatingSaveButton(
-                    isEnabled: canSave,
-                    action: {
-                        isEditMode ? updateTransaction() : saveTransaction()
+                    
+                    // Account/Transfer Section
+                    if selectedType == .transfer {
+                        TransferAccountsSection(
+                            fromAccount: $fromAccount,
+                            toAccount: $toAccount,
+                            accounts: accounts,
+                            onAddAccountTapped: { showingAddAccount = true }
+                        )
+                    } else {
+                        AccountSelectionSection(
+                            selectedAccount: $selectedAccount,
+                            accounts: accounts
+                        )
                     }
-                )
-                .padding(.horizontal, 15)
-                .padding(.bottom, 10)
+                    
+                    // Date & Note
+                    DateNoteSection(date: $date, note: $note)
+                    
+                    // Spacer for button
+                    Color.clear
+                        .frame(height: 80)
+                        .listRowBackground(Color.clear)
+                }
+                .scrollContentBackground(.hidden)
+                .background(Color.mainBackground)
+                
+                // Floating button
+                if isInitialized {  // ✅ Добавь условие
+                    FloatingSaveButton(
+                        isEnabled: canSave,
+                        action: {
+                            isEditMode ? updateTransaction() : saveTransaction()
+                        }
+                    )
+                    .padding(.horizontal, 15)
+                    .padding(.bottom, 10)
+                    .transition(.opacity)
+                }
             }
             .navigationTitle(isEditMode ? "Edit Transaction" : selectedType.displayName)
             .navigationBarTitleDisplayMode(.inline)
@@ -145,11 +156,11 @@ struct AddTransactionView: View {
             setupForCreating()
         }
         
-        // Focus amount field for new transactions
-        if !isEditMode {
-            DispatchQueue.main.async {
-                isAmountFieldFocused = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                isInitialized = true
             }
+            isAmountFieldFocused = true
         }
     }
     
