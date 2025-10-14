@@ -1,7 +1,6 @@
 {
   "images" : [
     {
-      "filename" : "1024-Photoroom.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +12,6 @@
           "value" : "dark"
         }
       ],
-      "filename" : "1024-Photoroom 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

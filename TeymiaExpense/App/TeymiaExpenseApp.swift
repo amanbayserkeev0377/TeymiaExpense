@@ -68,6 +68,8 @@ struct TeymiaExpenseApp: App {
 
 // MARK: - Default Data Creation
 private func createDefaultDataIfNeeded(context: ModelContext) {
+    print("🔄 Starting default data creation...")
+    
     Currency.createDefaults(context: context)
     CategoryGroup.createDefaults(context: context)
     Category.createDefaults(context: context)

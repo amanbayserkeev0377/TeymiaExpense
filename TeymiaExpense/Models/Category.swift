@@ -32,7 +32,7 @@ final class Category {
 
 extension Category {
     static func createDefaults(context: ModelContext) {
-        var descriptor = FetchDescriptor<Category>(
+        let descriptor = FetchDescriptor<Category>(
             predicate: #Predicate { $0.isDefault == true }
         )
         let existingDefaults = (try? context.fetch(descriptor)) ?? []
@@ -41,7 +41,7 @@ extension Category {
             return
         }
         
-        // Fallback проверка
+        // Fallback check
         let allDescriptor = FetchDescriptor<Category>()
         let allCategories = (try? context.fetch(allDescriptor)) ?? []
         

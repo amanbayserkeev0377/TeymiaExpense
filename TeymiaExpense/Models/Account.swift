@@ -53,7 +53,7 @@ final class Account {
 
 extension Account {
     static func createDefault(context: ModelContext) {
-        var descriptor = FetchDescriptor<Account>(
+        let descriptor = FetchDescriptor<Account>(
             predicate: #Predicate { $0.isDefault == true }
         )
         let existingDefault = (try? context.fetch(descriptor)) ?? []

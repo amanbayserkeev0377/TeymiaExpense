@@ -41,7 +41,7 @@ final class CategoryGroup {
 
 extension CategoryGroup {
     static func createDefaults(context: ModelContext) {
-        var descriptor = FetchDescriptor<CategoryGroup>(
+        let descriptor = FetchDescriptor<CategoryGroup>(
             predicate: #Predicate { $0.isDefault == true }
         )
         let existingDefaults = (try? context.fetch(descriptor)) ?? []
