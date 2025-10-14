@@ -16,7 +16,7 @@ struct AppearanceRowView: View {
                         Image("palette")
                             .resizable()
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(Color.primary)
                     }
                 )
                 
@@ -57,7 +57,7 @@ struct AppearanceView: View {
         .background(Color.mainBackground)
         .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.large)
-        .tint(colorManager.currentTintColor) // Updated
+        .tint(colorManager.currentTintColor)
     }
 }
 
@@ -94,9 +94,9 @@ struct AppIconButton: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 16)
                         .stroke(isSelected ? .appTint : .gray.opacity(0.3),
                                lineWidth: isSelected ? 2 : 0.3)
                 )

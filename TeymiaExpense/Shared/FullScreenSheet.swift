@@ -33,7 +33,7 @@ fileprivate struct FullScreenSheet<Content: View, Background: View>: View {
     var body: some View {
         content(safeArea)
             .scrollDisabled(scrollDisabled)
-            /// Test "geometryGroup" modifier, if there is any animation glitch try comment/uncomment
+            /// Test "geometryGroup" modifier, if there is any animation glitch comment/uncomment
             .geometryGroup()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(.rect)

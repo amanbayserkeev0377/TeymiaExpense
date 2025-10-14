@@ -17,7 +17,7 @@ struct CurrencySettingsRowView: View {
                             Image("dollar")
                                 .resizable()
                                 .frame(width: 18, height: 18)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(Color.primary)
                         }
                     )
                     

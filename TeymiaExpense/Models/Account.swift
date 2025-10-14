@@ -53,8 +53,18 @@ final class Account {
 
 extension Account {
     static func createDefault(context: ModelContext) {
-        let accountDescriptor = FetchDescriptor<Account>()
-        let existingAccounts = (try? context.fetch(accountDescriptor)) ?? []
+        var descriptor = FetchDescriptor<Account>(
+            predicate: #Predicate { $0.isDefault == true }
+        )
+        let existingDefault = (try? context.fetch(descriptor)) ?? []
+        
+        if !existingDefault.isEmpty {
+            return
+        }
+        
+        // Fallback
+        let allDescriptor = FetchDescriptor<Account>()
+        let existingAccounts = (try? context.fetch(allDescriptor)) ?? []
         
         if !existingAccounts.isEmpty {
             return

@@ -8,6 +8,8 @@ enum AppIcon {
         .main,
         .alternate(name: "AppIconDollar", imageName: "preview_appicon_dollar"),
         .alternate(name: "AppIconBitcoin", imageName: "preview_appicon_bitcoin"),
+        .alternate(name: "AppIconLight", imageName: "preivew_appicon_light"),
+        .alternate(name: "AppIconDark", imageName: "preview_appicon_dark")
     ]
     
     /// Name for alternate icon (nil for main icon)

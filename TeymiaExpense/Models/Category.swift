@@ -3,6 +3,7 @@ import SwiftData
 
 @Model
 final class Category {
+    var id: UUID = UUID()
     var name: String = ""
     var iconName: String = ""
     var sortOrder: Int = 0
@@ -31,10 +32,20 @@ final class Category {
 
 extension Category {
     static func createDefaults(context: ModelContext) {
-        let descriptor = FetchDescriptor<Category>()
-        let existing = (try? context.fetch(descriptor)) ?? []
+        var descriptor = FetchDescriptor<Category>(
+            predicate: #Predicate { $0.isDefault == true }
+        )
+        let existingDefaults = (try? context.fetch(descriptor)) ?? []
         
-        if !existing.isEmpty {
+        if !existingDefaults.isEmpty {
+            return
+        }
+        
+        // Fallback проверка
+        let allDescriptor = FetchDescriptor<Category>()
+        let allCategories = (try? context.fetch(allDescriptor)) ?? []
+        
+        if !allCategories.isEmpty {
             return
         }
         
@@ -42,7 +53,7 @@ extension Category {
         let categoryGroups = (try? context.fetch(categoryGroupDescriptor)) ?? []
         
         guard !categoryGroups.isEmpty else {
-            print("Warning: No category groups found for creating categories")
+            print("⚠️ Warning: No category groups found for creating categories")
             return
         }
         

@@ -14,26 +14,28 @@ struct OverviewCategoryGroupButton: View {
             ZStack {
                 // Glass effect background
                 TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 10, opaque: true)
-                    .background(Color.mainRowBackground.opacity(0.8))
+                    .blur(radius: 3, opaque: true)
+                    .background(Color.mainRowBackground.opacity(0.5))
                     .clipShape(Circle())
                     .overlay(
                         Circle()
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        .white.opacity(0.5),
-                                        .clear,
-                                        .white.opacity(0.2)
+                                        .white.opacity(0.6),
+                                        .white.opacity(0.1),
+                                        .white.opacity(0.1),
+                                        .white.opacity(0.6)
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
-                                lineWidth: 1.2
+                                lineWidth: 0.8
                             )
                     )
                     .frame(width: 60, height: 60)
-                    .shadow(color: .black.opacity(0.07), radius: 6)
+                    .shadow(color: .black.opacity(0.08), radius: 6)
+                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
                 
                 // Icon on top
                 Image(categoryGroup.iconName)
@@ -42,7 +44,7 @@ struct OverviewCategoryGroupButton: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
             }
-            .padding(2)
+            .padding(10)
             .clipShape(Circle())
             .contentShape(Circle())
             .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)

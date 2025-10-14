@@ -56,8 +56,8 @@ struct TeymiaExpenseApp: App {
                 .environment(AppColorManager.shared)
                 .environment(AppIconManager.shared)
                 .preferredColorScheme(userTheme.colorScheme)
-                .fullScreenCover(isPresented: $firstLaunchManager.shouldShowOnboarding) {
-                    OnBoardingView() {
+                .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
+                    TeymiaOnBoardingView() {
                         firstLaunchManager.completeOnboarding()
                     }
                 }
@@ -72,5 +72,11 @@ private func createDefaultDataIfNeeded(context: ModelContext) {
     CategoryGroup.createDefaults(context: context)
     Category.createDefaults(context: context)
     Account.createDefault(context: context)
-    try? context.save()
+
+    do {
+        try context.save()
+        print("✅ Default data created successfully")
+    } catch {
+        print("⚠️ Error saving default data: \(error)")
+    }
 }

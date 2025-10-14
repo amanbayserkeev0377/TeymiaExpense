@@ -18,7 +18,7 @@ struct CloudKitSyncRowView: View {
                         Image("cloud.upload")
                             .resizable()
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(Color.primary)
                     }
                 )
                 

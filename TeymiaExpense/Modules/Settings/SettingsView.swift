@@ -31,7 +31,7 @@ struct SettingsView: View {
                                     Image(themeIcon)
                                         .resizable()
                                         .frame(width: 20, height: 20)
-                                        .foregroundStyle(.primary)
+                                        .foregroundStyle(Color.primary)
                                 }
                             )
                             
@@ -55,6 +55,60 @@ struct SettingsView: View {
                     HiddenTransactionsRowView()
                 }
                 .listRowBackground(Color.mainRowBackground)
+                
+                AboutSection()
+                
+                Section {
+                    VStack(spacing: 16) {
+                        HStack(spacing: 20) {
+                            Button {
+                                if let url = URL(string: "https://github.com/amanbayserkeev0377/TeymiaExpense") {
+                                    UIApplication.shared.open(url)
+                                }
+                            } label: {
+                                Image("soc_github")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundStyle(Color.secondary)
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                if let url = URL(string: "https://t.me/amanbayserkeev0377") {
+                                    UIApplication.shared.open(url)
+                                }
+                            } label: {
+                                Image("soc_telegram")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundStyle(Color.secondary)
+
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        VStack(spacing: 4) {
+                            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.4"
+                            
+                            Text("Teymia Expense – \("version".localized) \(version)")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                            
+                            HStack(spacing: 4) {
+                                Text("Made with")
+                                Image(systemName: "heart.fill")
+                                Text("in Kyrgyzstan")
+                                Text("🇰🇬")
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .listSectionSeparator(.hidden)
             }
             .scrollContentBackground(.hidden)
             .background(Color.mainBackground)

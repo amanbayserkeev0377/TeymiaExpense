@@ -16,8 +16,9 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 0,
                     color: colorScheme == .dark
-                    ? Color(#colorLiteral(red: 0.75, green: 0.77, blue: 0.9, alpha: 1)).opacity(0.2)
-                    : Color(#colorLiteral(red: 0.576, green: 0.596, blue: 0.773, alpha: 1)).opacity(0.4),
+                    ? .appTint.opacity(0.15)
+                    : .appTint.opacity(0.2),
+                        
                     size: 210,
                     positions: [
                         CGPoint(x: geo.size.width * 0.15, y: geo.size.height * 0.2),  // Левый верх
@@ -34,8 +35,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 1,
                     color: colorScheme == .dark
-                    ? Color(#colorLiteral(red: 0.55, green: 0.6, blue: 0.9, alpha: 1)).opacity(0.3)
-                    : Color(#colorLiteral(red: 0.95, green: 0.7, blue: 0.85, alpha: 1)).opacity(0.4),
+                    ? .appTint.opacity(0.2)
+                    : .appTint.opacity(0.25),
                     size: 190,
                     positions: [
                         CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25), // Правый верх
@@ -52,8 +53,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 2,
                     color: colorScheme == .dark
-                        ? Color(#colorLiteral(red: 0.4196078431, green: 0.4666666667, blue: 0.8392156863, alpha: 1)).opacity(0.3)
-                        : Color(#colorLiteral(red: 1, green: 0.3725490196, blue: 0.4274509804, alpha: 1)).opacity(0.15),
+                    ?     .appTint.opacity(0.25)
+                        : .appTint.opacity(0.3),
                     size: 170,
                     positions: [
                         CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),   // Верх центр

@@ -198,24 +198,23 @@ struct GlassDayTransactionsView: View {
             }
             .background {
                 TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 10, opaque: true)
-                    .background(Color.mainRowBackground.opacity(0.7))
+                    .blur(radius: 3, opaque: true)
+                    .background(Color.mainRowBackground.opacity(0.5))
             }
-            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                    .stroke(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .strokeBorder(
                         LinearGradient(colors: [
-                            .white.opacity(0.5),
+                            .white.opacity(0.6),
                             .white.opacity(0.1),
-                            .white.opacity(0.2),
-                            .white.opacity(0.3),
-                            .white.opacity(0.5)
+                            .white.opacity(0.1),
+                            .white.opacity(0.6)
                         ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 0.4
+                        lineWidth: 0.8
                     )
             }
-            .shadow(color: .black.opacity(0.1), radius: 10)
+            .shadow(color: .black.opacity(0.15), radius: 10)
         }
     }
 }

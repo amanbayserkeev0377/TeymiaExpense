@@ -1,12 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "Дизайн без названия-2.png",
+      "filename" : "telegram.png",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "template-rendering-intent" : "template"
   }
 }

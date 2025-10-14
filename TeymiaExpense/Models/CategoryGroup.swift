@@ -3,6 +3,7 @@ import SwiftData
 
 @Model
 final class CategoryGroup {
+    var id: UUID = UUID()
     var name: String = ""
     var iconName: String = ""
     private var typeRawValue: String = "expense"
@@ -28,6 +29,7 @@ final class CategoryGroup {
         sortOrder: Int = 0,
         isDefault: Bool = false
     ) {
+        self.id = UUID()
         self.name = name
         self.iconName = iconName
         self.typeRawValue = type.rawValue
@@ -39,10 +41,19 @@ final class CategoryGroup {
 
 extension CategoryGroup {
     static func createDefaults(context: ModelContext) {
-        let descriptor = FetchDescriptor<CategoryGroup>()
-        let existing = (try? context.fetch(descriptor)) ?? []
+        var descriptor = FetchDescriptor<CategoryGroup>(
+            predicate: #Predicate { $0.isDefault == true }
+        )
+        let existingDefaults = (try? context.fetch(descriptor)) ?? []
         
-        if !existing.isEmpty {
+        if !existingDefaults.isEmpty {
+            return
+        }
+        
+        let allDescriptor = FetchDescriptor<CategoryGroup>()
+        let allGroups = (try? context.fetch(allDescriptor)) ?? []
+        
+        if !allGroups.isEmpty {
             return
         }
         

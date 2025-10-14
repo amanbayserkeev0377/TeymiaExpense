@@ -329,23 +329,23 @@ struct ThankYouOverlay: View {
             .padding(30)
             .background {
                 TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 10, opaque: true)
-                    .clipShape(RoundedRectangle(cornerRadius: 40))
+                    .blur(radius: 5, opaque: true)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
             }
             .background {
-                RoundedRectangle(cornerRadius: 40)
+                RoundedRectangle(cornerRadius: 25)
                     .fill(Color.white.opacity(0.05))
             }
             .overlay {
-                RoundedRectangle(cornerRadius: 40, style: .continuous)
+                RoundedRectangle(cornerRadius: 25, style: .continuous)
                     .stroke(
                         LinearGradient(colors: [
-                            .white.opacity(0.5),
-                            .white.opacity(0.15),
-                            .white.opacity(0.15),
-                            .white.opacity(0.5)
+                            .white.opacity(0.6),
+                            .white.opacity(0.1),
+                            .white.opacity(0.1),
+                            .white.opacity(0.6)
                         ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 0.8
+                        lineWidth: 1
                     )
             }
             .padding(.horizontal, 40)
