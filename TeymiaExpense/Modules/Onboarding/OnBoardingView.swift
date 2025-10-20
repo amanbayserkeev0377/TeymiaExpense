@@ -43,7 +43,6 @@ struct TeymiaOnBoardingView: View {
                             Image("app_icon_main")
                                 .resizable()
                                 .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                             
                             VStack {
                                 Text("Welcome to")

@@ -16,6 +16,7 @@ struct AboutSection: View {
                             Image("user.shield")
                                 .resizable()
                                 .frame(width: 20, height: 20)
+                                .aspectRatio(contentMode: .fit)
                                 .foregroundStyle(Color.primary)
                         }
                     )
@@ -44,6 +45,7 @@ struct AboutSection: View {
                             Image("user.document")
                                 .resizable()
                                 .frame(width: 20, height: 20)
+                                .aspectRatio(contentMode: .fit)
                                 .foregroundStyle(Color.primary)
                         }
                     )
@@ -82,6 +84,7 @@ struct AttributionsRowView: View {
                         Image("link.alt")
                             .resizable()
                             .frame(width: 20, height: 20)
+                            .aspectRatio(contentMode: .fit)
                             .foregroundStyle(Color.primary)
                     }
                 )

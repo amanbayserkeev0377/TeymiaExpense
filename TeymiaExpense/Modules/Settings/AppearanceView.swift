@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AppearanceRowView: View {
-    
     var body: some View {
         ZStack {
             NavigationLink(destination: AppearanceView()) {
@@ -16,6 +15,7 @@ struct AppearanceRowView: View {
                         Image("palette")
                             .resizable()
                             .frame(width: 20, height: 20)
+                            .aspectRatio(contentMode: .fit)
                             .foregroundStyle(Color.primary)
                     }
                 )
@@ -61,6 +61,8 @@ struct AppearanceView: View {
     }
 }
 
+// MARK: - App Icon Grid
+
 struct AppIconGridView: View {
     let selectedIcon: AppIcon
     let onIconSelected: (AppIcon) -> Void
@@ -69,13 +71,11 @@ struct AppIconGridView: View {
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(AppIcon.allIcons) { icon in
+            ForEach(AppIcon.allCases) { icon in
                 AppIconButton(
                     icon: icon,
                     isSelected: selectedIcon == icon,
-                    onTap: {
-                        onIconSelected(icon)
-                    }
+                    onTap: { onIconSelected(icon) }
                 )
             }
         }
@@ -90,18 +90,62 @@ struct AppIconButton: View {
     
     var body: some View {
         Button(action: onTap) {
-            Image(icon.imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            // Display actual app icon from Icon Composer file
+            // System automatically renders the icon from the bundle
+            IconPreviewView(iconName: icon.rawValue)
                 .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: 13.5))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(isSelected ? .appTint : .gray.opacity(0.3),
-                               lineWidth: isSelected ? 2 : 0.3)
+                    RoundedRectangle(cornerRadius: 13.5)
+                        .stroke(
+                            isSelected ? Color.appTint : Color.gray.opacity(0.3),
+                            lineWidth: isSelected ? 2.5 : 0.5
+                        )
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Preview view for app icon using the actual icon from bundle
+struct IconPreviewView: View {
+    let iconName: String
+    
+    var body: some View {
+        // Try to load the icon image from bundle
+        if let image = loadIconImage() {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            // Fallback to placeholder
+            RoundedRectangle(cornerRadius: 13.5)
+                .fill(Color.gray.opacity(0.3))
+                .overlay(
+                    Image(systemName: "app.fill")
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                )
+        }
+    }
+    
+    /// Load icon image from app bundle
+    private func loadIconImage() -> UIImage? {
+        // Icon Composer files are stored in bundle root
+        // We need to extract the 60x60 @2x or @3x image for preview
+        
+        // Try different icon sizes commonly used in Icon Composer
+        let sizes = ["60x60@2x", "60x60@3x", "76x76@2x"]
+        
+        for size in sizes {
+            if let path = Bundle.main.path(forResource: iconName, ofType: "png", inDirectory: size),
+               let image = UIImage(contentsOfFile: path) {
+                return image
+            }
+        }
+        
+        // Fallback: try to load from Assets if still there
+        return UIImage(named: iconName)
     }
 }
 

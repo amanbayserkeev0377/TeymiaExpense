@@ -29,6 +29,7 @@ struct TipsRowView: View {
                             Image("gift.fill")
                                 .resizable()
                                 .frame(width: 20, height: 20)
+                                .aspectRatio(contentMode: .fit)
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [

@@ -16,7 +16,8 @@ struct CurrencySettingsRowView: View {
                         icon: {
                             Image("dollar")
                                 .resizable()
-                                .frame(width: 18, height: 18)
+                                .frame(width: 20, height: 20)
+                                .aspectRatio(contentMode: .fit)
                                 .foregroundStyle(Color.primary)
                         }
                     )

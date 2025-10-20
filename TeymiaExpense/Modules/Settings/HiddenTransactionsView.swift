@@ -23,6 +23,7 @@ struct HiddenTransactionsRowView: View {
                         Image("eye.crossed")
                             .resizable()
                             .frame(width: 20, height: 20)
+                            .aspectRatio(contentMode: .fit)
                             .foregroundStyle(Color.primary)
                     }
                 )

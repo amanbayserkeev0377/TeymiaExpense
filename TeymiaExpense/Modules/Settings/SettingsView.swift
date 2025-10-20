@@ -15,6 +15,9 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Button("Reset Onboarding") {
+                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+                } // For test
                 TipsRowView()
                 
                 Section {
@@ -28,6 +31,7 @@ struct SettingsView: View {
                                     Image(themeIcon)
                                         .resizable()
                                         .frame(width: 20, height: 20)
+                                        .aspectRatio(contentMode: .fit)
                                         .foregroundStyle(Color.primary)
                                 }
                             )
