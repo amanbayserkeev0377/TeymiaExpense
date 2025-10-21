@@ -4,15 +4,18 @@ struct FloatingPlusButton: View {
     let action: () -> Void
     let animation: Namespace.ID?
     let useZoomTransition: Bool
+    let bottomPadding: CGFloat
     
     init(
         action: @escaping () -> Void,
         animation: Namespace.ID? = nil,
-        useZoomTransition: Bool = false
+        useZoomTransition: Bool = false,
+        bottomPadding: CGFloat = 20
     ) {
         self.action = action
         self.animation = animation
         self.useZoomTransition = useZoomTransition
+        self.bottomPadding = bottomPadding
     }
     
     var body: some View {
@@ -23,7 +26,7 @@ struct FloatingPlusButton: View {
                 
                 button
                     .padding(.trailing, 20)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, bottomPadding)
             }
         }
     }

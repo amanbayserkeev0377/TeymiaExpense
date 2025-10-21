@@ -37,23 +37,40 @@ struct AppearanceView: View {
     @Environment(AppIconManager.self) private var iconManager
     
     var body: some View {
-        Form {
-            Section("App Icon") {
-                AppIconGridView(
-                    selectedIcon: iconManager.currentIcon,
-                    onIconSelected: { icon in
-                        iconManager.setAppIcon(icon)
-                    }
-                )
+        ScrollView {
+            VStack(spacing: 32) {
+                // App Color Section
+                VStack(alignment: .leading, spacing: 12) {
+                    AppTintColorPickerSection()
+                        .padding()
+                        .background(Color.mainRowBackground)
+                        .cornerRadius(30)
+                        .shadow(
+                            color: Color.black.opacity(0.15),
+                            radius: 8
+                        )
+                        .padding(.horizontal)
+                }
+                // App Icon Section
+                VStack(alignment: .leading, spacing: 12) {
+                    AppIconGridView(
+                        selectedIcon: iconManager.currentIcon,
+                        onIconSelected: { icon in
+                            iconManager.setAppIcon(icon)
+                        }
+                    )
+                    .padding()
+                    .background(Color.mainBackground)
+                    .cornerRadius(30)
+                    .shadow(
+                        color: Color.black.opacity(0.15),
+                        radius: 8,
+                    )
+                    .padding(.horizontal)
+                }
             }
-            .listRowBackground(Color.mainRowBackground)
-            
-            Section("App Color") {
-                AppTintColorPickerSection()
-            }
-            .listRowBackground(Color.mainRowBackground)
+            .padding(.vertical)
         }
-        .scrollContentBackground(.hidden)
         .background(Color.mainBackground)
         .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.large)
@@ -72,80 +89,35 @@ struct AppIconGridView: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 20) {
             ForEach(AppIcon.allCases) { icon in
-                AppIconButton(
+                AppIconCell(
                     icon: icon,
                     isSelected: selectedIcon == icon,
                     onTap: { onIconSelected(icon) }
                 )
             }
         }
-        .padding(.vertical, 8)
     }
 }
 
-struct AppIconButton: View {
+struct AppIconCell: View {
     let icon: AppIcon
     let isSelected: Bool
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
-            // Display actual app icon from Icon Composer file
-            // System automatically renders the icon from the bundle
-            IconPreviewView(iconName: icon.rawValue)
+            Image(icon.previewImageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
                 .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 13.5))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 13.5)
+                    RoundedRectangle(cornerRadius: 16)
                         .stroke(
                             isSelected ? Color.appTint : Color.gray.opacity(0.3),
                             lineWidth: isSelected ? 2.5 : 0.5
                         )
                 )
         }
-        .buttonStyle(.plain)
-    }
-}
-
-/// Preview view for app icon using the actual icon from bundle
-struct IconPreviewView: View {
-    let iconName: String
-    
-    var body: some View {
-        // Try to load the icon image from bundle
-        if let image = loadIconImage() {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-        } else {
-            // Fallback to placeholder
-            RoundedRectangle(cornerRadius: 13.5)
-                .fill(Color.gray.opacity(0.3))
-                .overlay(
-                    Image(systemName: "app.fill")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                )
-        }
-    }
-    
-    /// Load icon image from app bundle
-    private func loadIconImage() -> UIImage? {
-        // Icon Composer files are stored in bundle root
-        // We need to extract the 60x60 @2x or @3x image for preview
-        
-        // Try different icon sizes commonly used in Icon Composer
-        let sizes = ["60x60@2x", "60x60@3x", "76x76@2x"]
-        
-        for size in sizes {
-            if let path = Bundle.main.path(forResource: iconName, ofType: "png", inDirectory: size),
-               let image = UIImage(contentsOfFile: path) {
-                return image
-            }
-        }
-        
-        // Fallback: try to load from Assets if still there
-        return UIImage(named: iconName)
     }
 }
 

@@ -80,7 +80,8 @@ struct HomeView: View {
                 FloatingPlusButton(
                     action: { showingAddTransaction = true },
                     animation: animation,
-                    useZoomTransition: PerformanceSettings.shouldUseZoomTransition
+                    useZoomTransition: true,
+                    bottomPadding: customTabBarBottomPadding
                 )
             }
         }
@@ -113,6 +114,14 @@ struct HomeView: View {
         
         return allTransactions.filter { transaction in
             transaction.date >= startOfStartDate && transaction.date < endOfEndDate
+        }
+    }
+    
+    private var customTabBarBottomPadding: CGFloat {
+        if #available(iOS 26, *) {
+            return 20
+        } else {
+            return 60
         }
     }
     

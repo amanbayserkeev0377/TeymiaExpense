@@ -44,140 +44,128 @@ struct CloudKitSyncView: View {
     @State private var isSyncing = false
     
     var body: some View {
-        List {
-            // Status Section
-            Section("Status") {
-                HStack {
-                    Text(cloudKitStatus.statusInfo.text)
-                        .fontWeight(.medium)
-                        .fontDesign(.rounded)
-                        .foregroundStyle(cloudKitStatus.statusInfo.color)
-                    
-                    Spacer()
-                    
-                    if case .checking = cloudKitStatus {
-                        ProgressView()
+        ScrollView {
+            VStack(spacing: 24) {
+                // Status Section
+                CustomSection(title: "Status") {
+                    HStack {
+                        Text(cloudKitStatus.statusInfo.text)
+                            .fontWeight(.medium)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(cloudKitStatus.statusInfo.color)
+                        
+                        Spacer()
+                        
+                        if case .checking = cloudKitStatus {
+                            ProgressView()
+                        }
                     }
                 }
-            }
-            .listRowBackground(Color.mainRowBackground)
-            
-            // Actions Section
-            if case .available = cloudKitStatus {
-                Section {
-                    // Force Sync Button
-                    Button {
-                        Task { await forceSync() }
-                    } label: {
-                        HStack {
-                            Text("Force Sync")
-                                .fontWeight(.medium)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.appTint)
+                
+                // Actions Section (only when available)
+                if case .available = cloudKitStatus {
+                    CustomSection(title: "Sync", footer: "Data syncs automatically in the background. Use force sync only if needed.") {
+                        // Force Sync Button
+                        Button {
+                            Task { await forceSync() }
+                        } label: {
+                            HStack {
+                                Text("Force Sync")
+                                    .fontWeight(.medium)
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.appTint)
+                                
+                                Spacer()
+                                
+                                if isSyncing {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isSyncing)
+                        
+                        // Last Sync Time
+                        if let lastSync = lastSyncTime {
+                            Divider()
+                                .padding(.vertical, 4)
                             
-                            Spacer()
-                            
-                            if isSyncing {
-                                ProgressView()
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Last Sync")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .fontDesign(.rounded)
+                                
+                                Text(formatTime(lastSync))
+                                    .foregroundStyle(.primary)
+                                    .fontDesign(.rounded)
                             }
                         }
                     }
-                    .disabled(isSyncing)
-                    
-                    // Last Sync Time
-                    if let lastSync = lastSyncTime {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Last Sync")
+                }
+                
+                // Troubleshooting Section (when unavailable)
+                if case .unavailable = cloudKitStatus {
+                    CustomSection(title: "Setup Required") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Sign in to iCloud")
+                                .font(.headline)
+                                .fontDesign(.rounded)
+                            
+                            Text("To enable sync:\n1. Open Settings\n2. Tap your name\n3. Sign in with Apple ID")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .fontDesign(.rounded)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                
+                // Error Section
+                if case .error(let message) = cloudKitStatus {
+                    CustomSection(title: "Troubleshooting") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Sync Error")
+                                .font(.headline)
+                                .fontDesign(.rounded)
+                            
+                            Text(message)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .fontDesign(.rounded)
                             
-                            Text(formatTime(lastSync))
-                                .foregroundStyle(.primary)
+                            Button {
+                                Task { await checkAccountStatus() }
+                            } label: {
+                                Text("Retry")
+                                    .fontWeight(.medium)
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.appTint)
+                            }
+                            .padding(.top, 8)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                
+                // Restricted Section
+                if case .restricted = cloudKitStatus {
+                    CustomSection(title: "Setup Required") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("iCloud Restricted")
+                                .font(.headline)
+                                .fontDesign(.rounded)
+                            
+                            Text("iCloud sync is restricted on this device. Check your device settings or parental controls.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                                 .fontDesign(.rounded)
                         }
+                        .padding(.vertical, 4)
                     }
-                } footer: {
-                    Text("Data syncs automatically in the background. Use force sync only if needed.")
-                        .fontDesign(.rounded)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
-            
-            // Troubleshooting Section
-            if case .unavailable = cloudKitStatus {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Sign in to iCloud")
-                            .font(.headline)
-                            .fontDesign(.rounded)
-                        
-                        Text("To enable sync:\n1. Open Settings\n2. Tap your name\n3. Sign in with Apple ID")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.rounded)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("Setup Required")
-                        .fontDesign(.rounded)
-                }
-                .listRowBackground(Color.mainRowBackground)
-            }
-            
-            // Error Section
-            if case .error(let message) = cloudKitStatus {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Sync Error")
-                            .font(.headline)
-                            .fontDesign(.rounded)
-                        
-                        Text(message)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.rounded)
-                        
-                        Button {
-                            Task { await checkAccountStatus() }
-                        } label: {
-                            Text("Retry")
-                                .fontWeight(.medium)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.appTint)
-                        }
-                        .padding(.top, 8)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("Troubleshooting")
-                        .fontDesign(.rounded)
-                }
-                .listRowBackground(Color.mainRowBackground)
-            }
-            
-            // Restricted Section
-            if case .restricted = cloudKitStatus {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("iCloud Restricted")
-                            .font(.headline)
-                            .fontDesign(.rounded)
-                        
-                        Text("iCloud sync is restricted on this device. Check your device settings or parental controls.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.rounded)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("Setup Required")
-                        .fontDesign(.rounded)
-                }
-                .listRowBackground(Color.mainRowBackground)
-            }
+            .padding(.vertical)
         }
-        .scrollContentBackground(.hidden)
         .background(Color.mainBackground)
         .navigationTitle("iCloud Sync")
         .navigationBarTitleDisplayMode(.large)
@@ -264,6 +252,59 @@ struct CloudKitSyncView: View {
         } else {
             formatter.dateStyle = .short
             return formatter.string(from: date)
+        }
+    }
+}
+
+// MARK: - Custom Section Component
+
+struct CustomSection<Content: View>: View {
+    let title: String?
+    let footer: String?
+    let content: Content
+    
+    init(
+        title: String? = nil,
+        footer: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.footer = footer
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header
+            if let title = title {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .fontDesign(.rounded)
+                    .padding(.horizontal, 24)
+            }
+            
+            // Content
+            VStack(alignment: .leading, spacing: 12) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color.mainRowBackground)
+            .cornerRadius(30)
+            .shadow(color: Color.black.opacity(0.15), radius: 8)
+            .padding(.horizontal)
+            
+            // Footer
+            if let footer = footer {
+                Text(footer)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fontDesign(.rounded)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 4)
+            }
         }
     }
 }
