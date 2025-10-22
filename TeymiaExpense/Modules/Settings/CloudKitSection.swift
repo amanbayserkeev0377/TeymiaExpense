@@ -44,7 +44,10 @@ struct CloudKitSyncView: View {
     @State private var isSyncing = false
     
     var body: some View {
-        ScrollView {
+        BlurNavigationView(
+            title: "iCloud Sync",
+            showBackButton: true
+        ) {
             VStack(spacing: 24) {
                 // Status Section
                 CustomSection(title: "Status") {
@@ -167,8 +170,7 @@ struct CloudKitSyncView: View {
             .padding(.vertical)
         }
         .background(Color.mainBackground)
-        .navigationTitle("iCloud Sync")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarHidden(true)
         .onAppear {
             loadLastSyncTime()
             Task { await checkAccountStatus() }
@@ -293,7 +295,7 @@ struct CustomSection<Content: View>: View {
             .padding()
             .background(Color.mainRowBackground)
             .cornerRadius(30)
-            .shadow(color: Color.black.opacity(0.15), radius: 8)
+            .shadow(color: Color.black.opacity(0.1), radius: 10)
             .padding(.horizontal)
             
             // Footer

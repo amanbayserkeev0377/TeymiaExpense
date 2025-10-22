@@ -53,28 +53,20 @@ final class Account {
 
 extension Account {
     static func createDefault(context: ModelContext) {
-        let descriptor = FetchDescriptor<Account>(
-            predicate: #Predicate { $0.isDefault == true }
-        )
-        let existingDefault = (try? context.fetch(descriptor)) ?? []
-        
-        if !existingDefault.isEmpty {
-            return
-        }
-        
-        // Fallback
+        // Single check: if ANY accounts exist, don't create default
         let allDescriptor = FetchDescriptor<Account>()
         let existingAccounts = (try? context.fetch(allDescriptor)) ?? []
         
-        if !existingAccounts.isEmpty {
+        guard existingAccounts.isEmpty else {
             return
         }
         
+        // Ensure currencies exist first
         let currencyDescriptor = FetchDescriptor<Currency>()
         let currencies = (try? context.fetch(currencyDescriptor)) ?? []
         
         guard let defaultCurrency = currencies.first(where: { $0.isDefault }) ?? currencies.first else {
-            print("Warning: No currencies available to create default account")
+            print("⚠️ Warning: No currencies available to create default account")
             return
         }
         

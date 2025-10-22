@@ -185,14 +185,6 @@ struct AddAccountView: View {
             .navigationTitle(isEditMode ? "Edit Account" : "Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .fontWeight(.semibold)
-                    }
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         isEditMode ? updateAccount() : saveAccount()

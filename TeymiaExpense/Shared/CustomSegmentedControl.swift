@@ -4,13 +4,22 @@ struct CustomSegmentedControl<T: Hashable>: View {
     let options: [T]
     let titles: [String]
     let icons: [String]
+    let iconSize: CGFloat
     let gradients: [LinearGradient]
     @Binding var selection: T
     
-    init(options: [T], titles: [String], icons: [String] = [], gradients: [LinearGradient] = [], selection: Binding<T>) {
+    init(
+        options: [T],
+        titles: [String],
+        icons: [String] = [],
+        iconSize: CGFloat = 20,
+        gradients: [LinearGradient] = [],
+        selection: Binding<T>
+    ) {
         self.options = options
         self.titles = titles
         self.icons = icons
+        self.iconSize = iconSize
         self.gradients = gradients
         self._selection = selection
     }
@@ -27,7 +36,7 @@ struct CustomSegmentedControl<T: Hashable>: View {
                         if index < icons.count {
                             Image(icons[index])
                                 .resizable()
-                                .frame(width: 20, height: 20)
+                                .frame(width: iconSize, height: iconSize)
                         }
                         
                         Text(titles[index])
@@ -49,6 +58,7 @@ struct CustomSegmentedControl<T: Hashable>: View {
                                 .matchedGeometryEffect(id: "selection", in: namespace)
                         }
                     }
+                    .shadow(color: .black.opacity(0.1), radius: 6)
                 }
                 .buttonStyle(.plain)
             }
@@ -72,6 +82,7 @@ extension CustomSegmentedControl where T == Int {
         self.options = Array(0..<titles.count)
         self.titles = titles
         self.icons = []
+        self.iconSize = 20
         self.gradients = []
         self._selection = selection
     }

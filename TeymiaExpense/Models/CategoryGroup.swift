@@ -41,19 +41,11 @@ final class CategoryGroup {
 
 extension CategoryGroup {
     static func createDefaults(context: ModelContext) {
-        let descriptor = FetchDescriptor<CategoryGroup>(
-            predicate: #Predicate { $0.isDefault == true }
-        )
-        let existingDefaults = (try? context.fetch(descriptor)) ?? []
-        
-        if !existingDefaults.isEmpty {
-            return
-        }
-        
+        // Single check: if ANY category groups exist, don't create defaults
         let allDescriptor = FetchDescriptor<CategoryGroup>()
         let allGroups = (try? context.fetch(allDescriptor)) ?? []
         
-        if !allGroups.isEmpty {
+        guard allGroups.isEmpty else {
             return
         }
         

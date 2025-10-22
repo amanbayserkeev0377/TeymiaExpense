@@ -120,6 +120,7 @@ struct SettingsView: View {
         .sheet(isPresented: $changeTheme) {
             ThemeChangeView(scheme: scheme)
                 .presentationDetents([.fraction(0.4)])
+                .presentationCornerRadius(40)
         }
     }
     

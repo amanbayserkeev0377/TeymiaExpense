@@ -28,80 +28,104 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                ScrollView(.vertical) {
-                    LazyVStack(spacing: 15) {
-                        // Accounts Carousel
-                        AccountsCarouselView(
-                            accounts: accounts,
-                            scrollProgressX: $scrollProgressX,
-                            topInset: topInset,
-                            scrollOffsetY: scrollOffsetY
-                        )
-                        .zIndex(-1)
-                        
-                        // Glass Transactions Section
-                        GlassTransactionsListView(
-                            transactions: filteredTransactions,
-                            startDate: $startDate,
-                            endDate: $endDate,
-                            userPreferences: userPreferences,
-                            currencies: currencies,
-                            onEditTransaction: { transaction in
-                                editingTransaction = transaction
-                            },
-                            onHideTransaction: hideTransaction,
-                            onDeleteTransaction: deleteTransaction
-                        )
-                        .padding(.top, 20)
-                    }
-                }
-                .safeAreaPadding(15)
-                .onScrollGeometryChange(for: ScrollGeometry.self) {
-                    $0
-                } action: { oldValue, newValue in
-                    topInset = newValue.contentInsets.top + 100
-                    scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
-                }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showingAccountsManagement = true
-                        } label: {
-                            Image("cards.blank")
-                                .resizable()
-                                .frame(width: 24, height: 24)
+            GeometryReader { geometry in
+                let safeArea = geometry.safeAreaInsets
+                
+                ZStack {
+                    ScrollView(.vertical) {
+                        LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
+                            // Sticky Header as Section
+                            Section {
+                                VStack(spacing: 15) {
+                                    // Accounts Carousel
+                                    AccountsCarouselView(
+                                        accounts: accounts,
+                                        scrollProgressX: $scrollProgressX,
+                                        topInset: topInset,
+                                        scrollOffsetY: scrollOffsetY
+                                    )
+                                    .zIndex(-1)
+                                    
+                                    // Glass Transactions Section
+                                    GlassTransactionsListView(
+                                        transactions: filteredTransactions,
+                                        startDate: $startDate,
+                                        endDate: $endDate,
+                                        userPreferences: userPreferences,
+                                        currencies: currencies,
+                                        onEditTransaction: { transaction in
+                                            editingTransaction = transaction
+                                        },
+                                        onHideTransaction: hideTransaction,
+                                        onDeleteTransaction: deleteTransaction
+                                    )
+                                    .padding(.horizontal, 15)
+                                    .padding(.top, 20)
+                                }
+                                .padding(.bottom, 15)
+                            } header: {
+                                // Custom Blur Header
+                                TransparentBlurView(removeAllFilters: true)
+                                    .blur(radius: 8, opaque: false)
+                                    .padding([.horizontal, .top], -30)
+                                    .overlay(alignment: .bottom) {
+                                        HStack {
+                                            Spacer()
+                                            
+                                            Button {
+                                                showingAccountsManagement = true
+                                            } label: {
+                                                Image("cards.blank")
+                                                    .resizable()
+                                                    .foregroundStyle(.appTint)
+                                                    .frame(width: 24, height: 24)
+                                                    .frame(width: 44, height: 44)
+                                                    .contentShape(Rectangle())
+                                            }
+                                            .padding(.trailing, 8)
+                                        }
+                                        .frame(height: 44)
+                                        .padding(.bottom, 8)
+                                    }
+                                    .frame(height: 100 + safeArea.top)
+                                    .padding(.top, -safeArea.top)
+                            }
                         }
                     }
+                    .onScrollGeometryChange(for: ScrollGeometry.self) {
+                        $0
+                    } action: { oldValue, newValue in
+                        topInset = newValue.contentInsets.top + 100
+                        scrollOffsetY = newValue.contentOffset.y + newValue.contentInsets.top
+                    }
+                    .background {
+                        LivelyFloatingBlobsBackground()
+                    }
+                    
+                    FloatingPlusButton(
+                        action: { showingAddTransaction = true },
+                        animation: animation,
+                        useZoomTransition: true,
+                        bottomPadding: customTabBarBottomPadding
+                    )
                 }
-                .background {
-                    LivelyFloatingBlobsBackground()
-                }
-                FloatingPlusButton(
-                    action: { showingAddTransaction = true },
-                    animation: animation,
-                    useZoomTransition: true,
-                    bottomPadding: customTabBarBottomPadding
-                )
             }
+            .ignoresSafeArea(.container, edges: .top)
         }
         .sheet(isPresented: $showingAccountsManagement) {
             AccountsManagementView()
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
         .sheet(isPresented: $showingAddTransaction) {
-            if PerformanceSettings.shouldUseZoomTransition {
-                AddTransactionView()
-                    .presentationDragIndicator(.visible)
-                    .navigationTransition(.zoom(sourceID: "AddTransaction", in: animation))
-            } else {
-                AddTransactionView()
-                    .presentationDragIndicator(.visible)
-            }
+            AddTransactionView()
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
     }
     

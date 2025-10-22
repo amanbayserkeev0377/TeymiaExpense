@@ -50,15 +50,6 @@ struct AccountsManagementView: View {
             .navigationTitle("Accounts")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .fontWeight(.semibold)
-                    }
-                }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -83,10 +74,12 @@ struct AccountsManagementView: View {
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
         .sheet(item: $editingAccount) { account in
             AddAccountView(editingAccount: account)
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
         .alert("Delete Account", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {

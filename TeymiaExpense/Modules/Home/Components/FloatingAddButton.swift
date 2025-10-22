@@ -43,11 +43,7 @@ struct FloatingPlusButton: View {
         .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
         .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
         
-        if useZoomTransition, let animation = animation {
-            buttonView.matchedTransitionSource(id: "AddTransaction", in: animation)
-        } else {
-            buttonView
-        }
+        buttonView
     }
     
     private var buttonContent: some View {

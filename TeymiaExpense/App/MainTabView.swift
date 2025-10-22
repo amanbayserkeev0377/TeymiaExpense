@@ -67,5 +67,6 @@ struct MainTabView: View {
             CustomTabBar(activeTab: $activeTab)
                 .padding(.bottom, -5)
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }

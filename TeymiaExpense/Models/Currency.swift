@@ -40,21 +40,11 @@ enum CurrencyType: String, CaseIterable, Codable {
 
 extension Currency {
     static func createDefaults(context: ModelContext) {
-        // Check for default currencies
-        let descriptor = FetchDescriptor<Currency>(
-            predicate: #Predicate { $0.isDefault == true }
-        )
-        let existingDefaults = (try? context.fetch(descriptor)) ?? []
-        
-        if !existingDefaults.isEmpty {
-            return
-        }
-        
-        // Fallback check
+        // Single check: if ANY currencies exist, don't create defaults
         let allDescriptor = FetchDescriptor<Currency>()
         let existing = (try? context.fetch(allDescriptor)) ?? []
         
-        if !existing.isEmpty {
+        guard existing.isEmpty else {
             return
         }
         

@@ -55,16 +55,6 @@ struct CategoryGroupOverviewView: View {
         .background(.mainBackground)
         .navigationTitle(categoryGroup.name)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                        .fontWeight(.semibold)
-                }
-            }
-        }
     }
     
     // MARK: - Helper Methods

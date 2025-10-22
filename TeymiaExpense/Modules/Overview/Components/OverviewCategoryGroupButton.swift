@@ -11,15 +11,15 @@ struct OverviewCategoryGroupButton: View {
     
     var body: some View {
         VStack(spacing: 8) {
+            // Glass Circle
             ZStack {
-                // Glass effect background
-                TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 3, opaque: true)
-                    .background(Color.mainRowBackground.opacity(0.5))
-                    .clipShape(Circle())
-                    .overlay(
+                // Background circle with gradient
+                Circle()
+                    .fill(Color.mainRowBackground.opacity(0.7))
+                    .overlay {
+                        // Glass border
                         Circle()
-                            .stroke(
+                            .strokeBorder(
                                 LinearGradient(
                                     colors: [
                                         .white.opacity(0.6),
@@ -30,25 +30,21 @@ struct OverviewCategoryGroupButton: View {
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
-                                lineWidth: 0.8
+                                lineWidth: 1
                             )
-                    )
+                    }
                     .frame(width: 60, height: 60)
-                    .shadow(color: .black.opacity(0.08), radius: 6)
-                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
+                    .shadow(color: .black.opacity(0.15), radius: 10)
                 
-                // Icon on top
+                // Icon
                 Image(categoryGroup.iconName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
             }
-            .padding(10)
-            .clipShape(Circle())
-            .contentShape(Circle())
-            .matchedTransitionSource(id: "categoryGroup-\(categoryGroup.id)", in: animation)
 
+            // Text content
             VStack(spacing: 4) {
                 Text(categoryGroup.name)
                     .font(.system(.body, design: .rounded))

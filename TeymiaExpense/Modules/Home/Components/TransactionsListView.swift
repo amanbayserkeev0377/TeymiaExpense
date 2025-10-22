@@ -196,11 +196,7 @@ struct GlassDayTransactionsView: View {
                     }
                 }
             }
-            .background {
-                TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 3, opaque: true)
-                    .background(Color.mainRowBackground.opacity(0.5))
-            }
+            .background(Color.mainRowBackground.opacity(0.7))
             .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 26, style: .continuous)

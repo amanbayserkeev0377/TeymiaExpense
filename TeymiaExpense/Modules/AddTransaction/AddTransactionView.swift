@@ -90,7 +90,7 @@ struct AddTransactionView: View {
                 .background(Color.mainBackground)
                 
                 // Floating button
-                if isInitialized {  // ✅ Добавь условие
+                if isInitialized {
                     FloatingSaveButton(
                         isEnabled: canSave,
                         action: {
@@ -104,16 +104,6 @@ struct AddTransactionView: View {
             }
             .navigationTitle(isEditMode ? "Edit Transaction" : selectedType.displayName)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .fontWeight(.semibold)
-                    }
-                }
-            }
         }
         .onAppear { setupInitialValues() }
         .onChange(of: selectedType) { oldValue, newValue in
@@ -122,6 +112,7 @@ struct AddTransactionView: View {
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
     }
     

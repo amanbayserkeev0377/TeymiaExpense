@@ -22,7 +22,6 @@ struct AccountsCarouselView: View {
                     LazyHStack(spacing: spacing) {
                         ForEach(accounts) { account in
                             AccountCardView(account: account)
-                                .matchedTransitionSource(id: account.id, in: animation)
                                 .onTapGesture {
                                     selectedAccount = account
                                 }
@@ -30,6 +29,7 @@ struct AccountsCarouselView: View {
                     }
                     .scrollTargetLayout()
                 }
+                .contentMargins(.horizontal, 15, for: .scrollContent)
                 .frame(height: 220)
                 .scrollIndicators(.hidden)
                 .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
@@ -69,8 +69,8 @@ struct AccountsCarouselView: View {
         }
         .sheet(item: $selectedAccount) { account in
             AccountTransactionsView(account: account)
-                .navigationTransition(.zoom(sourceID: account.id, in: animation))
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
     }
 }
@@ -146,7 +146,7 @@ struct CarouselBackdropView: View {
                 }
             }
             .compositingGroup()
-            .blur(radius: 25, opaque: true)
+            .blur(radius: 10, opaque: true)
             .overlay {
                 Rectangle()
                     .fill(.black.opacity(0.25))
@@ -155,9 +155,9 @@ struct CarouselBackdropView: View {
                 Rectangle()
                     .fill(.linearGradient(colors: [
                         .black,
+                        .black.opacity(0.8),
                         .black.opacity(0.7),
-                        .black.opacity(0.6),
-                        .black.opacity(0.3),
+                        .black.opacity(0.4),
                         .black.opacity(0.25),
                         .clear
                     ], startPoint: .top, endPoint: .bottom))

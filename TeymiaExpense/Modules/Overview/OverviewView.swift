@@ -86,7 +86,7 @@ struct OverviewView: View {
                 )
             }
             .presentationDragIndicator(.visible)
-            .navigationTransition(.zoom(sourceID: "categoryGroup-\(categoryGroup.id)", in: animation))
+            .presentationCornerRadius(40)
         }
     }
     

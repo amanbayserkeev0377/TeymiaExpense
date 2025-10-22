@@ -27,7 +27,6 @@ struct AppearanceRowView: View {
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tertiary)
             }
-            .contentShape(Rectangle())
         }
     }
 }
@@ -37,7 +36,10 @@ struct AppearanceView: View {
     @Environment(AppIconManager.self) private var iconManager
     
     var body: some View {
-        ScrollView {
+        BlurNavigationView(
+            title: "Appearance",
+            showBackButton: true
+        ) {
             VStack(spacing: 32) {
                 // App Color Section
                 VStack(alignment: .leading, spacing: 12) {
@@ -47,10 +49,11 @@ struct AppearanceView: View {
                         .cornerRadius(30)
                         .shadow(
                             color: Color.black.opacity(0.15),
-                            radius: 8
+                            radius: 10
                         )
                         .padding(.horizontal)
                 }
+                
                 // App Icon Section
                 VStack(alignment: .leading, spacing: 12) {
                     AppIconGridView(
@@ -60,11 +63,11 @@ struct AppearanceView: View {
                         }
                     )
                     .padding()
-                    .background(Color.mainBackground)
+                    .background(Color.mainRowBackground)
                     .cornerRadius(30)
                     .shadow(
                         color: Color.black.opacity(0.15),
-                        radius: 8,
+                        radius: 10
                     )
                     .padding(.horizontal)
                 }
@@ -72,9 +75,8 @@ struct AppearanceView: View {
             .padding(.vertical)
         }
         .background(Color.mainBackground)
-        .navigationTitle("Appearance")
-        .navigationBarTitleDisplayMode(.large)
         .tint(colorManager.currentTintColor)
+        .navigationBarHidden(true)
     }
 }
 
