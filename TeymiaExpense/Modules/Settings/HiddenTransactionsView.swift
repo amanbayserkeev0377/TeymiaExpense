@@ -33,6 +33,7 @@ struct HiddenTransactionsRowView: View {
                 if hiddenCount > 0 {
                     Text("\(hiddenCount)")
                         .foregroundStyle(.secondary)
+                        .fontDesign(.rounded)
                 }
                 
                 Image("chevron.right")
@@ -70,27 +71,28 @@ struct HiddenTransactionsView: View {
     }
     
     var body: some View {
-        Group {
+        BlurNavigationView(
+            title: "Hidden Transactions",
+            showBackButton: true,
+            trailingButton: !hiddenTransactions.isEmpty ? HeaderButton(
+                icon: "eye",
+                iconSize: 24,
+                action: { unhideAllTransactions() }
+            ) : nil
+        ) {
             if hiddenTransactions.isEmpty {
                 emptyStateView
             } else {
                 transactionsList
+                    .padding(.horizontal, 15)
             }
         }
-        .navigationTitle("Hidden Transactions")
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            if !hiddenTransactions.isEmpty {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Unhide All") {
-                        unhideAllTransactions()
-                    }
-                }
-            }
-        }
+        .background(Color.mainBackground)
+        .navigationBarHidden(true)
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
         }
         .alert("Delete Transaction?", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {
@@ -110,56 +112,46 @@ struct HiddenTransactionsView: View {
     
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView {
-            Label {
-                Text("No Hidden Transactions")
-            } icon: {
-                Image("eye.crossed")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .foregroundStyle(.secondary)
-            }
-        } description: {
-            Text("Transactions you hide will appear here")
+        VStack(spacing: 16) {
+            Image("eye.crossed")
+                .resizable()
+                .frame(width: 48, height: 48)
+                .foregroundStyle(.secondary)
+            
+            Text("No Hidden Transactions")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .fontDesign(.rounded)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 100)
     }
     
     // MARK: - Transactions List
     
     @ViewBuilder
     private var transactionsList: some View {
-        List {
+        LazyVStack(spacing: 20) {
             ForEach(sortedDates, id: \.self) { date in
-                Section {
-                    ForEach(groupedTransactions[date] ?? []) { transaction in
-                        HiddenTransactionRow(
-                            transaction: transaction,
-                            onTap: { editingTransaction = transaction },
-                            onUnhide: { unhideTransaction(transaction) },
-                            onDelete: {
-                                transactionToDelete = transaction
-                                showingDeleteAlert = true
-                            }
-                        )
+                GlassDayTransactionsView(
+                    date: date,
+                    transactions: groupedTransactions[date] ?? [],
+                    userPreferences: userPreferences,
+                    currencies: currencies,
+                    onEditTransaction: { editingTransaction = $0 },
+                    onHideTransaction: { unhideTransaction($0) },
+                    onDeleteTransaction: {
+                        transactionToDelete = $0
+                        showingDeleteAlert = true
                     }
-                } header: {
-                    Text(formatDate(date))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .fontDesign(.rounded)
-                        .foregroundStyle(.primary)
-                        .textCase(nil)
-                }
-                .listRowBackground(Color.mainRowBackground)
+                )
             }
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(Color.mainBackground)
+        .padding(.bottom, 20)
     }
     
     // MARK: - Date Formatting
-    
+        
     private func formatDate(_ date: Date) -> String {
         let calendar = Calendar.current
         
@@ -206,29 +198,14 @@ struct HiddenTransactionsView: View {
 struct HiddenTransactionRow: View {
     let transaction: Transaction
     let onTap: () -> Void
-    let onUnhide: () -> Void
-    let onDelete: () -> Void
     
     var body: some View {
         TransactionRowView(transaction: transaction)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
             .contentShape(Rectangle())
             .onTapGesture {
                 onTap()
-            }
-            .swipeActions {
-                Button(role: .destructive) {
-                    onDelete()
-                } label: {
-                    Image("trash.swipe")
-                }
-                .tint(.red)
-                
-                Button {
-                    onUnhide()
-                } label: {
-                    Image("eye.swipe")
-                }
-                .tint(.blue)
             }
     }
 }

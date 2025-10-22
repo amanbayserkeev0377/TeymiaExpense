@@ -132,7 +132,15 @@ struct CustomTabBar: View {
     private func TabBarBackground() -> some View {
         ZStack {
             Capsule(style: .continuous)
-                .stroke(.gray.opacity(0.1), lineWidth: 0.8)
+                .strokeBorder(
+                    LinearGradient(colors: [
+                        .white.opacity(0.3),
+                        .white.opacity(0.15),
+                        .white.opacity(0.15),
+                        .white.opacity(0.3)
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing),
+                    lineWidth: 0.4
+                )
         }
         .background {
             TransparentBlurView(removeAllFilters: true)
@@ -141,6 +149,6 @@ struct CustomTabBar: View {
                 .clipShape(Capsule(style: .continuous))
         }
         .compositingGroup()
-        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.15), radius: 10)
     }
 }

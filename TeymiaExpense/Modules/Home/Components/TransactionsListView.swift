@@ -197,9 +197,9 @@ struct GlassDayTransactionsView: View {
                 }
             }
             .background(Color.mainRowBackground.opacity(0.7))
-            .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .strokeBorder(
                         LinearGradient(colors: [
                             .white.opacity(0.6),

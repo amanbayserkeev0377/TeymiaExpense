@@ -87,6 +87,22 @@ struct CurrencySettingsView: View {
                         .padding(.vertical, 10)
                         .background(Color.mainRowBackground)
                         .cornerRadius(30)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [
+                                            .white.opacity(0.3),
+                                            .white.opacity(0.15),
+                                            .white.opacity(0.15),
+                                            .white.opacity(0.3)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 0.4
+                                )
+                        }
                         .shadow(color: .black.opacity(0.1), radius: 10)
                         .padding(.horizontal)
                         .padding(.top, 16)
@@ -120,7 +136,7 @@ struct CurrencySettingsView: View {
                                     
                                     if currency != filteredCurrencies.last {
                                         Divider()
-                                            .padding(.leading, 60)
+                                            .padding(.leading, 44)
                                     }
                                 }
                             }

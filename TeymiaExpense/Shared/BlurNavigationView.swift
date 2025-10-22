@@ -4,7 +4,14 @@ import SwiftUI
 
 struct HeaderButton {
     let icon: String
+    let iconSize: CGFloat
     let action: () -> Void
+    
+    init(icon: String, iconSize: CGFloat = 30, action: @escaping () -> Void) {
+        self.icon = icon
+        self.iconSize = iconSize
+        self.action = action
+    }
 }
 
 // MARK: - Blur Navigation View
@@ -73,7 +80,7 @@ struct BlurNavigationView<Content: View>: View {
                                         Image(leading.icon)
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
-                                            .frame(width: 30, height: 30)
+                                            .frame(width: leading.iconSize, height: leading.iconSize) // Исправлено здесь
                                             .foregroundStyle(.appTint)
                                     }
                                     .buttonStyle(CircleButtonStyle())
@@ -98,7 +105,7 @@ struct BlurNavigationView<Content: View>: View {
                                         Image(trailing.icon)
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
-                                            .frame(width: 30, height: 30)
+                                            .frame(width: trailing.iconSize, height: trailing.iconSize) // Исправлено здесь
                                             .foregroundStyle(.appTint)
                                     }
                                     .buttonStyle(CircleButtonStyle())

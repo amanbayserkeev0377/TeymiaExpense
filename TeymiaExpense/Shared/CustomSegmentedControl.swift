@@ -55,6 +55,22 @@ struct CustomSegmentedControl<T: Hashable>: View {
                         if selection == option {
                             Capsule()
                                 .fill(Color.mainRowBackground)
+                                .overlay {
+                                    Capsule()
+                                        .strokeBorder(
+                                            LinearGradient(
+                                                colors: [
+                                                    .white.opacity(0.3),
+                                                    .white.opacity(0.15),
+                                                    .white.opacity(0.15),
+                                                    .white.opacity(0.3),
+                                                        ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 0.4
+                                        )
+                                }
                                 .matchedGeometryEffect(id: "selection", in: namespace)
                         }
                     }
