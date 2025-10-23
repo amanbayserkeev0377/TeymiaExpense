@@ -129,7 +129,7 @@ struct CarouselBackdropView: View {
                     } else {
                         switch account.designType {
                         case .image:
-                            Image(account.cardImage)
+                            Image(AccountImageData.image(at: account.designIndex).imageName)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: size.width, height: size.height)

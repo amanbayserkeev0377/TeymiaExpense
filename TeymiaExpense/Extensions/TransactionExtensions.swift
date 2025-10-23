@@ -32,12 +32,12 @@ extension Transaction {
     func displayTitle(relativeTo account: Account?) -> String {
         if type == .transfer {
             if self.account?.id == account?.id {
-                return "Transfer to \(toAccount?.name ?? "Account")"
+                return "transfer_to".localized + " \(toAccount?.name ?? "Account")"
             } else {
-                return "Transfer from \(self.account?.name ?? "Account")"
+                return "transfer_from".localized + " \(self.account?.name ?? "Account")"
             }
         }
-        return category?.name ?? "General"
+        return category?.name ?? "general_category".localized
     }
     
     /// Get icon name for transaction
@@ -66,9 +66,9 @@ extension TransactionType {
     
     var displayName: String {
         switch self {
-        case .expense: return "Expense"
-        case .income: return "Income"
-        case .transfer: return "Transfer"
+        case .expense: return "transaction_type_expense".localized
+        case .income: return "transaction_type_income".localized
+        case .transfer: return "transaction_type_transfer".localized
         }
     }
     

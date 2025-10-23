@@ -129,6 +129,8 @@ struct SettingsLinkRow<Destination: View>: View {
             .padding(.vertical, 6)
             .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+
     }
 }
 

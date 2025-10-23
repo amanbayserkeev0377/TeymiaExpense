@@ -123,7 +123,7 @@ struct BlurNavigationView<Content: View>: View {
                             .frame(height: 44)
                             .padding(.bottom, 8)
                         }
-                        .frame(height: 110 + safeArea.top)
+                        .frame(height: 100 + safeArea.top)
                         .padding(.top, -safeArea.top)
                     
                     Spacer()

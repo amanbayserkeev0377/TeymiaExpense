@@ -30,8 +30,12 @@ struct AccountImage: Identifiable, Codable {
 }
 
 // MARK: - Account Extensions for Images
+// ✅ НОВЫЙ КОД - безопасный
 extension Account {
     var cardImage: String {
+        guard designIndex >= 0 else {
+            return "pic1" // fallback
+        }
         let imageIndex = designIndex % AccountImageData.images.count
         return AccountImageData.images[imageIndex].imageName
     }

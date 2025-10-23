@@ -137,15 +137,19 @@ struct AccountRowView: View {
             // Account icon or design preview
             Group {
                 if account.designType == .image {
-                    Image(account.cardImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 32)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(AccountColor.gradient(at: account.designIndex))
-                        .frame(width: 50, height: 32)
+                    if account.designIndex == -1, let customImage = account.customUIImage {
+                        Image(uiImage: customImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 32)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        Image(AccountImageData.image(at: account.designIndex).imageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 32)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
                 }
             }
             

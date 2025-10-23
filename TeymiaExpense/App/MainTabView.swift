@@ -22,7 +22,7 @@ struct MainTabView: View {
             HomeView()
                 .tabItem {
                     Image("home.fill")
-                    Text("Home")
+                    Text("home".localized)
                 }
                 .fontDesign(.rounded)
                 .tag(0)
@@ -30,7 +30,7 @@ struct MainTabView: View {
             OverviewView()
                 .tabItem {
                     Image("overview.fill")
-                    Text("Overview")
+                    Text("overview".localized)
                 }
                 .fontDesign(.rounded)
                 .tag(1)
@@ -38,7 +38,7 @@ struct MainTabView: View {
             SettingsView()
                 .tabItem {
                     Image("settings.fill")
-                    Text("Settings")
+                    Text("settings".localized)
                 }
                 .fontDesign(.rounded)
                 .tag(2)

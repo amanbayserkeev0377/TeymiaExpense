@@ -252,7 +252,6 @@ struct AddTransactionView: View {
             dismiss()
         } catch {
             print("Error saving transaction: \(error)")
-            // TODO: Show user-friendly error alert
         }
     }
     
@@ -278,7 +277,6 @@ struct AddTransactionView: View {
             dismiss()
         } catch {
             print("Error updating transaction: \(error)")
-            // TODO: Show user-friendly error alert
         }
     }
 }

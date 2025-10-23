@@ -90,7 +90,7 @@ struct CurrencyDataProvider {
         Currency(code: "JMD", symbol: "$", name: "currency_jamaican_dollar".localized, type: .fiat),
         Currency(code: "JOD", symbol: "JD", name: "currency_jordanian_dinar".localized, type: .fiat),
         Currency(code: "KES", symbol: "KSh", name: "currency_kenyan_shilling".localized, type: .fiat),
-        Currency(code: "KGS", symbol: "сом", name: "currency_kyrgyzstani_som".localized, type: .fiat),
+        Currency(code: "KGS", symbol: "KGS_symbol".localized, name: "currency_kyrgyzstani_som".localized, type: .fiat),
         Currency(code: "KHR", symbol: "៛", name: "currency_cambodian_riel".localized, type: .fiat),
         Currency(code: "KID", symbol: "$", name: "currency_kiribati_dollar".localized, type: .fiat),
         Currency(code: "KMF", symbol: "CF", name: "currency_comorian_franc".localized, type: .fiat),

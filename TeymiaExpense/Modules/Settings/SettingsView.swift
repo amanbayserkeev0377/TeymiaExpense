@@ -27,6 +27,30 @@ struct SettingsView: View {
                     
                     // General Section
                     SettingsSection(title: "General") {
+                        // Language
+                        SettingsRow(
+                                icon: "globe.america",
+                                title: "Language",
+                                subtitle: currentLanguage
+                            ) {
+                                if let url = URL(string: UIApplication.openSettingsURLString) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        
+                        SettingsDivider()
+                        
+                        // Currency
+                        SettingsLinkRow(
+                            icon: "usd.circle",
+                            title: "Currency",
+                            subtitle: userPreferences.baseCurrencyCode
+                        ) {
+                            CurrencySettingsView()
+                        }
+                        
+                        SettingsDivider()
+                        
                         // Theme
                         SettingsRow(
                             icon: themeIcon,
@@ -44,17 +68,6 @@ struct SettingsView: View {
                             title: "Appearance"
                         ) {
                             AppearanceView()
-                        }
-                        
-                        SettingsDivider()
-                        
-                        // Currency
-                        SettingsLinkRow(
-                            icon: "usd.circle",
-                            title: "Currency",
-                            subtitle: userPreferences.baseCurrencyCode
-                        ) {
-                            CurrencySettingsView()
                         }
                         
                         SettingsDivider()
@@ -190,6 +203,16 @@ struct SettingsView: View {
         case .dark:
             return "moon"
         }
+    }
+    
+    private var currentLanguage: String {
+        let locale = Locale.current
+        guard let languageCode = locale.language.languageCode?.identifier else {
+            return "System"
+        }
+        
+        let languageName = locale.localizedString(forLanguageCode: languageCode) ?? languageCode
+        return languageName.prefix(1).uppercased() + languageName.dropFirst()
     }
 }
 
