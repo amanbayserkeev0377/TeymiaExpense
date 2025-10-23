@@ -27,12 +27,18 @@ struct ThemeChangeView: View {
                         }
                 }
             
-            Picker("Theme", selection: $userTheme) {
-                ForEach(Theme.allCases, id: \.self) { theme in
-                    Text(theme.rawValue).tag(theme)
-                }
-            }
-            .pickerStyle(.segmented)
+            CustomSegmentedControl(
+                options: Theme.allCases,
+                titles: Theme.allCases.map { $0.rawValue },
+                icons: ["circle.half", "sun", "moon"],
+                iconSize: 18,
+                gradients: [
+                    LinearGradient(colors: [.primary], startPoint: .leading, endPoint: .trailing),
+                    LinearGradient(colors: [.sun], startPoint: .leading, endPoint: .trailing),
+                    LinearGradient(colors: [.moon], startPoint: .leading, endPoint: .trailing)
+                ],
+                selection: $userTheme
+            )
             .padding(.horizontal, 40)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -74,9 +80,22 @@ enum Theme: String, CaseIterable, Hashable {
             return .dark
         }
     }
+    
+    // MARK: - Computed Properties
+    
+    private var themeIcon: String {
+        switch self {
+        case .systemDefault:
+            return "circle.half"
+        case .light:
+            return "sun"
+        case .dark:
+            return "moon"
+        }
+    }
 }
 
 extension Color {
-    static let sun = Color(hex: "FF8419")
-    static let moon = Color(hex: "8E86FF")
+    static let sun =  Color(#colorLiteral(red: 1, green: 0.5176470588, blue: 0.09803921569, alpha: 1))
+    static let moon = Color(#colorLiteral(red: 0.5568627451, green: 0.5254901961, blue: 1, alpha: 1))
 }

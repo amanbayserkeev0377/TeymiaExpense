@@ -1,51 +1,6 @@
 import SwiftUI
 import SwiftData
 
-struct HiddenTransactionsRowView: View {
-    @Query(filter: #Predicate<Transaction> { $0.isHidden == true })
-    private var hiddenTransactions: [Transaction]
-    
-    private var hiddenCount: Int {
-        hiddenTransactions.count
-    }
-    
-    var body: some View {
-        ZStack {
-            NavigationLink(destination: HiddenTransactionsView()) {
-                EmptyView()
-            }
-            .opacity(0)
-            
-            HStack {
-                Label(
-                    title: { Text("Hidden Transactions") },
-                    icon: {
-                        Image("eye.crossed")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundStyle(Color.primary)
-                    }
-                )
-                
-                Spacer()
-                
-                if hiddenCount > 0 {
-                    Text("\(hiddenCount)")
-                        .foregroundStyle(.secondary)
-                        .fontDesign(.rounded)
-                }
-                
-                Image("chevron.right")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
-            }
-            .contentShape(Rectangle())
-        }
-    }
-}
-
 struct HiddenTransactionsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var userPreferences
@@ -75,7 +30,7 @@ struct HiddenTransactionsView: View {
             title: "Hidden Transactions",
             showBackButton: true,
             trailingButton: !hiddenTransactions.isEmpty ? HeaderButton(
-                icon: "eye",
+                icon: "eye.crossed",
                 iconSize: 24,
                 action: { unhideAllTransactions() }
             ) : nil
@@ -113,7 +68,7 @@ struct HiddenTransactionsView: View {
     @ViewBuilder
     private var emptyStateView: some View {
         VStack(spacing: 16) {
-            Image("eye.crossed")
+            Image("search.question")
                 .resizable()
                 .frame(width: 48, height: 48)
                 .foregroundStyle(.secondary)

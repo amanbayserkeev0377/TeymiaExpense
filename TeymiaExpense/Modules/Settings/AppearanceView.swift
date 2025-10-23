@@ -1,36 +1,5 @@
 import SwiftUI
 
-struct AppearanceRowView: View {
-    var body: some View {
-        ZStack {
-            NavigationLink(destination: AppearanceView()) {
-                EmptyView()
-            }
-            .opacity(0)
-            
-            HStack {
-                Label(
-                    title: { Text("Appearance") },
-                    icon: {
-                        Image("palette")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundStyle(Color.primary)
-                    }
-                )
-                
-                Spacer()
-                
-                Image("chevron.right")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
-            }
-        }
-    }
-}
-
 struct AppearanceView: View {
     @Environment(AppColorManager.self) private var colorManager
     @Environment(AppIconManager.self) private var iconManager
@@ -47,6 +16,13 @@ struct AppearanceView: View {
                         .padding()
                         .background(Color.mainRowBackground)
                         .cornerRadius(30)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(
+                                    .gray.opacity(0.2),
+                                    lineWidth: 0.7
+                                )
+                        }
                         .shadow(
                             color: Color.black.opacity(0.15),
                             radius: 10
@@ -65,6 +41,13 @@ struct AppearanceView: View {
                     .padding()
                     .background(Color.mainRowBackground)
                     .cornerRadius(30)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 30)
+                            .stroke(
+                                .gray.opacity(0.2),
+                                lineWidth: 0.7
+                            )
+                    }
                     .shadow(
                         color: Color.black.opacity(0.15),
                         radius: 10

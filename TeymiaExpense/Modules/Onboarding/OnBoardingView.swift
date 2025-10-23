@@ -142,7 +142,7 @@ struct TeymiaOnBoardingView: View {
                     }
                     .background {
                         TransparentBlurView(removeAllFilters: true)
-                            .blur(radius: 10, opaque: true)
+                            .blur(radius: 8, opaque: true)
                             .background(Color.clear)
                     }
                 }

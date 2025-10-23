@@ -80,10 +80,14 @@ struct BlurNavigationView<Content: View>: View {
                                         Image(leading.icon)
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
-                                            .frame(width: leading.iconSize, height: leading.iconSize) // Исправлено здесь
+                                            .frame(width: leading.iconSize, height: leading.iconSize)
                                             .foregroundStyle(.appTint)
                                     }
                                     .buttonStyle(CircleButtonStyle())
+                                } else {
+                                    // Invisible spacer to balance layout when no leading button
+                                    Spacer()
+                                        .frame(width: 44, height: 44)
                                 }
                                 
                                 Spacer()
@@ -105,21 +109,21 @@ struct BlurNavigationView<Content: View>: View {
                                         Image(trailing.icon)
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
-                                            .frame(width: trailing.iconSize, height: trailing.iconSize) // Исправлено здесь
+                                            .frame(width: trailing.iconSize, height: trailing.iconSize)
                                             .foregroundStyle(.appTint)
                                     }
                                     .buttonStyle(CircleButtonStyle())
                                 } else {
-                                    // Spacer to balance layout
+                                    // Invisible spacer to balance layout when no trailing button
                                     Spacer()
                                         .frame(width: 44, height: 44)
                                 }
                             }
                             .padding(.horizontal, 18)
                             .frame(height: 44)
-                            .padding(.top, 8)
+                            .padding(.bottom, 8)
                         }
-                        .frame(height: 100 + safeArea.top)
+                        .frame(height: 110 + safeArea.top)
                         .padding(.top, -safeArea.top)
                     
                     Spacer()

@@ -1,42 +1,6 @@
 import SwiftUI
 import SwiftData
 
-struct CurrencySettingsRowView: View {
-    @Environment(UserPreferences.self) private var userPreferences
-    
-    var body: some View {
-        ZStack {
-            NavigationLink(destination: CurrencySettingsView()) {
-                EmptyView()
-            }
-            .opacity(0)
-                HStack {
-                    Label(
-                        title: { Text("Currency") },
-                        icon: {
-                            Image("dollar")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundStyle(Color.primary)
-                        }
-                    )
-                    
-                    Spacer()
-                    
-                    Text(userPreferences.baseCurrencyCode)
-                        .foregroundStyle(.secondary)
-                    
-                    Image("chevron.right")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tertiary)
-                }
-                .contentShape(Rectangle())
-        }
-    }
-}
-
 struct CurrencySettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(UserPreferences.self) private var userPreferences
@@ -143,6 +107,13 @@ struct CurrencySettingsView: View {
                             .padding()
                             .background(Color.mainRowBackground)
                             .cornerRadius(30)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(
+                                        .gray.opacity(0.2),
+                                        lineWidth: 0.7
+                                    )
+                            }
                             .shadow(color: .black.opacity(0.1), radius: 10)
                             .padding(.horizontal)
                             .padding(.top, 16)

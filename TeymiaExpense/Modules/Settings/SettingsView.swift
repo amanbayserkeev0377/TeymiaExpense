@@ -10,56 +10,111 @@ struct SettingsView: View {
     @Query private var accounts: [Account]
     @Query private var transactions: [Transaction]
     
+    @Query(filter: #Predicate<Transaction> { $0.isHidden == true })
+    private var hiddenTransactions: [Transaction]
+    
     @State private var changeTheme = false
     
     var body: some View {
         NavigationStack {
-            List {
-                Button("Reset Onboarding") {
-                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
-                } // For test
-                TipsRowView()
-                
-                Section {
-                    Button {
-                        changeTheme.toggle()
-                    } label: {
-                        HStack {
-                            Label(
-                                title: { Text("Theme") },
-                                icon: {
-                                    Image(themeIcon)
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .aspectRatio(contentMode: .fit)
-                                        .foregroundStyle(Color.primary)
-                                }
-                            )
-                            
-                            Spacer()
-                            
-                            Text(userTheme.rawValue)
-                                .foregroundStyle(.secondary)
-                            
-                            Image("chevron.right")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
+            BlurNavigationView(
+                title: "Settings",
+                showBackButton: false
+            ) {
+                VStack(spacing: 24) {
+                    // Tips Section
+                    TipsSection()
                     
-                    AppearanceRowView()
-                    CurrencySettingsRowView()
-                    CloudKitSyncRowView()
-                    HiddenTransactionsRowView()
-                }
-                .listRowBackground(Color.mainRowBackground)
-                
-                AboutSection()
-                
-                Section {
+                    // General Section
+                    SettingsSection(title: "General") {
+                        // Theme
+                        SettingsRow(
+                            icon: themeIcon,
+                            title: "Theme",
+                            subtitle: userTheme.rawValue
+                        ) {
+                            changeTheme.toggle()
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // Appearance
+                        SettingsLinkRow(
+                            icon: "paintbrush",
+                            title: "Appearance"
+                        ) {
+                            AppearanceView()
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // Currency
+                        SettingsLinkRow(
+                            icon: "usd.circle",
+                            title: "Currency",
+                            subtitle: userPreferences.baseCurrencyCode
+                        ) {
+                            CurrencySettingsView()
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // iCloud Sync
+                        SettingsLinkRow(
+                            icon: "cloud.upload",
+                            title: "iCloud Sync"
+                        ) {
+                            CloudKitSyncView()
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // Hidden Transactions
+                        SettingsLinkRow(
+                            icon: "eye.crossed",
+                            title: "Hidden Transactions",
+                            subtitle: hiddenTransactions.count > 0 ? "\(hiddenTransactions.count)" : nil
+                        ) {
+                            HiddenTransactionsView()
+                        }
+                    }
+                    
+                    // About Section
+                    SettingsSection(title: "About") {
+                        // Privacy Policy
+                        SettingsRow(
+                            icon: "user.shield",
+                            title: "Privacy Policy"
+                        ) {
+                            if let url = URL(string: "https://www.notion.so/Privacy-Policy-28cd5178e65a80e297b2e94f9046ae1d") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // Terms of Service
+                        SettingsRow(
+                            icon: "user.document",
+                            title: "Terms of Service"
+                        ) {
+                            if let url = URL(string: "https://www.notion.so/Terms-of-Service-28cd5178e65a804f94cff1e109dbb9d5") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                        
+                        SettingsDivider()
+                        
+                        // Attributions
+                        SettingsLinkRow(
+                            icon: "link.alt",
+                            title: "Attributions"
+                        ) {
+                            AttributionsView()
+                        }
+                    }
+                    
+                    // Social & Version Section
                     VStack(spacing: 16) {
                         HStack(spacing: 20) {
                             Button {
@@ -87,11 +142,13 @@ struct SettingsView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        
                         VStack(spacing: 4) {
                             let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.4"
                             
                             Text("Teymia Expense – \("version".localized) \(version)")
                                 .font(.footnote)
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
                             
@@ -102,19 +159,17 @@ struct SettingsView: View {
                                 Text("🇰🇬")
                             }
                             .font(.footnote)
+                            .fontDesign(.rounded)
                             .foregroundStyle(.secondary)
                         }
                     }
                     .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
                 }
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-                .listSectionSeparator(.hidden)
+                .padding(.vertical, 20)
             }
-            .scrollContentBackground(.hidden)
             .background(Color.mainBackground)
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarHidden(true)
         }
         .preferredColorScheme(userTheme.colorScheme)
         .sheet(isPresented: $changeTheme) {
@@ -134,6 +189,104 @@ struct SettingsView: View {
             return "sun"
         case .dark:
             return "moon"
+        }
+    }
+}
+
+// MARK: - Tips Section
+
+struct TipsSection: View {
+    @State private var showingTips = false
+    
+    var body: some View {
+        Button {
+            showingTips = true
+        } label: {
+            HStack(spacing: 12) {
+                Image("gift.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [
+                                Color(#colorLiteral(red: 0.4470213652, green: 1, blue: 0.6704101562, alpha: 1)),
+                                Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                Text("Buy me a matcha")
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [
+                                Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1)),
+                                Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                
+                Spacer()
+                
+                Image("chevron.right")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(Color.mainRowBackground)
+        .cornerRadius(30)
+        .overlay {
+            RoundedRectangle(cornerRadius: 30)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            .white.opacity(0.3),
+                            .white.opacity(0.15),
+                            .white.opacity(0.15),
+                            .white.opacity(0.3)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.4
+                )
+        }
+        .shadow(color: .black.opacity(0.1), radius: 10)
+        .padding(.horizontal, 16)
+        .fullScreenSheet(ignoresSafeArea: true, isPresented: $showingTips) { safeArea in
+            TipsView()
+                .safeAreaPadding(.top, safeArea.top + 35)
+                .overlay(alignment: .top) {
+                    Capsule()
+                        .fill(.white.secondary)
+                        .frame(width: 45, height: 5)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: safeArea.top + 30, alignment: .bottom)
+                        .offset(y: -10)
+                        .contentShape(.rect)
+                }
+                .clipShape(Background())
+        } background: {
+            Color.clear
+        }
+    }
+    
+    func Background() -> some Shape {
+        if #available(iOS 26, *) {
+            return ConcentricRectangle(corners: .concentric, isUniform: true)
+        } else {
+            return RoundedRectangle(cornerRadius: 30)
         }
     }
 }
