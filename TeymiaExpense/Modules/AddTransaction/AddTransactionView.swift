@@ -5,6 +5,7 @@ struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var userPreferences
+    @Environment(\.colorScheme) private var colorScheme
     
     @Query private var accounts: [Account]
     @Query private var categories: [Category]
@@ -28,6 +29,21 @@ struct AddTransactionView: View {
     @FocusState private var isAmountFieldFocused: Bool
     @State private var isInitialized = false
     
+    // Filtered categories based on transaction type
+    private var filteredCategories: [Category] {
+        categories.filter { category in
+            switch selectedType {
+            case .expense:
+                return category.type == .expense
+            case .income:
+                return category.type == .income
+            case .transfer:
+                return false
+            }
+        }
+        .sorted { $0.sortOrder < $1.sortOrder }
+    }
+    
     // MARK: - Initializers
     init(editingTransaction: Transaction? = nil, preselectedAccount: Account? = nil) {
         self.editingTransaction = editingTransaction
@@ -38,30 +54,19 @@ struct AddTransactionView: View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 Form {
-                    AmountInputSection(
-                        amount: $amount,
-                        selectedTransactionType: $selectedType,
-                        isAmountFieldFocused: $isAmountFieldFocused,
-                        currencySymbol: currencySymbol
-                    )
-                    
-                    // Category Section (only for income/expense)
-                    if selectedType != .transfer {
-                        Section {
-                            NavigationLink {
-                                CategorySelectionView(
-                                    transactionType: selectedType == .income ? .income : .expense,
-                                    selectedCategory: selectedCategory,
-                                    onSelectionChanged: { category in
-                                        selectedCategory = category
-                                    }
-                                )
-                            } label: {
-                                CategorySelectionRow(selectedCategory: selectedCategory)
-                            }
+                    Section {
+                        HStack {
+                            TextField(currencySymbol, text: $amount)
+                                .autocorrectionDisabled()
+                                .focused($isAmountFieldFocused)
+                                .font(.system(.largeTitle, design: .rounded))
+                                .fontWeight(.bold)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.center)
                         }
-                        .listRowBackground(Color.mainRowBackground)
+                        .contentShape(Rectangle())
                     }
+                    .listRowBackground(Color.mainRowBackground)
                     
                     // Account/Transfer Section
                     if selectedType == .transfer {
@@ -78,6 +83,20 @@ struct AddTransactionView: View {
                         )
                     }
                     
+                    // Category Section (grid selection)
+                    if selectedType != .transfer {
+                        Section {
+                            CategoryGridSelector(
+                                categories: filteredCategories,
+                                selectedCategory: $selectedCategory,
+                                colorScheme: colorScheme
+                            )
+                        } header: {
+                            Text("Category")
+                        }
+                        .listRowBackground(Color.mainRowBackground)
+                    }
+                    
                     // Date & Note
                     DateNoteSection(date: $date, note: $note)
                     
@@ -86,8 +105,9 @@ struct AddTransactionView: View {
                         .frame(height: 80)
                         .listRowBackground(Color.clear)
                 }
+                .scrollDismissesKeyboard(.immediately)
                 .scrollContentBackground(.hidden)
-                .background(Color.mainBackground)
+                .background(Color.mainGroupBackground)
                 
                 // Floating button
                 if isInitialized {
@@ -102,8 +122,19 @@ struct AddTransactionView: View {
                     .transition(.opacity)
                 }
             }
-            .navigationTitle(isEditMode ? "Edit Transaction" : selectedType.displayName)
+            .navigationTitle(isEditMode ? "Edit Transaction" : "New Transaction")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Picker("Type", selection: $selectedType) {
+                        ForEach(TransactionType.allCases, id: \.self) { type in
+                            Text(type.displayName).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 280)
+                }
+            }
         }
         .onAppear { setupInitialValues() }
         .onChange(of: selectedType) { oldValue, newValue in
@@ -185,7 +216,7 @@ struct AddTransactionView: View {
         
         selectedCategory = TransactionService.getDefaultCategory(
             for: selectedType,
-            from: categories
+            from: filteredCategories
         )
     }
     
@@ -194,7 +225,7 @@ struct AddTransactionView: View {
         if newType != .transfer {
             selectedCategory = TransactionService.getDefaultCategory(
                 for: newType,
-                from: categories
+                from: filteredCategories
             )
         }
         
@@ -281,6 +312,78 @@ struct AddTransactionView: View {
     }
 }
 
+// MARK: - Category Grid Selector
+
+struct CategoryGridSelector: View {
+    let categories: [Category]
+    @Binding var selectedCategory: Category?
+    let colorScheme: ColorScheme
+    
+    var body: some View {
+        if categories.isEmpty {
+            Text("No categories available")
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 40)
+        } else {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
+                spacing: 16
+            ) {
+                ForEach(categories) { category in
+                    CategoryCircleButton(
+                        category: category,
+                        isSelected: selectedCategory?.id == category.id,
+                        colorScheme: colorScheme
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedCategory = category
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Category Circle Button
+
+struct CategoryCircleButton: View {
+    let category: Category
+    let isSelected: Bool
+    let colorScheme: ColorScheme
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(category.iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(
+                        isSelected
+                        ? (colorScheme == .light ? Color.white : Color.black)
+                        : Color.primary
+                    )
+                    .padding(14)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? Color.primary : Color.secondary.opacity(0.07))
+                    )
+                
+                Text(category.name)
+                    .font(.system(.caption, design: .rounded))
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Floating Save Button Component
 
 struct FloatingSaveButton: View {
@@ -307,18 +410,8 @@ struct FloatingSaveButton: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
                 .background {
-                    if #available(iOS 26, *) {
-                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(buttonColor)
-                            .glassEffect(
-                                isEnabled
-                                ? .regular.tint(.appTint).interactive()
-                                : .regular.tint(.gray.opacity(0.3))
-                            )
-                    } else {
-                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(buttonColor)
-                    }
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .fill(buttonColor)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .shadow(color: shadowColor, radius: 12, y: 4)

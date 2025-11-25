@@ -8,59 +8,55 @@ struct LivelyFloatingBlobsBackground: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Clean base background
                 Color.mainBackground
                     .ignoresSafeArea()
                 
-                // Blob 1 - Внешний круг (быстрый)
                 LivelyBlob(
                     index: 0,
                     color: colorScheme == .dark
-                    ? .appTint.opacity(0.15)
-                    : .appTint.opacity(0.2),
+                    ?  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.35)
+                    :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.3),
                         
                     size: 210,
                     positions: [
-                        CGPoint(x: geo.size.width * 0.15, y: geo.size.height * 0.2),  // Левый верх
-                            CGPoint(x: geo.size.width * 0.25, y: geo.size.height * 0.4),  // Левый центр
-                            CGPoint(x: geo.size.width * 0.2, y: geo.size.height * 0.7),   // Левый низ
-                            CGPoint(x: geo.size.width * 0.3, y: geo.size.height * 0.55),  // Чуть правее
-                            CGPoint(x: geo.size.width * 0.18, y: geo.size.height * 0.35)  // Возврат
+                        CGPoint(x: geo.size.width * 0.15, y: geo.size.height * 0.2),
+                            CGPoint(x: geo.size.width * 0.25, y: geo.size.height * 0.4),
+                            CGPoint(x: geo.size.width * 0.2, y: geo.size.height * 0.7),
+                            CGPoint(x: geo.size.width * 0.3, y: geo.size.height * 0.55),
+                            CGPoint(x: geo.size.width * 0.18, y: geo.size.height * 0.35)
                     ],
                     duration: 4,
                     blur: 60
                 )
                 
-                // Blob 2 - Средний круг (очень быстрый)
                 LivelyBlob(
                     index: 1,
                     color: colorScheme == .dark
-                    ? .appTint.opacity(0.2)
-                    : .appTint.opacity(0.25),
+                    ? Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.45)
+                    : Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.5),
                     size: 190,
                     positions: [
-                        CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25), // Правый верх
-                            CGPoint(x: geo.size.width * 0.85, y: geo.size.height * 0.5),  // Правый центр
-                            CGPoint(x: geo.size.width * 0.8, y: geo.size.height * 0.75),  // Правый низ
-                            CGPoint(x: geo.size.width * 0.7, y: geo.size.height * 0.6),   // Чуть левее
-                            CGPoint(x: geo.size.width * 0.82, y: geo.size.height * 0.4)   // Возврат
+                        CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25),
+                            CGPoint(x: geo.size.width * 0.85, y: geo.size.height * 0.5),
+                            CGPoint(x: geo.size.width * 0.8, y: geo.size.height * 0.75),
+                            CGPoint(x: geo.size.width * 0.7, y: geo.size.height * 0.6),
+                            CGPoint(x: geo.size.width * 0.82, y: geo.size.height * 0.4)
                     ],
                     duration: 5,
                     blur: 60
                 )
                 
-                // Blob 3 - Внутренний круг (самый быстрый)
                 LivelyBlob(
                     index: 2,
                     color: colorScheme == .dark
-                    ?     .appTint.opacity(0.25)
-                        : .appTint.opacity(0.3),
+                    ? Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.5)
+                    : Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.6),
                     size: 170,
                     positions: [
-                        CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),   // Верх центр
-                            CGPoint(x: geo.size.width * 0.55, y: geo.size.height * 0.5),  // Центр
-                            CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.7),   // Низ центр
-                            CGPoint(x: geo.size.width * 0.45, y: geo.size.height * 0.5)   // Центр левее
+                        CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),
+                            CGPoint(x: geo.size.width * 0.55, y: geo.size.height * 0.5),
+                            CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.7),
+                        CGPoint(x: geo.size.width * 0.45, y: geo.size.height * 0.5)
                     ],
                     duration: 3,
                     blur: 60
@@ -106,7 +102,6 @@ struct LivelyBlob: View {
             .blur(radius: blur)
             .position(currentPosition)
             .onAppear {
-                // Разные начальные задержки для каждого шарика
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.5) {
                     startMoving()
                 }
@@ -136,26 +131,4 @@ struct LivelyBlob: View {
 #Preview("Light Mode") {
     LivelyFloatingBlobsBackground()
         .preferredColorScheme(.light)
-}
-
-#Preview("With Content") {
-    ZStack {
-        LivelyFloatingBlobsBackground()
-        
-        VStack(spacing: 20) {
-            Text("Content on top")
-                .font(.largeTitle)
-                .fontDesign(.rounded)
-                .foregroundStyle(Color.primary)
-            
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.gray.opacity(0.1))
-                .frame(height: 200)
-                .overlay {
-                    Text("Glass Card")
-                        .foregroundStyle(Color.primary)
-                }
-        }
-        .padding()
-    }
 }

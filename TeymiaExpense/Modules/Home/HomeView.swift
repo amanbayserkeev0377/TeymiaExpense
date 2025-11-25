@@ -15,7 +15,6 @@ struct HomeView: View {
         order: .reverse
     ) private var allTransactions: [Transaction]
     
-    @State private var showingAccountsManagement = false
     @State private var showingAddTransaction = false
     @State private var editingTransaction: Transaction?
     @State private var startDate = Date.startOfCurrentMonth
@@ -33,63 +32,35 @@ struct HomeView: View {
                 
                 ZStack {
                     ScrollView(.vertical) {
-                        LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
-                            // Sticky Header as Section
-                            Section {
-                                VStack(spacing: 15) {
-                                    // Accounts Carousel
-                                    AccountsCarouselView(
-                                        accounts: accounts,
-                                        scrollProgressX: $scrollProgressX,
-                                        topInset: topInset,
-                                        scrollOffsetY: scrollOffsetY
-                                    )
-                                    .zIndex(-1)
-                                    
-                                    // Glass Transactions Section
-                                    GlassTransactionsListView(
-                                        transactions: filteredTransactions,
-                                        startDate: $startDate,
-                                        endDate: $endDate,
-                                        userPreferences: userPreferences,
-                                        currencies: currencies,
-                                        onEditTransaction: { transaction in
-                                            editingTransaction = transaction
-                                        },
-                                        onHideTransaction: hideTransaction,
-                                        onDeleteTransaction: deleteTransaction
-                                    )
-                                    .padding(.horizontal, 15)
-                                    .padding(.top, 20)
-                                }
-                                .padding(.bottom, 15)
-                            } header: {
-                                // Custom Blur Header
-                                TransparentBlurView(removeAllFilters: true)
-                                    .blur(radius: 8, opaque: false)
-                                    .padding([.horizontal, .top], -30)
-                                    .overlay(alignment: .bottom) {
-                                        HStack {
-                                            Spacer()
-                                            
-                                            Button {
-                                                showingAccountsManagement = true
-                                            } label: {
-                                                Image("cards.blank")
-                                                    .resizable()
-                                                    .foregroundStyle(.appTint)
-                                                    .frame(width: 24, height: 24)
-                                                    .frame(width: 44, height: 44)
-                                                    .contentShape(Rectangle())
-                                            }
-                                            .padding(.trailing, 8)
-                                        }
-                                        .frame(height: 44)
-                                        .padding(.bottom, 8)
-                                    }
-                                    .frame(height: 100 + safeArea.top)
-                                    .padding(.top, -safeArea.top)
+                        LazyVStack(spacing: 0) {
+                            VStack(spacing: 15) {
+                                // Accounts Carousel
+                                AccountsCarouselView(
+                                    accounts: accounts,
+                                    scrollProgressX: $scrollProgressX,
+                                    topInset: topInset,
+                                    scrollOffsetY: scrollOffsetY
+                                )
+                                .padding(.top, 100)
+                                
+                                // Glass Transactions Section
+                                GlassTransactionsListView(
+                                    transactions: filteredTransactions,
+                                    startDate: $startDate,
+                                    endDate: $endDate,
+                                    userPreferences: userPreferences,
+                                    currencies: currencies,
+                                    onEditTransaction: { transaction in
+                                        editingTransaction = transaction
+                                    },
+                                    onHideTransaction: hideTransaction,
+                                    onDeleteTransaction: deleteTransaction
+                                )
+                                .padding(.horizontal, 15)
+                                .padding(.top, 20)
                             }
+                            .padding(.top, safeArea.top)
+                            .padding(.bottom, 15)
                         }
                     }
                     .onScrollGeometryChange(for: ScrollGeometry.self) {
@@ -111,11 +82,6 @@ struct HomeView: View {
                 }
             }
             .ignoresSafeArea(.container, edges: .top)
-        }
-        .sheet(isPresented: $showingAccountsManagement) {
-            AccountsManagementView()
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)

@@ -47,8 +47,7 @@ struct CategoryTransactionsView: View {
             Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        let groupType = category.categoryGroup?.type ?? .expense
-                        Text("Total \(groupType == .income ? "Income" : "Expense")")
+                        Text("Total \(category.type == .income ? "Income" : "Expense")")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
@@ -56,7 +55,7 @@ struct CategoryTransactionsView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
-                            .foregroundStyle(groupType == .income ? Color("IncomeColor") : Color("ExpenseColor"))
+                            .foregroundStyle(category.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
                     }
                     
                     Spacer()

@@ -5,12 +5,10 @@ import SwiftData
 struct TeymiaExpenseApp: App {
     @State private var userPreferences = UserPreferences()
     @StateObject private var firstLaunchManager = FirstLaunchManager()
-    @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Transaction.self,
-            CategoryGroup.self,
             Category.self,
             Account.self,
             Currency.self
@@ -55,12 +53,11 @@ struct TeymiaExpenseApp: App {
                 .environment(userPreferences)
                 .environment(AppColorManager.shared)
                 .environment(AppIconManager.shared)
-                .preferredColorScheme(userTheme.colorScheme)
                 .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
                     TeymiaOnBoardingView() {
                         firstLaunchManager.completeOnboarding()
                     }
-                    .presentationCornerRadius(40)
+                    .presentationCornerRadius(30)
                 }
         }
         .modelContainer(sharedModelContainer)
@@ -69,15 +66,22 @@ struct TeymiaExpenseApp: App {
 
 // MARK: - Default Data Creation
 private func createDefaultDataIfNeeded(context: ModelContext) {
-    print("🔄 Starting default data creation...")
+    let hasCreatedDefaults = UserDefaults.standard.bool(forKey: "hasCreatedDefaultData_v1_1")
+    
+    guard !hasCreatedDefaults else {
+        print("✅ Default data already exists")
+        return
+    }
+    
+    print("📝 Creating default data...")
     
     Currency.createDefaults(context: context)
-    CategoryGroup.createDefaults(context: context)
     Category.createDefaults(context: context)
     Account.createDefault(context: context)
 
     do {
         try context.save()
+        UserDefaults.standard.set(true, forKey: "hasCreatedDefaultData_v1_1")
         print("✅ Default data created successfully")
     } catch {
         print("⚠️ Error saving default data: \(error)")

@@ -44,10 +44,7 @@ struct CloudKitSyncView: View {
     @State private var isSyncing = false
     
     var body: some View {
-        BlurNavigationView(
-            title: "iCloud Sync",
-            showBackButton: true
-        ) {
+        List {
             VStack(spacing: 24) {
                 // Status Section
                 CustomSection(title: "Status") {

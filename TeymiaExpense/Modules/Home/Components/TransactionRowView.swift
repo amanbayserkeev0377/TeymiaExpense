@@ -13,47 +13,39 @@ struct TransactionRowView: View {
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.primary)
             
-            // Transaction details
+            // Transaction details (left side)
             VStack(alignment: .leading, spacing: 2) {
+                // Title
                 Text(transaction.displayTitle(relativeTo: nil))
                     .font(.body)
                     .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
-                // Show group name for regular transactions
-                if transaction.type != .transfer,
-                   let categoryGroup = transaction.category?.categoryGroup {
-                    Text(categoryGroup.name)
+                // Account name (moved from right)
+                if let account = transaction.account {
+                    Text(account.name)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 
-                // Note
-                if let note = transaction.note {
+                // Note (if exists)
+                if let note = transaction.note, !note.isEmpty {
                     Text(note)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                         .lineLimit(1)
                 }
             }
             
             Spacer()
             
-            // Amount and account
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(transaction.formattedAmount(for: transaction.account))
-                    .font(.body)
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(transaction.typeColor)
-                
-                if transaction.type != .transfer, let account = transaction.account {
-                    Text(account.name)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            // Amount (right side - simple)
+            Text(transaction.formattedAmount(for: transaction.account))
+                .font(.body)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+                .foregroundStyle(transaction.typeColor)
         }
         .contentShape(Rectangle())
     }

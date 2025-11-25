@@ -11,19 +11,7 @@ enum AppIcon: String, CaseIterable, Identifiable {
     case squareDollar = "AppIcon-SquareDollar"
     case washington = "AppIcon-Washington"
     
-    case silver = "AppIcon-Silver"
-    case green = "AppIcon-Green"
-    case greenPastel = "AppIcon-GreenPastel"
-    
-    case indigo = "AppIcon-Indigo"
-    case purple = "AppIcon-Purple"
-    case blue = "AppIcon-Blue"
-
-    case red = "AppIcon-Red"
-    case orange = "AppIcon-Orange"
     case card = "AppIcon-Card"
-    
-    case pink = "AppIcon-Pink"
     case cards = "AppIcon-Cards"
     case cards2 = "AppIcon-Cards2"
     

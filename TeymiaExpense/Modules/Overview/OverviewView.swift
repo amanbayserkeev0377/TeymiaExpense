@@ -2,15 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct OverviewView: View {
-    @Namespace private var animation
     @Environment(\.colorScheme) private var colorScheme
     @Environment(UserPreferences.self) private var userPreferences
-    @Query private var categoryGroups: [CategoryGroup]
     @Query private var categories: [Category]
     @Query private var allTransactions: [Transaction]
     @Query private var currencies: [Currency]
     
-    @State private var selectedCategoryGroup: CategoryGroup?
+    @State private var selectedCategory: Category?
     
     // Date filtering state
     @State private var startDate = Date.startOfCurrentMonth
@@ -31,16 +29,16 @@ struct OverviewView: View {
         }
     }
     
-    private var expenseGroupsWithTransactions: [CategoryGroup] {
-        categoryGroups
+    private var expenseCategoriesWithTransactions: [Category] {
+        categories
             .filter { $0.type == .expense && hasTransactions(for: $0) }
-            .sorted { $0.sortOrder < $1.sortOrder }
+            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) } // Sort by amount
     }
     
-    private var incomeGroupsWithTransactions: [CategoryGroup] {
-        categoryGroups
+    private var incomeCategoriesWithTransactions: [Category] {
+        categories
             .filter { $0.type == .income && hasTransactions(for: $0) }
-            .sorted { $0.sortOrder < $1.sortOrder }
+            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) } // Sort by amount
     }
     
     private var totalExpenses: Decimal {
@@ -76,11 +74,10 @@ struct OverviewView: View {
                 LivelyFloatingBlobsBackground()
             }
         }
-        .sheet(item: $selectedCategoryGroup) { categoryGroup in
+        .sheet(item: $selectedCategory) { category in
             NavigationStack {
-                CategoryGroupOverviewView(
-                    categoryGroup: categoryGroup,
-                    filteredTransactions: filteredTransactions,
+                CategoryTransactionsView(
+                    category: category,
                     startDate: startDate,
                     endDate: endDate
                 )
@@ -120,43 +117,39 @@ struct OverviewView: View {
     
     @ViewBuilder
     private var expensesSection: some View {
-        if !expenseGroupsWithTransactions.isEmpty {
-            OverviewTransactionSection(
+        if !expenseCategoriesWithTransactions.isEmpty {
+            OverviewCategorySection(
                 title: "Expenses",
                 total: totalExpenses,
                 color: Color("ExpenseColor"),
-                groups: expenseGroupsWithTransactions,
+                categories: expenseCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
-                categories: categories,
                 currencies: currencies,
                 userPreferences: userPreferences,
-                onGroupSelected: { selectedCategoryGroup = $0 },
-                animation: animation
+                onCategorySelected: { selectedCategory = $0 }
             )
         }
     }
     
     @ViewBuilder
     private var incomeSection: some View {
-        if !incomeGroupsWithTransactions.isEmpty {
-            OverviewTransactionSection(
+        if !incomeCategoriesWithTransactions.isEmpty {
+            OverviewCategorySection(
                 title: "Income",
                 total: totalIncome,
                 color: Color("IncomeColor"),
-                groups: incomeGroupsWithTransactions,
+                categories: incomeCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
-                categories: categories,
                 currencies: currencies,
                 userPreferences: userPreferences,
-                onGroupSelected: { selectedCategoryGroup = $0 },
-                animation: animation
+                onCategorySelected: { selectedCategory = $0 }
             )
         }
     }
     
     @ViewBuilder
     private var emptyStateSection: some View {
-        if expenseGroupsWithTransactions.isEmpty && incomeGroupsWithTransactions.isEmpty {
+        if expenseCategoriesWithTransactions.isEmpty && incomeCategoriesWithTransactions.isEmpty {
             TransactionEmptyStateView()
                 .padding(.top, 60)
         }
@@ -164,13 +157,15 @@ struct OverviewView: View {
     
     // MARK: - Helper Methods
     
-    private func hasTransactions(for categoryGroup: CategoryGroup) -> Bool {
-        let groupCategories = categories.filter { $0.categoryGroup?.id == categoryGroup.id }
-        let categoryIds = Set(groupCategories.map { $0.id })
-        
-        return filteredTransactions.contains { transaction in
-            guard let categoryId = transaction.category?.id else { return false }
-            return categoryIds.contains(categoryId)
+    private func hasTransactions(for category: Category) -> Bool {
+        filteredTransactions.contains { transaction in
+            transaction.category?.id == category.id
         }
+    }
+    
+    private func getTotalAmount(for category: Category) -> Decimal {
+        filteredTransactions
+            .filter { $0.category?.id == category.id }
+            .reduce(Decimal.zero) { $0 + abs($1.amount) }
     }
 }

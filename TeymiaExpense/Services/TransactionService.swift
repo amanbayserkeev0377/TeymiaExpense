@@ -19,7 +19,6 @@ struct TransactionService {
             note: note?.isEmpty == true ? nil : note,
             date: date,
             type: .expense,
-            categoryGroup: category.categoryGroup,
             category: category,
             account: account
         )
@@ -44,7 +43,6 @@ struct TransactionService {
             note: note?.isEmpty == true ? nil : note,
             date: date,
             type: .income,
-            categoryGroup: category.categoryGroup,
             category: category,
             account: account
         )
@@ -69,7 +67,6 @@ struct TransactionService {
             note: note?.isEmpty == true ? nil : note,
             date: date,
             type: .transfer,
-            categoryGroup: nil,
             category: nil,
             account: fromAccount,
             toAccount: toAccount
@@ -107,7 +104,6 @@ struct TransactionService {
         transaction.account = newAccount
         transaction.toAccount = newToAccount
         transaction.category = newCategory
-        transaction.categoryGroup = newCategory?.categoryGroup
         
         // Apply new balance changes
         applyBalanceChanges(for: transaction)
@@ -120,24 +116,18 @@ struct TransactionService {
     static func getDefaultCategory(for type: TransactionType, from categories: [Category]) -> Category? {
         switch type {
         case .income:
+            // Try to find "Salary" category first
             return categories.first { category in
-                category.categoryGroup?.type == .income &&
-                (category.categoryGroup?.name.lowercased().contains("salary") ?? false) &&
-                category.name.lowercased().contains("monthly.salary")
-            } ?? categories.first { category in
-                category.categoryGroup?.type == .income &&
-                (category.categoryGroup?.name.lowercased().contains("salary") ?? false)
-            } ?? categories.first { $0.categoryGroup?.type == .income }
+                category.type == .income &&
+                category.name.lowercased().contains("salary")
+            } ?? categories.first { $0.type == .income }
             
         case .expense:
+            // Try to find "Other" category first
             return categories.first { category in
-                category.categoryGroup?.type == .expense &&
-                (category.categoryGroup?.name.lowercased().contains("other") ?? false) &&
-                category.name.lowercased().contains("general")
-            } ?? categories.first { category in
-                category.categoryGroup?.type == .expense &&
-                (category.categoryGroup?.name.lowercased().contains("other") ?? false)
-            } ?? categories.first { $0.categoryGroup?.type == .expense }
+                category.type == .expense &&
+                category.name.lowercased().contains("other")
+            } ?? categories.first { $0.type == .expense }
             
         case .transfer:
             return nil

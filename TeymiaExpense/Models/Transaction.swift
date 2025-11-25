@@ -14,7 +14,6 @@ final class Transaction {
         set { typeRawValue = newValue.rawValue }
     }
     
-    var categoryGroup: CategoryGroup? = nil
     var category: Category? = nil
     var account: Account? = nil
     var toAccount: Account? = nil
@@ -24,7 +23,6 @@ final class Transaction {
         note: String? = nil,
         date: Date = Date(),
         type: TransactionType,
-        categoryGroup: CategoryGroup? = nil,
         category: Category? = nil,
         account: Account? = nil,
         toAccount: Account? = nil,
@@ -35,7 +33,6 @@ final class Transaction {
         self.date = date
         self.typeRawValue = type.rawValue
         self.isHidden = isHidden
-        self.categoryGroup = categoryGroup
         self.category = category
         self.account = account
         self.toAccount = toAccount

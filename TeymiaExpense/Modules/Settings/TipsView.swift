@@ -1,135 +1,51 @@
 import SwiftUI
 import StoreKit
 
-struct TipsRowView: View {
-    @State private var showingTips = false
-    
-    var body: some View {
-        Section {
-            Button {
-                showingTips = true
-            } label: {
-                HStack {
-                    Label(
-                        title: {
-                            Text("Buy me a matcha")
-                                .fontWeight(.medium)
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1)),
-                                            Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
-                                        ],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                        },
-                        icon: {
-                            Image("gift.fill")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            Color(#colorLiteral(red: 0.4470213652, green: 1, blue: 0.6704101562, alpha: 1)),
-                                            Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        }
-                    )
-                    
-                    Spacer()
-                    
-                    Image("chevron.right")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tertiary)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-        }
-        .listRowBackground(Color.mainRowBackground)
-        .fullScreenSheet(ignoresSafeArea: true, isPresented: $showingTips) { safeArea in
-            TipsView()
-                .safeAreaPadding(.top, safeArea.top + 35)
-                .overlay(alignment: .top) {
-                    Capsule()
-                        .fill(.white.secondary)
-                        .frame(width: 45, height: 5)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: safeArea.top + 30, alignment: .bottom)
-                        .offset(y: -10)
-                        .contentShape(.rect)
-                }
-                .clipShape(Background())
-        } background: {
-            Color.clear
-        }
-    }
-    
-    func Background() -> some Shape {
-        if #available(iOS 26, *) {
-            return ConcentricRectangle(corners: .concentric, isUniform: true)
-        } else {
-            return RoundedRectangle(cornerRadius: 30)
-        }
-    }
-}
-
 // MARK: - Tips View
 struct TipsView: View {
     @State private var tipsManager = TipsManager()
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        ZStack {
-            AnimatedBlobBackground()
-            
-            if tipsManager.isLoading {
-                LoadingView(tint: Color.mint, lineWidth: 4)
-                    .frame(width: 30, height: 30)
-            } else {
-                ScrollView {
-                    VStack(spacing: 40) {
-                        // Info Section
-                        InfoSection()
-                        
-                        // Tips Grid
-                        TipsGrid(tipsManager: tipsManager)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
+        if tipsManager.isLoading {
+            LoadingView(tint: Color.mint, lineWidth: 4)
+                .frame(width: 30, height: 30)
+        } else {
+            ScrollView {
+                VStack(spacing: 40) {
+                    // Info Section
+                    InfoSection()
+                    
+                    // Tips Grid
+                    TipsGrid(tipsManager: tipsManager)
                 }
-                .scrollIndicators(.hidden)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 40)
             }
-        }
-        .preferredColorScheme(.dark)
-        .overlay {
-            if tipsManager.showThankYou {
-                ThankYouOverlay(
-                    tip: tipsManager.lastPurchasedTip,
-                    isShowing: $tipsManager.showThankYou
-                )
-                .transition(.opacity.combined(with: .scale(0.8)))
+            .scrollIndicators(.hidden)
+            .background {
+                LivelyFloatingBlobsBackground()
             }
+            .overlay {
+                if tipsManager.showThankYou {
+                    ThankYouOverlay(
+                        tip: tipsManager.lastPurchasedTip,
+                        isShowing: $tipsManager.showThankYou
+                    )
+                    .transition(.opacity.combined(with: .scale(0.8)))
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: tipsManager.showThankYou)
         }
-        .animation(.easeInOut(duration: 0.3), value: tipsManager.showThankYou)
     }
 }
 
 // MARK: - Info Section
 struct InfoSection: View {
     var body: some View {
-        VStack(spacing: 0) {
-            Image("plant.image")
+        VStack(spacing: 24) {
+            Image("app_icon_main")
                 .resizable()
-                .frame(width: 200, height: 200)
+                .frame(width: 70, height: 70)
             
             VStack(spacing: 16) {
                 Text("All features in Teymia Expense are free")
@@ -137,18 +53,15 @@ struct InfoSection: View {
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.4), radius: 3)
+                    .foregroundStyle(.primary)
                 
                 Text("You can leave a tip to support ongoing development and future updates.")
                     .fontDesign(.rounded)
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                    .shadow(color: .black.opacity(0.4), radius: 3)
-
+                
             }
-            .padding(.top, -15)
         }
     }
 }
@@ -158,7 +71,7 @@ struct TipsGrid: View {
     let tipsManager: TipsManager
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             ForEach(Tip.allTips) { tip in
                 if let product = tipsManager.product(for: tip) {
                     TipCard(
@@ -197,15 +110,13 @@ struct TipCard: View {
                     Text(tip.name)
                         .font(.headline)
                         .fontDesign(.rounded)
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.4), radius: 3)
-
+                        .foregroundStyle(.primary)
+                    
                     
                     Text(tip.message)
                         .font(.subheadline)
                         .fontDesign(.rounded)
-                        .foregroundStyle(.white.opacity(0.7))
-                        .shadow(color: .black.opacity(0.4), radius: 3)
+                        .foregroundStyle(.primary)
                 }
                 
                 Spacer()
@@ -217,30 +128,16 @@ struct TipCard: View {
                 } else {
                     Text(product.displayPrice)
                         .font(.title3.bold())
-                        .foregroundStyle(.white)
-                        .fontDesign(.rounded)
-                        .shadow(color: .black.opacity(0.4), radius: 3)
+                        .foregroundStyle(.primary)
+                        .fontDesign(.monospaced)
                 }
             }
-            .padding(20)
+            .padding(16)
             .background {
                 RoundedRectangle(cornerRadius: 40)
-                    .fill(.white.opacity(0.12))
+                    .fill(.secondary.opacity(0.06))
             }
             .clipShape(RoundedRectangle(cornerRadius: 40, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 40, style: .continuous)
-                    .stroke(
-                        LinearGradient(colors: [
-                            .white.opacity(0.6),
-                            Color(#colorLiteral(red: 0, green: 0.8159179091, blue: 0.5566406846, alpha: 1)).opacity(0.2),
-                            Color(#colorLiteral(red: 0, green: 0.8159179091, blue: 0.5566406846, alpha: 1)).opacity(0.3),
-                            .white.opacity(0.1)
-                        ], startPoint: .top, endPoint: .bottom),
-                        lineWidth: 0.5
-                    )
-            }
-            .shadow(color: .white.opacity(0.4), radius: 5)
         }
         .buttonStyle(.plain)
         .disabled(isPurchasing)
@@ -301,12 +198,13 @@ struct ThankYouOverlay: View {
                     Text("Thank You!")
                         .font(.title.bold())
                         .fontDesign(.rounded)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     
                     Text("Every tip helps Teymia Expense grow and stay free.")
                         .font(.subheadline)
+                        .fontWeight(.medium)
                         .fontDesign(.rounded)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
                 }
                 
@@ -317,6 +215,7 @@ struct ThankYouOverlay: View {
                 } label: {
                     Text("Continue")
                         .font(.headline)
+                        .fontWeight(.medium)
                         .foregroundStyle(.white)
                         .fontDesign(.rounded)
                         .frame(maxWidth: .infinity)
@@ -335,18 +234,18 @@ struct ThankYouOverlay: View {
             }
             .background {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.white.opacity(0.05))
+                    .fill(Color.secondary.opacity(0.07))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .stroke(
+                    .strokeBorder(
                         LinearGradient(colors: [
                             .white.opacity(0.6),
-                            .white.opacity(0.1),
-                            .white.opacity(0.1),
+                            .primary.opacity(0.05),
+                            .primary.opacity(0.05),
                             .white.opacity(0.6)
                         ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 1
+                        lineWidth: 1.2
                     )
             }
             .padding(.horizontal, 40)

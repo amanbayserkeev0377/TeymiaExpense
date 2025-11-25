@@ -32,119 +32,73 @@ struct TeymiaOnBoardingView: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LivelyFloatingBlobsBackground()
-            
-            VStack(spacing: 0) {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // App Icon Card
-                        VStack(spacing: 16) {
-                            Image("app_icon_main")
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                            
-                            VStack {
-                                Text("Welcome to")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .fontDesign(.rounded)
-                                    .multilineTextAlignment(.center)
-                                Text("Teymia Expense")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .fontDesign(.rounded)
-                                    .foregroundStyle(.appTint)
-                                    .multilineTextAlignment(.center)
-                            }
-                        }
-                        .padding(.top, 40)
-                        .padding(.bottom, 8)
+            ScrollView {
+                VStack(spacing: 30) {
+                    // App Icon Card
+                    VStack(spacing: 16) {
+                        Image("app_icon_main")
+                            .resizable()
+                            .frame(width: 80, height: 80)
                         
-                        // Features Card
-                        VStack(spacing: 0) {
-                            ForEach(Array(features.enumerated()), id: \.element.id) { index, feature in
-                                FeatureRow(feature: feature)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 16)
-                                
-                                if index < features.count - 1 {
-                                    Divider()
-                                        .padding(.horizontal, 20)
-                                }
-                            }
-                        }
-                        .background(Color.mainRowBackground.opacity(0.7))
-                        .clipShape(RoundedRectangle(cornerRadius: 40, style: .continuous))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 40, style: .continuous)
-                                .strokeBorder(
-                                    LinearGradient(colors: [
-                                        .white.opacity(0.6),
-                                        .white.opacity(0.1),
-                                        .white.opacity(0.1),
-                                        .white.opacity(0.6)
-                                    ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                                    lineWidth: 1.2
-                                )
-                        }
-                        .shadow(color: .black.opacity(0.15), radius: 10)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 100)
-                }
-                .scrollIndicators(.hidden)
-                .overlay(alignment: .bottom) {
-                    VStack(spacing: 12) {
-                        // Privacy Notice
-                        HStack(spacing: 12) {
-                            Image("user.shield")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(Color.appTint)
-                            
-                            Text("Your financial data stays on your device and is never shared.")
-                                .font(.caption)
+                        VStack {
+                            Text("Welcome to")
+                                .font(.title2)
+                                .fontWeight(.bold)
                                 .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .multilineTextAlignment(.center)
+                            Text("Teymia Expense")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.appTint)
+                                .multilineTextAlignment(.center)
                         }
-                        .padding(.horizontal, 24)
+                    }
+                    .padding(.top, 40)
+                    .padding(.bottom, 8)
+                    
+                    // Features Card
+                    VStack(spacing: 24) {
+                        ForEach(Array(features.enumerated()), id: \.element.id) { index, feature in
+                            FeatureRow(feature: feature)
+                                .padding(.horizontal, 30)
+                        }
+                    }
+                }
+            }
+            .background {
+                LivelyFloatingBlobsBackground()
+            }
+            .scrollIndicators(.hidden)
+            .overlay(alignment: .bottom) {
+                VStack(spacing: 12) {
+                    // Privacy Notice
+                    HStack(spacing: 12) {
+                        Image("user.shield")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(Color.appTint)
                         
-                        // Continue Button
-                        if #available(iOS 26.0, *) {
-                            Button(action: onComplete) {
-                                Text("Continue")
-                                    .fontWeight(.semibold)
-                                    .fontDesign(.rounded)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                            }
-                            .tint(Color.appTint)
-                            .buttonStyle(.glassProminent)
-                            .buttonBorderShape(.capsule)
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 20)
-                        } else {
-                            Button(action: onComplete) {
-                                Text("Continue")
-                                    .fontWeight(.semibold)
-                                    .fontDesign(.rounded)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                            }
-                            .tint(Color.appTint)
-                            .buttonStyle(.borderedProminent)
-                            .buttonBorderShape(.capsule)
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 20)
-                        }
+                        Text("Your financial data stays on your device and is never shared.")
+                            .font(.caption)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .background {
-                        TransparentBlurView(removeAllFilters: true)
-                            .blur(radius: 8, opaque: true)
-                            .background(Color.clear)
+                    .padding(.horizontal, 24)
+                    
+                    Button(action: onComplete) {
+                        Text("Continue")
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
                     }
+                    .tint(Color.appTint)
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
                 }
             }
         }
@@ -161,7 +115,7 @@ struct FeatureRow: View {
             // Icon
             Image(feature.icon)
                 .resizable()
-                .frame(width: 26, height: 26)
+                .frame(width: 24, height: 24)
                 .foregroundStyle(Color.appTint)
             
             // Text Content

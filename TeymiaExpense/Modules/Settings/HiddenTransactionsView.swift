@@ -26,15 +26,7 @@ struct HiddenTransactionsView: View {
     }
     
     var body: some View {
-        BlurNavigationView(
-            title: "Hidden Transactions",
-            showBackButton: true,
-            trailingButton: !hiddenTransactions.isEmpty ? HeaderButton(
-                icon: "eye.crossed",
-                iconSize: 24,
-                action: { unhideAllTransactions() }
-            ) : nil
-        ) {
+        List {
             if hiddenTransactions.isEmpty {
                 emptyStateView
             } else {
@@ -42,8 +34,6 @@ struct HiddenTransactionsView: View {
                     .padding(.horizontal, 15)
             }
         }
-        .background(Color.mainBackground)
-        .navigationBarHidden(true)
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
                 .presentationDragIndicator(.visible)

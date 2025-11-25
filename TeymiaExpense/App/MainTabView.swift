@@ -2,71 +2,61 @@ import SwiftUI
 
 struct MainTabView: View {
     @Environment(AppColorManager.self) private var colorManager
-    @State private var activeTab: AppTab = .home
+    @AppStorage("themeMode") private var themeMode: ThemeMode = .system
     
     var body: some View {
-        if #available(iOS 26, *) {
-            // Native TabView for iOS 26+
-            nativeTabView
-        } else {
-            // Custom TabBar for iOS 17-18
-            customTabView
-        }
-    }
-    
-    // MARK: - Native TabView (iOS 26+)
-    
-    @available(iOS 26, *)
-    private var nativeTabView: some View {
         TabView {
-            HomeView()
-                .tabItem {
-                    Image("home.fill")
-                    Text("home".localized)
-                }
-                .fontDesign(.rounded)
-                .tag(0)
+            NavigationStack {
+                HomeView()
+            }
+            .tabItem {
+                Image("home.fill")
+                Text("home".localized)
+            }
+            .fontDesign(.rounded)
             
-            OverviewView()
-                .tabItem {
-                    Image("overview.fill")
-                    Text("overview".localized)
-                }
-                .fontDesign(.rounded)
-                .tag(1)
+            NavigationStack {
+                BalanceView()
+            }
+            .tabItem {
+                Image("balance.fill")
+                Text("balance".localized)
+            }
+            .fontDesign(.rounded)
             
-            SettingsView()
-                .tabItem {
-                    Image("settings.fill")
-                    Text("settings".localized)
-                }
-                .fontDesign(.rounded)
-                .tag(2)
+            NavigationStack {
+                OverviewView()
+            }
+            .tabItem {
+                Image("overview.fill")
+                Text("overview".localized)
+            }
+            .fontDesign(.rounded)
+            
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Image("settings.fill")
+                Text("settings".localized)
+            }
+            .fontDesign(.rounded)
         }
+        .preferredColorScheme(themeMode.colorScheme)
         .tint(colorManager.currentTintColor)
     }
+}
+
+enum ThemeMode: Int, CaseIterable {
+    case system = 0
+    case light = 1
+    case dark = 2
     
-    // MARK: - Custom TabView (iOS 17-18)
-    
-    private var customTabView: some View {
-        ZStack(alignment: .bottom) {
-            // Content
-            Group {
-                switch activeTab {
-                case .home:
-                    HomeView()
-                case .overview:
-                    OverviewView()
-                case .settings:
-                    SettingsView()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // Custom Tab Bar
-            CustomTabBar(activeTab: $activeTab)
-                .padding(.bottom, -5)
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
