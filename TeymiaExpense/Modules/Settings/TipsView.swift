@@ -234,7 +234,7 @@ struct ThankYouOverlay: View {
             }
             .background {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.secondary.opacity(0.07))
+                    .fill(Color.secondary.opacity(0.1))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)

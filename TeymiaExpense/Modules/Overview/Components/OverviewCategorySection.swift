@@ -16,22 +16,22 @@ struct OverviewCategorySection: View {
             // Header
             HStack {
                 Text(title)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.title3)
+                    .fontWeight(.semibold)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                 
                 Spacer()
                 
                 Text(userPreferences.formatAmount(total, currencies: currencies))
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(.title3)
+                    .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(color)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
             
-            Divider()
+            Divider().opacity(0.3)
             
             // Categories Grid
             LazyVGrid(
@@ -54,7 +54,7 @@ struct OverviewCategorySection: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 8)
         }
     }
     

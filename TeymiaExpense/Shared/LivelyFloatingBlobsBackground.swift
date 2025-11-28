@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Lively Floating Blobs Background (Lava Lamp Effect)
+// MARK: - Lively Floating Blobs Background
 
 struct LivelyFloatingBlobsBackground: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -14,8 +14,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 0,
                     color: colorScheme == .dark
-                    ?  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.35)
-                    :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.3),
+                    ?  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.25)
+                    :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.2),
                         
                     size: 210,
                     positions: [
@@ -32,8 +32,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 1,
                     color: colorScheme == .dark
-                    ? Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.45)
-                    : Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.5),
+                    ? Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.35)
+                    : Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.25),
                     size: 190,
                     positions: [
                         CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25),
@@ -49,8 +49,8 @@ struct LivelyFloatingBlobsBackground: View {
                 LivelyBlob(
                     index: 2,
                     color: colorScheme == .dark
-                    ? Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.5)
-                    : Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.6),
+                    ? Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.4)
+                    : Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.3),
                     size: 170,
                     positions: [
                         CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),

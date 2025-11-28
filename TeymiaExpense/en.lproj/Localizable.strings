@@ -2,6 +2,11 @@
 "overview" = "Overview";
 "settings" = "Settings";
 
+/* ===================== Buttons ===================== */
+"save" = "Save";
+
+
+
 "transfer_to" = "Transfer to";
 "transfer_from" = "Transfer from";
 "general_category" = "General";

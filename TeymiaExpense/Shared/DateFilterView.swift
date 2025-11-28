@@ -11,7 +11,7 @@ struct DateFilterView: View {
             HStack(spacing: 8) {
                 Image("calendar.week")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                 Text("Week")
                 .foregroundStyle(.primary)
                 Spacer()
@@ -25,7 +25,7 @@ struct DateFilterView: View {
             HStack(spacing: 8) {
                 Image("calendar.month")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                 Text("Month")
                 .foregroundStyle(.primary)
                 Spacer()
@@ -39,7 +39,7 @@ struct DateFilterView: View {
             HStack(spacing: 8) {
                 Image("calendar.year")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                 Text("Year")
                 .foregroundStyle(.primary)
                 Spacer()
@@ -50,13 +50,13 @@ struct DateFilterView: View {
                 dismiss()
             }
             
-            Divider()
+            Divider().opacity(0.3)
             
             // Custom Date Range
             HStack(spacing: 8) {
                 Image("calendar.custom")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                 DatePicker("Start", selection: $startDate, displayedComponents: [.date])
                     .datePickerStyle(.compact)
             }
@@ -64,7 +64,7 @@ struct DateFilterView: View {
             HStack(spacing: 8) {
                 Image("calendar.custom")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                 DatePicker("End", selection: $endDate, displayedComponents: [.date])
                     .datePickerStyle(.compact)
             }
@@ -162,28 +162,15 @@ fileprivate extension View {
         } else {
             self
                 .buttonStyle(.borderless)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 8)
                 .background {
                     TransparentBlurView(removeAllFilters: true)
-                        .blur(radius: 3, opaque: true)
-                        .background(Color.mainRowBackground.opacity(0.5))
+                        .blur(radius: 2, opaque: true)
+                        .background(Color.mainRowBackground.opacity(0.2))
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 30, style: .continuous)
-                        .stroke(
-                            LinearGradient(colors: [
-                                .white.opacity(0.6),
-                                .white.opacity(0.1),
-                                .white.opacity(0.1),
-                                .white.opacity(0.6)
-                                
-                            ], startPoint: .topLeading, endPoint: .bottomTrailing),
-                            lineWidth: 0.8
-                        )
-                }
-                .shadow(color: .black.opacity(0.1), radius: 6)
+                .shadow(color: .black.opacity(0.08), radius: 10)
         }
     }
 }

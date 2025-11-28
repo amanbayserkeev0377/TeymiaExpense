@@ -13,12 +13,12 @@ struct CategoryManagementView: View {
     @State private var editingCategory: Category?
     @State private var showingAddCategory = false
     
-    // Delete confirmation
+    // Delete confirmation & Multiselect state
+    @State private var selectedCategories: Set<Category> = []
     @State private var showingDeleteAlert = false
     @State private var deleteAlertMessage = ""
     @State private var pendingDeleteAction: (() -> Void)?
     
-    // Computed property for sheet binding
     private var showingEditCategory: Binding<Bool> {
         Binding(
             get: { editingCategory != nil },
@@ -33,8 +33,7 @@ struct CategoryManagementView: View {
     }
     
     var body: some View {
-        List {
-            // Type picker
+        List(selection: $selectedCategories) {
             Section {
                 Picker("Type", selection: $selectedType) {
                     Text("Expense").tag(CategoryType.expense)
@@ -49,7 +48,7 @@ struct CategoryManagementView: View {
                 Section {
                     ContentUnavailableView(
                         "No categories",
-                        systemImage: "folder",
+                        systemImage: "circle.grid.2x2",
                         description: Text("Tap + to add a category")
                     )
                 }
@@ -58,9 +57,10 @@ struct CategoryManagementView: View {
                 Section {
                     ForEach(filteredCategories) { category in
                         CategoryRow(category: category)
+                            .tag(category)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                if isEditMode {
+                                if !isEditMode {
                                     editingCategory = category
                                 }
                             }
@@ -68,15 +68,9 @@ struct CategoryManagementView: View {
                                 Button(role: .destructive) {
                                     confirmDeleteCategory(category)
                                 } label: {
-                                    Label("Delete", systemImage: "trash")
+                                    Label("", image: "trash.swipe")
                                 }
-                                
-                                Button {
-                                    editingCategory = category
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                .tint(.gray)
+                                .tint(.red)
                             }
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
@@ -86,38 +80,57 @@ struct CategoryManagementView: View {
         }
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
         .scrollContentBackground(.hidden)
-        .background(Color.mainBackground)
-        .navigationTitle("Categories")
+        .background(Color.mainGroupBackground)
+        .navigationTitle("categories".localized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isEditMode.toggle()
-                    }
-                } label: {
-                    Image(systemName: isEditMode ? "checkmark" : "pencil")
-                        .fontWeight(.semibold)
-                }
+            EditDoneToolbarButton(isEditMode: $isEditMode) {
+                selectedCategories = []
             }
             
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingAddCategory = true
-                } label: {
-                    Image(systemName: "plus")
-                        .fontWeight(.semibold)
+            AddToolbarButton {
+                showingAddCategory = true
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if isEditMode {
+                HStack {
+                    Button {
+                        if selectedCategories.count < filteredCategories.count {
+                            selectedCategories = Set(filteredCategories)
+                        } else {
+                            selectedCategories = []
+                        }
+                    } label: {
+                        Text(selectedCategories.count < filteredCategories.count ? "Select All" : "Deselect All")
+                            .padding(4)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Button(role: .destructive) {
+                        confirmDeleteSelectedCategories()
+                    } label: {
+                        Text("Delete (\(selectedCategories.count))")
+                            .padding(4)
+                    }
+                    .tint(.red)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(selectedCategories.isEmpty)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background {
+                    TransparentBlurView(removeAllFilters: true)
+                        .blur(radius: 2, opaque: false)
                 }
             }
         }
         .sheet(isPresented: $showingAddCategory) {
             CategoryFormView(categoryType: selectedType)
-                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: showingEditCategory) {
             if let category = editingCategory {
                 CategoryFormView(editingCategory: category)
-                    .presentationDragIndicator(.visible)
             }
         }
         .alert("Delete Category?", isPresented: $showingDeleteAlert) {
@@ -135,6 +148,46 @@ struct CategoryManagementView: View {
     
     // MARK: - Helper Methods
     
+    private func deleteCategories(_ categories: [Category]) {
+        withAnimation {
+            categories.forEach { modelContext.delete($0) }
+            try? modelContext.save()
+            selectedCategories = []
+        }
+    }
+    
+    private func confirmDeleteSelectedCategories() {
+        guard !selectedCategories.isEmpty else { return }
+        
+        let categoriesToDelete = Array(selectedCategories)
+        let totalTransactions = categoriesToDelete.reduce(0) { $0 + ($1.transactions?.count ?? 0) }
+        
+        if categoriesToDelete.count == 1 {
+            let category = categoriesToDelete.first!
+            if totalTransactions > 0 {
+                deleteAlertMessage = "Category \"\(category.name)\" has \(totalTransactions) transactions. They will be kept but unassigned."
+            } else {
+                deleteAlertMessage = "Category \"\(category.name)\" will be deleted."
+            }
+        } else {
+            if totalTransactions > 0 {
+                deleteAlertMessage = "Are you sure you want to delete \(categoriesToDelete.count) categories? They contain a total of \(totalTransactions) transactions, which will be kept but unassigned."
+            } else {
+                deleteAlertMessage = "Are you sure you want to delete \(categoriesToDelete.count) categories?"
+            }
+        }
+        
+        pendingDeleteAction = {
+            self.deleteCategories(categoriesToDelete)
+        }
+        showingDeleteAlert = true
+    }
+    
+    private func confirmDeleteCategory(_ category: Category) {
+        selectedCategories = [category]
+        confirmDeleteSelectedCategories()
+    }
+    
     private func moveCategories(from source: IndexSet, to destination: Int) {
         var cats = filteredCategories
         cats.move(fromOffsets: source, toOffset: destination)
@@ -145,23 +198,6 @@ struct CategoryManagementView: View {
         
         try? modelContext.save()
     }
-    
-    private func confirmDeleteCategory(_ category: Category) {
-        let transactionCount = category.transactions?.count ?? 0
-        if transactionCount > 0 {
-            deleteAlertMessage = "This category has \(transactionCount) transactions. They will be kept but unassigned."
-        } else {
-            deleteAlertMessage = "This category will be deleted."
-        }
-        
-        pendingDeleteAction = {
-            withAnimation {
-                modelContext.delete(category)
-                try? modelContext.save()
-            }
-        }
-        showingDeleteAlert = true
-    }
 }
 
 // MARK: - Category Row
@@ -170,15 +206,13 @@ struct CategoryRow: View {
     let category: Category
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack {
             Image(category.iconName)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
+                .frame(width: 18, height: 18)
                 .foregroundStyle(.primary)
             
             Text(category.name)
-                .font(.body)
                 .foregroundStyle(.primary)
             
             Spacer()

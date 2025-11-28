@@ -62,11 +62,9 @@ struct AccountTransactionsView: View {
             }
             .sheet(isPresented: $showingAddTransaction) {
                 AddTransactionView(preselectedAccount: account)
-                    .presentationDragIndicator(.visible)
             }
             .sheet(item: $editingTransaction) { transaction in
                 AddTransactionView(editingTransaction: transaction)
-                    .presentationDragIndicator(.visible)
             }
         }
     }
@@ -105,8 +103,12 @@ struct AccountTransactionsView: View {
     private var transactionsSection: some View {
         if filteredTransactions.isEmpty {
             Section {
-                TransactionEmptyStateView()
+                ContentUnavailableView(
+                    "No Transactions",
+                    systemImage: "magnifyingglass"
+                )
             }
+            .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
         } else {
             ForEach(sortedDates, id: \.self) { date in

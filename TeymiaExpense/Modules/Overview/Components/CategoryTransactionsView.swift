@@ -80,8 +80,12 @@ struct CategoryTransactionsView: View {
             // Transactions List
             if filteredTransactions.isEmpty {
                 Section {
-                    TransactionEmptyStateView()
+                    ContentUnavailableView(
+                        "No Transactions",
+                        systemImage: "magnifyingglass"
+                    )
                 }
+                .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             } else {
                 ForEach(sortedDates, id: \.self) { date in
@@ -125,7 +129,6 @@ struct CategoryTransactionsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
-                .presentationDragIndicator(.visible)
         }
     }
     

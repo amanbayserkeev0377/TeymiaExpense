@@ -57,7 +57,6 @@ struct TeymiaExpenseApp: App {
                     TeymiaOnBoardingView() {
                         firstLaunchManager.completeOnboarding()
                     }
-                    .presentationCornerRadius(30)
                 }
         }
         .modelContainer(sharedModelContainer)

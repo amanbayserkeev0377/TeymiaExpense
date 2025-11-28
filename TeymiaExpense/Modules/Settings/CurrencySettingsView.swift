@@ -14,41 +14,40 @@ struct CurrencySettingsView: View {
     
     var body: some View {
         List {
-            Section {
-                Picker("Type", selection: $selectedType) {
-                    ForEach(CurrencyType.allCases, id: \.self) { type in
-                        Text(type == .fiat ? "Fiat" : "Crypto")
-                            .tag(type)
+            if filteredCurrencies.isEmpty {
+                ContentUnavailableView(
+                    "No currencies found",
+                    systemImage: "magnifyingglass",
+                    description: Text("Try adjusting your search")
+                )
+                .listRowBackground(Color.clear)
+            } else {
+                ForEach(filteredCurrencies, id: \.code) { currency in
+                    CurrencyRowView(currency: currency, isSelected: userPreferences.baseCurrencyCode == currency.code) {
+                        userPreferences.baseCurrencyCode = currency.code
+                        dismiss()
                     }
-                }
-                .pickerStyle(.segmented)
-                .onChange(of: selectedType) { _, _ in
-                    searchText = ""
-                }
-            }
-            .listRowBackground(Color.clear)
-            
-            // Currency list section
-            Section {
-                if filteredCurrencies.isEmpty {
-                    ContentUnavailableView(
-                        "No currencies found",
-                        systemImage: "magnifyingglass",
-                        description: Text("Try adjusting your search")
-                    )
-                    .listRowBackground(Color.clear)
-                } else {
-                    ForEach(filteredCurrencies, id: \.code) { currency in
-                        CurrencyRowView(currency: currency, isSelected: userPreferences.baseCurrencyCode == currency.code) {
-                            userPreferences.baseCurrencyCode = currency.code
-                            dismiss()
-                        }
-                    }
+                    .listRowBackground(Color.mainRowBackground)
                 }
             }
         }
-        .searchable(text: $searchText, placement: .automatic)
-        .navigationTitle("Currency")
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.mainGroupBackground)
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Picker("Currency Type", selection: $selectedType) {
+                    Text("fiat".localized).tag(CurrencyType.fiat)
+                    Text("crypto".localized).tag(CurrencyType.crypto)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 200)
+                .onChange(of: selectedType) { oldValue, newValue in
+                    searchText = ""
+                }
+            }
+        }
     }
 }

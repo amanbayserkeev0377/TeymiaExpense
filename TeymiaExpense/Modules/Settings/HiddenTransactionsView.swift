@@ -8,13 +8,13 @@ struct HiddenTransactionsView: View {
     @Query(filter: #Predicate<Transaction> { $0.isHidden == true })
     private var hiddenTransactions: [Transaction]
     
-    @Query private var currencies: [Currency]
-    
+    @State private var isEditMode = false
     @State private var showingDeleteAlert = false
-    @State private var transactionToDelete: Transaction?
+    @State private var deleteAlertMessage = ""
+    @State private var pendingDeleteAction: (() -> Void)?
     @State private var editingTransaction: Transaction?
+    @State private var selectedTransactions: Set<Transaction> = []
     
-    // Group transactions by date
     private var groupedTransactions: [Date: [Transaction]] {
         Dictionary(grouping: hiddenTransactions) { transaction in
             Calendar.current.startOfDay(for: transaction.date)
@@ -26,87 +26,138 @@ struct HiddenTransactionsView: View {
     }
     
     var body: some View {
-        List {
+        List(selection: $selectedTransactions) {
             if hiddenTransactions.isEmpty {
-                emptyStateView
+                ContentUnavailableView(
+                    "No Hidden Transactions",
+                    systemImage: "eye.slash",
+                    description: Text("Hidden transactions will appear here")
+                )
+                .listRowBackground(Color.clear)
             } else {
                 transactionsList
-                    .padding(.horizontal, 15)
+            }
+        }
+        .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.mainGroupBackground)
+        .navigationTitle("hidden_transactions".localized)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            EditDoneToolbarButton(isEditMode: $isEditMode) {
+                selectedTransactions = []
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if isEditMode {
+                HStack(spacing: 12) {
+                    Button {
+                        if selectedTransactions.count < hiddenTransactions.count {
+                            selectedTransactions = Set(hiddenTransactions)
+                        } else {
+                            selectedTransactions = []
+                        }
+                    } label: {
+                        Text(selectedTransactions.count < hiddenTransactions.count ? "select_all".localized : "deselect_all".localized)
+                            .padding(4)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Button {
+                        confirmUnhideSelectedTransactions()
+                    } label: {
+                        Text("unhide".localized + " (\(selectedTransactions.count))")
+                            .padding(4)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(selectedTransactions.isEmpty)
+                    
+                    Button(role: .destructive) {
+                        confirmDeleteSelectedTransactions()
+                    } label: {
+                        Text("delete".localized + " (\(selectedTransactions.count))")
+                            .padding(4)
+                    }
+                    .tint(.red)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(selectedTransactions.isEmpty)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background {
+                    TransparentBlurView(removeAllFilters: true)
+                        .blur(radius: 2, opaque: false)
+                }
             }
         }
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
-        .alert("Delete Transaction?", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) {
-                transactionToDelete = nil
+        .alert("delete_transaction_alert".localized, isPresented: $showingDeleteAlert) {
+            Button("cancel".localized, role: .cancel) {
+                pendingDeleteAction = nil
             }
-            Button("Delete", role: .destructive) {
-                if let transaction = transactionToDelete {
-                    deleteTransaction(transaction)
-                }
+            Button("delete".localized, role: .destructive) {
+                pendingDeleteAction?()
+                pendingDeleteAction = nil
             }
         } message: {
-            Text("This action cannot be undone.")
+            Text(deleteAlertMessage)
         }
-    }
-    
-    // MARK: - Empty State
-    
-    @ViewBuilder
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image("search.question")
-                .resizable()
-                .frame(width: 48, height: 48)
-                .foregroundStyle(.secondary)
-            
-            Text("No Hidden Transactions")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .fontDesign(.rounded)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 100)
     }
     
     // MARK: - Transactions List
     
     @ViewBuilder
     private var transactionsList: some View {
-        LazyVStack(spacing: 20) {
-            ForEach(sortedDates, id: \.self) { date in
-                GlassDayTransactionsView(
-                    date: date,
-                    transactions: groupedTransactions[date] ?? [],
-                    userPreferences: userPreferences,
-                    currencies: currencies,
-                    onEditTransaction: { editingTransaction = $0 },
-                    onHideTransaction: { unhideTransaction($0) },
-                    onDeleteTransaction: {
-                        transactionToDelete = $0
-                        showingDeleteAlert = true
-                    }
-                )
+        ForEach(sortedDates, id: \.self) { date in
+            Section {
+                ForEach(groupedTransactions[date] ?? [], id: \.id) { transaction in
+                    TransactionRowView(transaction: transaction)
+                        .tag(transaction)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if !isEditMode {
+                                editingTransaction = transaction
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                confirmDeleteTransaction(transaction)
+                            } label: {
+                                Label("", image: "trash.swipe")
+                            }
+                            .tint(.red)
+                            
+                            Button {
+                                unhideTransaction(transaction)
+                            } label: {
+                                Label("", image: "eye.swipe")
+                            }
+                            .tint(.gray)
+                        }
+                }
+                .listRowBackground(Color.mainRowBackground)
+            } header: {
+                Text(formatDate(date))
             }
         }
-        .padding(.bottom, 20)
     }
     
     // MARK: - Date Formatting
-        
+    
     private func formatDate(_ date: Date) -> String {
         let calendar = Calendar.current
         
         if calendar.isDateInToday(date) {
-            return "Today"
+            return "today".localized
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return "yesterday".localized
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
+            formatter.locale = Locale.current
             return formatter.string(from: date)
         }
     }
@@ -120,37 +171,46 @@ struct HiddenTransactionsView: View {
         }
     }
     
-    private func unhideAllTransactions() {
+    private func unhideTransactions(_ transactions: [Transaction]) {
         withAnimation {
-            for transaction in hiddenTransactions {
-                transaction.isHidden = false
-            }
+            transactions.forEach { $0.isHidden = false }
             try? modelContext.save()
+            selectedTransactions = []
         }
     }
     
-    private func deleteTransaction(_ transaction: Transaction) {
+    private func deleteTransactions(_ transactions: [Transaction]) {
         withAnimation {
-            modelContext.delete(transaction)
+            transactions.forEach { modelContext.delete($0) }
             try? modelContext.save()
+            selectedTransactions = []
         }
-        transactionToDelete = nil
     }
-}
-
-// MARK: - Hidden Transaction Row
-
-struct HiddenTransactionRow: View {
-    let transaction: Transaction
-    let onTap: () -> Void
     
-    var body: some View {
-        TransactionRowView(transaction: transaction)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                onTap()
-            }
+    private func confirmUnhideSelectedTransactions() {
+        guard !selectedTransactions.isEmpty else { return }
+        unhideTransactions(Array(selectedTransactions))
+    }
+    
+    private func confirmDeleteSelectedTransactions() {
+        guard !selectedTransactions.isEmpty else { return }
+        
+        let transactionsToDelete = Array(selectedTransactions)
+        
+        if transactionsToDelete.count == 1 {
+            deleteAlertMessage = "transaction_delete_message_single".localized
+        } else {
+            deleteAlertMessage = String(format: "transaction_delete_message_multiple".localized, transactionsToDelete.count)
+        }
+        
+        pendingDeleteAction = {
+            self.deleteTransactions(transactionsToDelete)
+        }
+        showingDeleteAlert = true
+    }
+    
+    private func confirmDeleteTransaction(_ transaction: Transaction) {
+        selectedTransactions = [transaction]
+        confirmDeleteSelectedTransactions()
     }
 }

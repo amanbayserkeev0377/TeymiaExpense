@@ -80,7 +80,7 @@ extension Category {
             ("Cafe", "fork.knife"),
             ("Transport", "transport"),
             ("Shopping", "shopping"),
-            ("Entertainment", "entertainment"),
+            ("Entertainment", "cinema"),
             ("Health", "health"),
             ("Housing", "housing"),
             ("Education", "education"),

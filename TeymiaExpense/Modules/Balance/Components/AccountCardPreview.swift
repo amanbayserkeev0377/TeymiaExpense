@@ -29,8 +29,8 @@ struct AccountCardPreview: View {
                     
                     Spacer()
                 }
-                .padding(.top, 20)
-                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.horizontal, 16)
                 
                 Spacer()
                 
@@ -42,7 +42,7 @@ struct AccountCardPreview: View {
                             .fontDesign(.rounded)
                             .foregroundStyle(.white)
                             .lineLimit(1)
-                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                         
                         Text(balance.isEmpty ? "0" : "\(balance)")
                             .font(.largeTitle)
@@ -51,16 +51,15 @@ struct AccountCardPreview: View {
                             .foregroundStyle(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
-                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                     }
                     
                     Spacer()
                     
                     Image("eye")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
                         .frame(width: 20, height: 20)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.white)
                         .offset(y: -10)
                 }
                 .padding(.bottom, 15)

@@ -14,7 +14,7 @@ struct TeymiaOnBoardingView: View {
     
     private let features: [OnBoardingFeature] = [
         OnBoardingFeature(
-            icon: "category.management",
+            icon: "categories",
             title: "Stay Organized",
             description: "Categorize expenses and see where your money goes"
         ),

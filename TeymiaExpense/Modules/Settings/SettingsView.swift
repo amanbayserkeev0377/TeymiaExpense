@@ -20,11 +20,13 @@ struct SettingsView: View {
                     Label {
                         Text("categories".localized)
                     } icon: {
-                        Image("category.management")
+                        Image("categories")
                             .settingsIcon()
                     }
                 }
             }
+            .listRowBackground(Color.mainRowBackground)
+
             
             Section {
                 LanguageSection()
@@ -66,7 +68,7 @@ struct SettingsView: View {
                     HiddenTransactionsView()
                 } label: {
                     Label {
-                        Text("hidden transactions".localized)
+                        Text("hidden_transactions".localized)
                     } icon: {
                         Image("eye.crossed")
                             .settingsIcon()
@@ -204,8 +206,8 @@ struct TipsSection: View {
                                         Color(#colorLiteral(red: 0.1882352941, green: 0.7843137255, blue: 0.6705882353, alpha: 1)),
                                         Color(#colorLiteral(red: 0.1098020747, green: 0.6508788466, blue: 0.6040038466, alpha: 1))
                                     ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
+                                    startPoint: .leading,
+                                    endPoint: .trailing
                                 )
                             ) },
                     icon: {

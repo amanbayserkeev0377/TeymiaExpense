@@ -18,8 +18,13 @@ struct BalanceView: View {
             List {
                 if accounts.isEmpty {
                     Section {
-                        EmptyAccountsView()
+                        ContentUnavailableView(
+                            "No accounts",
+                            systemImage: "magnifyingglass",
+                            description: Text("Create your first account to start tracking expenses")
+                        )
                     }
+                    .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                 } else {
                     Section {
@@ -40,50 +45,38 @@ struct BalanceView: View {
                                 }
                         }
                         .onMove(perform: isEditMode ? moveAccounts : nil)
+                    } header: {
+                        Text("Total:")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.primary)
                     }
-                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
                 }
             }
-            .listStyle(.inset)
+            .listStyle(.plain)
             .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
             .scrollContentBackground(.hidden)
             .background {
                 LivelyFloatingBlobsBackground()
             }
-            .navigationTitle("Accounts")
+            .navigationTitle("Balance")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isEditMode.toggle()
-                        }
-                    } label: {
-                        Image(systemName: isEditMode ? "checkmark" : "pencil")
-                            .fontWeight(.semibold)
-                    }
-                }
+                EditDoneToolbarButton(isEditMode: $isEditMode, action: nil)
                 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddAccount = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                    }
+                AddToolbarButton {
+                    showingAddAccount = true
                 }
             }
         }
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
         .sheet(item: $editingAccount) { account in
             AddAccountView(editingAccount: account)
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
         .alert("Delete Account", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {
@@ -154,6 +147,10 @@ struct AccountRowView: View {
                             .frame(width: 50, height: 32)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
+                } else if account.designType == .color {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(AccountColor.gradient(at: account.designIndex))
+                        .frame(width: 50, height: 32)
                 }
             }
             
@@ -172,34 +169,6 @@ struct AccountRowView: View {
                 .foregroundStyle(.primary)
         }
         .padding(.vertical, 4)
-    }
-}
-
-// MARK: - Empty State View
-
-struct EmptyAccountsView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image("credit.card")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .foregroundStyle(.secondary)
-            
-            VStack(spacing: 8) {
-                Text("No Accounts")
-                    .font(.headline)
-                    .fontWeight(.medium)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.primary)
-                
-                Text("Create your first account to start tracking expenses")
-                    .font(.subheadline)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
+        .contentShape(Rectangle())
     }
 }

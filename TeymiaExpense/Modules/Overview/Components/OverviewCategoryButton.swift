@@ -10,17 +10,15 @@ struct OverviewCategoryButton: View {
     let userPreferences: UserPreferences
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             // Circle with icon
             ZStack {
                 Circle()
-                    .fill(Color.secondary.opacity(0.07))
+                    .fill(Color.secondary.opacity(0.1))
                     .frame(width: 50, height: 50)
-                    .shadow(color: .black.opacity(0.1), radius: 8)
                 
                 Image(category.iconName)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)
             }
@@ -28,19 +26,21 @@ struct OverviewCategoryButton: View {
             // Category info
             VStack(spacing: 4) {
                 Text(category.name)
-                    .font(.caption)
-                    .fontWeight(.medium)
+                    .font(.callout)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                
+                    .minimumScaleFactor(0.8)
+                    .fixedSize(horizontal: false, vertical: true)
+
                 Text(userPreferences.formatAmountWithoutCurrency(totalAmount, currencies: currencies))
-                    .font(.caption2)
-                    .fontWeight(.semibold)
+                    .font(.callout)
+                    .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(color)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ImageCropperView: View {
-    @Environment(\.dismiss) private var dismiss
     let originalImage: UIImage
     let onCropComplete: (UIImage) -> Void
     
@@ -89,7 +88,7 @@ struct ImageCropperView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        dismiss()
+                        onCropComplete(originalImage)
                     } label: {
                         Image(systemName: "xmark")
                             .fontWeight(.semibold)
@@ -294,12 +293,10 @@ struct ImageCropperView: View {
     private func cropImage() {
         guard let croppedImage = performCrop() else {
             print("❌ Crop failed")
-            dismiss()
             return
         }
         
         onCropComplete(croppedImage)
-        dismiss()
     }
     
     private func performCrop() -> UIImage? {

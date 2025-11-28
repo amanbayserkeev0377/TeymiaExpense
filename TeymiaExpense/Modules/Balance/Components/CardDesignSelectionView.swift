@@ -1,48 +1,52 @@
 import SwiftUI
 import PhotosUI
 
-struct CardDesignSelectionView: View {
-    @Environment(\.dismiss) private var dismiss
+struct CardDesignSelectionSection: View {
     @Binding var selectedDesignType: AccountDesignType
     @Binding var selectedDesignIndex: Int
     @Binding var customImage: UIImage?
-    @Binding var shouldShowCropper: Bool // Signal to parent
     @Binding var imageForCropping: UIImage?
+    @Binding var showingPhotoPicker: Bool
     
-    @State private var showingPhotoPicker = false
+    private let cornerRadius: CGFloat = 8
+    private let frameWidth: CGFloat = 65
+    private let frameHeight: CGFloat = 40
+    private let lineWidth: CGFloat = 3
+    
+    private var imageColumns: [[AccountImage]] {
+        stride(from: 0, to: AccountImageData.images.count, by: 3).map {
+            Array(AccountImageData.images[$0..<min($0 + 3, AccountImageData.images.count)])
+        }
+    }
+    
+    private var colorColumns: [[Int]] {
+        stride(from: 0, to: AccountColor.allCases.count, by: 3).map {
+            Array($0..<min($0 + 3, AccountColor.allCases.count))
+        }
+    }
     
     var body: some View {
-        Form {
-            Section {
+        Section("design".localized) {
+            VStack(spacing: 16) {
+                // Segmented Picker
                 Picker("Design Type", selection: $selectedDesignType) {
                     Text("photo").tag(AccountDesignType.image)
                     Text("color").tag(AccountDesignType.color)
                 }
                 .pickerStyle(.segmented)
-            }
-            .listRowBackground(Color.clear)
-            
-            Section {
+                .padding(.horizontal, 40)
+                
+                // Scrollable Content
                 if selectedDesignType == .color {
                     colorSelectionView
                 } else {
-                    imageSelectionGrid
+                    imageSelectionView
                 }
             }
-            .listRowBackground(Color.gray.opacity(0.1))
+            .padding(.vertical, 16)
         }
-        .listStyle(.plain)
-        .listSectionSpacing(0)
-        .scrollContentBackground(.hidden)
-        .sheet(isPresented: $showingPhotoPicker) {
-            PhotoPicker { image in
-                imageForCropping = image
-                showingPhotoPicker = false
-                
-                // Close this sheet first, then signal parent
-                dismiss()
-            }
-        }
+        .listRowBackground(Color.mainRowBackground)
+        .listRowInsets(EdgeInsets())
         .onChange(of: customImage) { oldValue, newValue in
             if newValue != nil {
                 selectedDesignIndex = -1
@@ -50,20 +54,47 @@ struct CardDesignSelectionView: View {
         }
     }
     
-    // MARK: - Image Selection Grid
+    // MARK: - Image Selection
     @ViewBuilder
-    private var imageSelectionGrid: some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3),
-            spacing: 12
-        ) {
-            ForEach(Array(AccountImageData.images.enumerated()), id: \.element.id) { index, imageData in
-                imageDesignButton(index: index, imageData: imageData)
+    private var imageSelectionView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 12) {
+                ForEach(imageColumns.indices, id: \.self) { columnIndex in
+                    VStack(spacing: 12) {
+                        ForEach(Array(imageColumns[columnIndex].enumerated()), id: \.element.id) { rowIndex, imageData in
+                            let globalIndex = columnIndex * 3 + rowIndex
+                            imageDesignButton(index: globalIndex, imageData: imageData)
+                        }
+                    }
+                }
+                
+                VStack(spacing: 12) {
+                    customPhotoButton
+                    Color.clear.frame(width: frameWidth, height: frameHeight)
+                    Color.clear.frame(width: frameWidth, height: frameHeight)
+                }
             }
-            
-            customPhotoButton
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
         }
-        .padding(.vertical, 8)
+    }
+    
+    // MARK: - Color Selection (3 Rows, Horizontal Scroll)
+    @ViewBuilder
+    private var colorSelectionView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 12) {
+                ForEach(colorColumns.indices, id: \.self) { columnIndex in
+                    VStack(spacing: 12) {
+                        ForEach(colorColumns[columnIndex], id: \.self) { colorIndex in
+                            colorDesignButton(index: colorIndex)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+        }
     }
     
     // MARK: - Custom Photo Button
@@ -77,51 +108,35 @@ struct CardDesignSelectionView: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(height: 60)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .frame(width: frameWidth, height: frameHeight)
+                        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: cornerRadius)
                                 .stroke(
-                                    selectedDesignIndex == -1 ? .appTint : .clear,
-                                    lineWidth: 3
+                                    selectedDesignIndex == -1 ? Color.appTint : Color.clear,
+                                    lineWidth: lineWidth
                                 )
                         )
-                        .clipped()
                 } else {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.1))
-                        .frame(height: 60)
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.secondary.opacity(0.1))
+                        .frame(width: frameWidth, height: frameHeight)
                         .overlay {
                             Image(systemName: "plus")
-                                .font(.system(size: 24, weight: .semibold))
+                                .fontWeight(.semibold)
                                 .foregroundStyle(.appTint)
                         }
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.appTint.opacity(0.3), style: StrokeStyle(lineWidth: 2, dash: [6]))
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .strokeBorder(Color.appTint, style: StrokeStyle(lineWidth: 2, dash: [8]))
                         )
                 }
             }
-            .frame(height: 60)
             .scaleEffect((selectedDesignIndex == -1 && customImage != nil) ? 1.05 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: selectedDesignIndex)
             .animation(.easeInOut(duration: 0.2), value: customImage)
         }
         .buttonStyle(.plain)
-    }
-    
-    // MARK: - Color Selection View
-    @ViewBuilder
-    private var colorSelectionView: some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
-            spacing: 16
-        ) {
-            ForEach(AccountColor.allCases.indices, id: \.self) { index in
-                colorDesignButton(index: index)
-            }
-        }
-        .padding(.vertical, 8)
     }
     
     // MARK: - Image Design Button
@@ -134,14 +149,14 @@ struct CardDesignSelectionView: View {
         } label: {
             Image(imageData.imageName)
                 .resizable()
-                .aspectRatio(16/10, contentMode: .fill)
-                .frame(height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .aspectRatio(contentMode: .fill)
+                .frame(width: frameWidth, height: frameHeight)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(
-                            (selectedDesignType == .image && selectedDesignIndex == index) ? .appTint : .clear,
-                            lineWidth: 3
+                            (selectedDesignType == .image && selectedDesignIndex == index) ? Color.appTint : Color.clear,
+                            lineWidth: lineWidth
                         )
                 )
                 .scaleEffect((selectedDesignType == .image && selectedDesignIndex == index) ? 1.05 : 1.0)
@@ -159,21 +174,19 @@ struct CardDesignSelectionView: View {
             selectedDesignType = .color
             customImage = nil
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(AccountColor.gradient(at: index))
-                    .frame(height: 50)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(
-                                (selectedDesignType == .color && selectedDesignIndex == index) ? .appTint : .clear,
-                                lineWidth: 3
-                            )
-                    )
-            }
-            .scaleEffect((selectedDesignType == .color && selectedDesignIndex == index) ? 1.05 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: selectedDesignIndex)
-            .animation(.easeInOut(duration: 0.2), value: selectedDesignType)
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(AccountColor.gradient(at: index))
+                .frame(width: frameWidth, height: frameHeight)
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(
+                            (selectedDesignType == .color && selectedDesignIndex == index) ? Color.appTint : Color.clear,
+                            lineWidth: lineWidth
+                        )
+                )
+                .scaleEffect((selectedDesignType == .color && selectedDesignIndex == index) ? 1.05 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: selectedDesignIndex)
+                .animation(.easeInOut(duration: 0.2), value: selectedDesignType)
         }
         .buttonStyle(.plain)
     }

@@ -31,10 +31,14 @@ extension Transaction {
     /// Get display title for transaction
     func displayTitle(relativeTo account: Account?) -> String {
         if type == .transfer {
-            if self.account?.id == account?.id {
-                return "transfer_to".localized + " \(toAccount?.name ?? "Account")"
+            if let fromAccount = self.account, let toAccount = toAccount {
+                return "\(fromAccount.name) → \(toAccount.name)"
+            } else if let fromAccount = self.account {
+                return "\(fromAccount.name) → ..."
+            } else if let toAccount = toAccount {
+                return "... → \(toAccount.name)"
             } else {
-                return "transfer_from".localized + " \(self.account?.name ?? "Account")"
+                return "transfer".localized
             }
         }
         return category?.name ?? "general_category".localized

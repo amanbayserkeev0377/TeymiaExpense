@@ -5,42 +5,57 @@ struct TransactionRowView: View {
     let transaction: Transaction
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Icon
+        HStack(spacing: 0) {
             Image(transaction.displayIcon)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.primary)
+                .padding(.trailing, 12)
             
-            // Transaction details (left side)
-            VStack(alignment: .leading, spacing: 2) {
-                // Title
+            if transaction.type == .transfer {
                 Text(transaction.displayTitle(relativeTo: nil))
                     .font(.body)
                     .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
-                
-                // Account name (moved from right)
-                if let account = transaction.account {
-                    Text(account.name)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
-                // Note (if exists)
-                if let note = transaction.note, !note.isEmpty {
-                    Text(note)
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                        .lineLimit(1)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Text(transaction.displayTitle(relativeTo: nil))
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.9)
+                            .fixedSize(horizontal: false, vertical: true)
+                        
+                        if let note = transaction.note, !note.isEmpty {
+                            Text("(\(note))")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    
+                    if let account = transaction.account {
+                        Text(account.name)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fontDesign(.rounded)
+                    }
                 }
             }
             
             Spacer()
             
-            // Amount (right side - simple)
             Text(transaction.formattedAmount(for: transaction.account))
                 .font(.body)
                 .fontWeight(.semibold)
@@ -48,5 +63,6 @@ struct TransactionRowView: View {
                 .foregroundStyle(transaction.typeColor)
         }
         .contentShape(Rectangle())
+        .padding(.vertical, 2)
     }
 }

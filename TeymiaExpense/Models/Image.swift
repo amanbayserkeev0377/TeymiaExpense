@@ -14,7 +14,10 @@ struct AccountImageData {
         AccountImage(id: "image9", imageName: "pic9"),
         AccountImage(id: "image10", imageName: "pic10"),
         AccountImage(id: "image11", imageName: "pic11"),
-        AccountImage(id: "image12", imageName: "pic12")
+        AccountImage(id: "image12", imageName: "pic12"),
+        AccountImage(id: "image13", imageName: "pic13"),
+        AccountImage(id: "image14", imageName: "pic14"),
+        AccountImage(id: "image15", imageName: "pic15")
     ]
     
     static func image(at index: Int) -> AccountImage {
@@ -23,18 +26,15 @@ struct AccountImageData {
     }
 }
 
-// MARK: - Account Image Model
 struct AccountImage: Identifiable, Codable {
     let id: String
     let imageName: String
 }
 
-// MARK: - Account Extensions for Images
-// ✅ НОВЫЙ КОД - безопасный
 extension Account {
     var cardImage: String {
         guard designIndex >= 0 else {
-            return "pic1" // fallback
+            return "pic1"
         }
         let imageIndex = designIndex % AccountImageData.images.count
         return AccountImageData.images[imageIndex].imageName

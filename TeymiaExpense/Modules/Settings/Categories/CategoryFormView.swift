@@ -13,6 +13,8 @@ struct CategoryFormView: View {
     @State private var selectedIcon: String
     @State private var showingIconSelection = false
     
+    @FocusState private var isCategoryNameFocused: Bool
+
     // MARK: - Initializers
     
     /// Create form for adding new category
@@ -46,21 +48,29 @@ struct CategoryFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    // Category Type (read-only)
+                Section(categoryType == .expense ? "Expense" : "Income") {
                     HStack {
-                        Text("Type")
-                            .foregroundStyle(.primary)
-                        
-                        Spacer()
-                        
-                        Text(categoryType == .expense ? "Expense" : "Income")
-                            .foregroundStyle(.secondary)
+                        TextField("Category Name", text: $categoryName)
+                            .autocorrectionDisabled()
+                            .focused($isCategoryNameFocused)
+                            .fontDesign(.rounded)
+                            
+                        Button(action: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                                categoryName = ""
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(Color.secondary.opacity(0.5))
+                                .font(.system(size: 18))
+                        }
+                        .buttonStyle(.plain)
+                        .opacity(categoryName.isEmpty ? 0 : 1)
+                        .scaleEffect(categoryName.isEmpty ? 0.001 : 1)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.5), value: categoryName.isEmpty)
+                        .disabled(categoryName.isEmpty)
                     }
-                    
-                    // Category Name
-                    TextField("Category Name", text: $categoryName)
-                        .autocorrectionDisabled()
+                    .contentShape(Rectangle())
                     
                     // Icon Selection
                     Button {
@@ -69,7 +79,7 @@ struct CategoryFormView: View {
                         HStack {
                             Image(selectedIcon)
                                 .resizable()
-                                .frame(width: 24, height: 24)
+                                .frame(width: 18, height: 18)
                                 .foregroundStyle(.primary)
                             
                             Text("Icon")
@@ -77,8 +87,9 @@ struct CategoryFormView: View {
                             
                             Spacer()
                             
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
+                            Image("chevron.right")
+                                .resizable()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.tertiary)
                         }
                         .contentShape(Rectangle())
@@ -88,34 +99,35 @@ struct CategoryFormView: View {
                 .listRowBackground(Color.mainRowBackground)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.mainBackground)
+            .background(Color.mainGroupBackground)
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
+                CloseToolbarButton()
                 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        save()
+                ConfirmationToolbarButton(
+                    action: save,
+                    isDisabled: !canSave
+                )
+            }
+            .onAppear {
+                if !isEditing {
+                    DispatchQueue.main.async {
+                        isCategoryNameFocused = true
                     }
-                    .fontWeight(.semibold)
-                    .disabled(!canSave)
                 }
             }
         }
         .sheet(isPresented: $showingIconSelection) {
             CategoryIconSelectionView(selectedIcon: $selectedIcon)
-                .presentationDragIndicator(.visible)
         }
     }
     
     // MARK: - Actions
     
     private func save() {
+        isCategoryNameFocused = false
+        
         let trimmedName = categoryName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if let existingCategory = editingCategory {
@@ -140,6 +152,7 @@ struct CategoryFormView: View {
             dismiss()
         } catch {
             print("Error saving category: \(error)")
+            isCategoryNameFocused = true
         }
     }
 }

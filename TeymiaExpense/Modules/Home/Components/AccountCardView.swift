@@ -49,8 +49,8 @@ struct AccountCardView: View {
                     
                     Spacer()
                 }
-                .padding(.top, 20)
-                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.horizontal, 16)
                 
                 Spacer()
                 
@@ -62,7 +62,7 @@ struct AccountCardView: View {
                             .fontDesign(.rounded)
                             .foregroundStyle(.white)
                             .lineLimit(1)
-                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                         
                         Text(hideBalance ? "••••" : account.formattedBalance)
                             .font(.largeTitle)
@@ -71,7 +71,7 @@ struct AccountCardView: View {
                             .foregroundStyle(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
-                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                             .contentTransition(.numericText())
                             .animation(.easeInOut(duration: 0.25), value: hideBalance)
                     }
@@ -79,7 +79,7 @@ struct AccountCardView: View {
                     Spacer()
                     
                     Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
                             hideBalance.toggle()
                         }
                     } label: {
@@ -87,7 +87,7 @@ struct AccountCardView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(.white.opacity(0.9))
+                            .foregroundStyle(.white)
                     }
                     .buttonStyle(.plain)
                     .offset(y: -10)

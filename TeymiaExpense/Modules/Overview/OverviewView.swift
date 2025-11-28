@@ -82,8 +82,6 @@ struct OverviewView: View {
                     endDate: endDate
                 )
             }
-            .presentationDragIndicator(.visible)
-            .presentationCornerRadius(40)
         }
     }
     
@@ -112,7 +110,7 @@ struct OverviewView: View {
                 )
             }
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 16)
     }
     
     @ViewBuilder
@@ -150,8 +148,10 @@ struct OverviewView: View {
     @ViewBuilder
     private var emptyStateSection: some View {
         if expenseCategoriesWithTransactions.isEmpty && incomeCategoriesWithTransactions.isEmpty {
-            TransactionEmptyStateView()
-                .padding(.top, 60)
+            ContentUnavailableView(
+                "No Transactions",
+                systemImage: "magnifyingglass"
+            )
         }
     }
     

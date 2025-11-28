@@ -27,7 +27,7 @@ struct CurrencySelectionRow: View {
                 } else {
                     Image("dollar")
                         .resizable()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 18, height: 18)
                     
                     Text("select_currency".localized)
                         .foregroundStyle(.secondary)
@@ -49,7 +49,6 @@ struct CurrencySelectionRow: View {
 // MARK: - Currency Selection View
 struct CurrencySelectionView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) var colorScheme
     @Binding var selectedCurrency: Currency?
     
     @State private var selectedType: CurrencyType = .fiat
@@ -63,32 +62,43 @@ struct CurrencySelectionView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(filteredCurrencies, id: \.code) { currency in
-                    CurrencyRowView(
-                        currency: currency,
-                        isSelected: selectedCurrency?.code == currency.code
-                    ) {
-                        selectedCurrency = currency
-                        dismiss()
+                if filteredCurrencies.isEmpty {
+                    ContentUnavailableView(
+                        "No currencies found",
+                        systemImage: "magnifyingglass",
+                        description: Text("Try adjusting your search")
+                    )
+                    .listRowBackground(Color.clear)
+                } else {
+                    ForEach(filteredCurrencies, id: \.code) { currency in
+                        CurrencyRowView(
+                            currency: currency,
+                            isSelected: selectedCurrency?.code == currency.code
+                        ) {
+                            selectedCurrency = currency
+                            dismiss()
+                        }
+                        .listRowBackground(Color.mainRowBackground)
                     }
-                    .listRowBackground(Color.mainRowBackground)
                 }
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            .background(Color.mainBackground)
-            .searchable(text: $searchText)
+            .background(Color.mainGroupBackground)
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                CloseToolbarButton()
+                
                 ToolbarItem(placement: .principal) {
                     Picker("Currency Type", selection: $selectedType) {
                         Text("fiat".localized).tag(CurrencyType.fiat)
                         Text("crypto".localized).tag(CurrencyType.crypto)
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 300)
+                    .frame(width: 200)
                     .onChange(of: selectedType) { oldValue, newValue in
-                        searchText = "" // Clear search when switching types
+                        searchText = ""
                     }
                 }
             }
@@ -108,7 +118,6 @@ struct CurrencyRowView: View {
                 // Currency flag/icon
                 Image(CurrencyService.getCurrencyIcon(for: currency))
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
                     .frame(width: 32, height: 32)
                     .clipShape(Circle())
                     .overlay(
@@ -145,6 +154,7 @@ struct CurrencyRowView: View {
                         .foregroundStyle(.appTint)
                 }
             }
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

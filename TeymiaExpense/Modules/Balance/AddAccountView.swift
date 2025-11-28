@@ -21,10 +21,9 @@ struct AddAccountView: View {
     @State private var selectedIcon: String = "cash"
     @State private var showingCurrencySelection = false
     @State private var showingIconSelection = false
-    @State private var showingCardDesignSelection = false
     @State private var showingImageCropper = false
+    @State private var showingPhotoPicker = false
     @State private var imageForCropping: UIImage?
-    @State private var shouldShowCropper = false
 
     
     @FocusState private var isAccountNameFocused: Bool
@@ -68,17 +67,23 @@ struct AddAccountView: View {
                                 isInitialBalanceFocused = true
                             }
                             .fontDesign(.rounded)
-                        
-                        if !accountName.isEmpty {
-                            Button(action: {
+
+                        Button(action: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
                                 accountName = ""
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(Color.secondary)
-                                    .font(.system(size: 16))
                             }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(Color.secondary.opacity(0.5))
+                                .font(.system(size: 18))
                         }
+                        .buttonStyle(.plain)
+                        .opacity(accountName.isEmpty ? 0 : 1)
+                        .scaleEffect(accountName.isEmpty ? 0.001 : 1)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.5), value: accountName.isEmpty)
+                        .disabled(accountName.isEmpty)
                     }
+                    .contentShape(Rectangle())
                     
                     HStack {
                         TextField(isEditMode ? "Current Balance" : "Initial Balance", text: $initialBalance)
@@ -99,57 +104,17 @@ struct AddAccountView: View {
                 }
                 .listRowBackground(Color.mainRowBackground)
                 
+                CardDesignSelectionSection(
+                    selectedDesignType: $selectedDesignType,
+                    selectedDesignIndex: $selectedDesignIndex,
+                    customImage: $customImage,
+                    imageForCropping: $imageForCropping,
+                    showingPhotoPicker: $showingPhotoPicker
+                )
+                
+                AccountIconSection(selectedIcon: $selectedIcon)
+                
                 Section {
-                    // Card Design Selection
-                    Button {
-                        showingCardDesignSelection = true
-                    } label: {
-                        HStack {
-                            Image(selectedDesignType == .image ? "photo" : "palette")
-                                .resizable()
-                                .frame(width: 22, height: 22)
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundStyle(.primary)
-                            
-                            Text("Card Design")
-                                .foregroundStyle(.primary)
-                            
-                            Spacer()
-                            
-                            Image("chevron.right")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    
-                    // Icon Selection
-                    Button {
-                        showingIconSelection = true
-                    } label: {
-                        HStack {
-                            Image(selectedIcon)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(.primary)
-                            
-                            Text("Icon")
-                                .foregroundStyle(.primary)
-                            
-                            Spacer()
-                            
-                            Image("chevron.right")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    
                     // Currency Selection
                     Button {
                         showingCurrencySelection = true
@@ -181,19 +146,18 @@ struct AddAccountView: View {
                 .listRowBackground(Color.mainRowBackground)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.mainBackground.ignoresSafeArea())
+            .background(Color.mainGroupBackground.ignoresSafeArea())
             .navigationTitle(isEditMode ? "Edit Account" : "Add Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
+                CloseToolbarButton()
+
+                ConfirmationToolbarButton(
+                    action: {
                         isEditMode ? updateAccount() : saveAccount()
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .fontWeight(.semibold)
-                    }
-                    .disabled(!canSave)
-                }
+                    },
+                    isDisabled: !canSave
+                )
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button {
@@ -215,29 +179,12 @@ struct AddAccountView: View {
         }
         .sheet(isPresented: $showingCurrencySelection) {
             CurrencySelectionView(selectedCurrency: $selectedCurrency)
-                .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showingIconSelection) {
-            AccountIconSelectionView(selectedIcon: $selectedIcon)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $showingCardDesignSelection) {
-            if imageForCropping != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    showingImageCropper = true
-                }
+        .sheet(isPresented: $showingPhotoPicker) {
+            PhotoPicker { image in
+                imageForCropping = image
+                showingPhotoPicker = false
             }
-        } content: {
-            CardDesignSelectionView(
-                selectedDesignType: $selectedDesignType,
-                selectedDesignIndex: $selectedDesignIndex,
-                customImage: $customImage,
-                shouldShowCropper: $shouldShowCropper,
-                imageForCropping: $imageForCropping
-            )
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
         }
         .fullScreenCover(isPresented: $showingImageCropper) {
             if let image = imageForCropping {
@@ -245,14 +192,14 @@ struct AddAccountView: View {
                     customImage = croppedImage
                     selectedDesignIndex = -1
                     imageForCropping = nil
+                    showingImageCropper = false
                 }
             }
         }
         .onChange(of: imageForCropping) { oldValue, newValue in
-            print("📸 imageForCropping changed: \(newValue != nil)")
-        }
-        .onChange(of: showingImageCropper) { oldValue, newValue in
-            print("🎬 showingImageCropper: \(newValue)")
+            if newValue != nil {
+                showingImageCropper = true
+            }
         }
     }
     

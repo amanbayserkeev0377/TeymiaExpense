@@ -2,20 +2,11 @@ import SwiftUI
 
 struct FloatingPlusButton: View {
     let action: () -> Void
-    let animation: Namespace.ID?
-    let useZoomTransition: Bool
-    let bottomPadding: CGFloat
     
     init(
         action: @escaping () -> Void,
-        animation: Namespace.ID? = nil,
-        useZoomTransition: Bool = false,
-        bottomPadding: CGFloat = 20
     ) {
         self.action = action
-        self.animation = animation
-        self.useZoomTransition = useZoomTransition
-        self.bottomPadding = bottomPadding
     }
     
     var body: some View {
@@ -26,7 +17,7 @@ struct FloatingPlusButton: View {
                 
                 button
                     .padding(.trailing, 20)
-                    .padding(.bottom, bottomPadding)
+                    .padding(.bottom, 20)
             }
         }
     }
@@ -70,26 +61,10 @@ extension View {
                     
                     // Color overlay
                     Circle()
-                        .fill(Color.appTint.opacity(0.8))
+                        .fill(Color.appTint.opacity(0.7))
                 }
                 .clipShape(Circle())
             }
-            .overlay(
-                Circle()
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                .white.opacity(0.6),
-                                .white.opacity(0.1),
-                                .white.opacity(0.1),
-                                .white.opacity(0.6)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1.2
-                    )
-            )
         }
     }
 }

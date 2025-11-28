@@ -5,95 +5,116 @@ struct TransferAccountsSection: View {
     @Binding var toAccount: Account?
     let accounts: [Account]
     let onAddAccountTapped: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Section("from_account".localized) {
-            ForEach(accounts) { account in
-                Button {
-                    fromAccount = account
-                    if toAccount == account {
-                        toAccount = nil
-                    }
-                } label: {
-                    HStack {
-                        Image(account.cardIcon)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(fromAccount == account ? .primary : .secondary)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(account.name)
-                                .foregroundStyle(.primary)
-                            
-                            Text(account.formattedBalance)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        if fromAccount == account {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.appTint)
-                                .fontWeight(.bold)
-                                .fontDesign(.rounded)
+            if accounts.isEmpty {
+                ContentUnavailableView(
+                    "No accounts",
+                    systemImage: "magnifyingglass"
+                )
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(accounts) { account in
+                            accountButton(
+                                account: account,
+                                isSelected: fromAccount == account
+                            ) {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    fromAccount = account
+                                    if toAccount == account {
+                                        toAccount = nil
+                                    }
+                                }
+                            }
                         }
                     }
-                    .contentShape(Rectangle())
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 16)
                 }
-                .buttonStyle(.plain)
             }
         }
         .listRowBackground(Color.mainRowBackground)
+        .listRowInsets(EdgeInsets())
         
         Section("to_account".localized) {
             let availableToAccounts = accounts.filter { $0 != fromAccount }
             
             if availableToAccounts.isEmpty {
-                Button {
-                    onAddAccountTapped()
-                } label: {
-                    Label("Add another account for transfers", systemImage: "plus")
-                        .foregroundStyle(.appTint)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .buttonStyle(.plain)
+                ContentUnavailableView(
+                    accounts.isEmpty ? "No accounts" : "Create second account",
+                    systemImage: "arrow.2.circlepath",
+                    description: Text(
+                        accounts.isEmpty
+                        ? "Add an account to start managing finances"
+                        : "Add another account to make transfers"
+                    )
+                )
             } else {
-                ForEach(availableToAccounts) { account in
-                    Button {
-                        toAccount = account
-                    } label: {
-                        HStack {
-                            Image(account.cardIcon)
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(toAccount == account ? .primary : .secondary)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(account.name)
-                                    .foregroundStyle(.primary)
-                                
-                                Text(account.formattedBalance)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            if toAccount == account {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.appTint)
-                                    .fontWeight(.bold)
-                                    .fontDesign(.rounded)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(availableToAccounts) { account in
+                            accountButton(
+                                account: account,
+                                isSelected: toAccount == account
+                            ) {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    toAccount = account
+                                }
                             }
                         }
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 16)
                 }
             }
         }
         .listRowBackground(Color.mainRowBackground)
+        .listRowInsets(EdgeInsets())
+    }
+    
+    private func accountButton(
+        account: Account,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Text(account.name)
+                    .font(.footnote)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Image(account.cardIcon)
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(
+                        isSelected
+                        ? (colorScheme == .light ? Color.white : Color.black)
+                        : Color.primary
+                    )
+                    .padding(10)
+                    .background(
+                        Circle()
+                            .fill(
+                                isSelected
+                                ? Color.primary
+                                : Color.secondary.opacity(0.1)
+                            )
+                    )
+                
+                Text(account.formattedBalance)
+                    .font(.footnote)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }

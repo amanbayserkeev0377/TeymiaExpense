@@ -65,6 +65,32 @@ struct AddTransactionView: View {
                                 .multilineTextAlignment(.center)
                         }
                         .contentShape(Rectangle())
+                        
+                        HStack {
+                            Image("note")
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                                .foregroundStyle(.primary)
+                            
+                            TextField("note".localized, text: $note)
+                                .fontDesign(.rounded)
+                                
+                            Button(action: {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                                    note = ""
+                                }
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.secondary.opacity(0.5))
+                                    .font(.system(size: 18))
+                            }
+                            .buttonStyle(.plain)
+                            .opacity(note.isEmpty ? 0 : 1)
+                            .scaleEffect(note.isEmpty ? 0.001 : 1)
+                            .animation(.spring(response: 0.4, dampingFraction: 0.5), value: note.isEmpty)
+                            .disabled(note.isEmpty)
+                        }
+                        .contentShape(Rectangle())
                     }
                     .listRowBackground(Color.mainRowBackground)
                     
@@ -83,22 +109,20 @@ struct AddTransactionView: View {
                         )
                     }
                     
-                    // Category Section (grid selection)
+                    // Catgories Section
                     if selectedType != .transfer {
-                        Section {
-                            CategoryGridSelector(
+                        Section("category".localized) {
+                            CategoriesSection(
                                 categories: filteredCategories,
                                 selectedCategory: $selectedCategory,
                                 colorScheme: colorScheme
                             )
-                        } header: {
-                            Text("Category")
                         }
                         .listRowBackground(Color.mainRowBackground)
+                        .listRowInsets(EdgeInsets())
                     }
                     
-                    // Date & Note
-                    DateNoteSection(date: $date, note: $note)
+                    DateNoteSection(date: $date)
                     
                     // Spacer for button
                     Color.clear
@@ -125,6 +149,8 @@ struct AddTransactionView: View {
             .navigationTitle(isEditMode ? "Edit Transaction" : "New Transaction")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                CloseToolbarButton()
+                
                 ToolbarItem(placement: .principal) {
                     Picker("Type", selection: $selectedType) {
                         ForEach(TransactionType.allCases, id: \.self) { type in
@@ -132,7 +158,7 @@ struct AddTransactionView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 280)
+                    .frame(width: 270)
                 }
             }
         }
@@ -142,8 +168,6 @@ struct AddTransactionView: View {
         }
         .sheet(isPresented: $showingAddAccount) {
             AddAccountView()
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
     }
     
@@ -309,78 +333,6 @@ struct AddTransactionView: View {
         } catch {
             print("Error updating transaction: \(error)")
         }
-    }
-}
-
-// MARK: - Category Grid Selector
-
-struct CategoryGridSelector: View {
-    let categories: [Category]
-    @Binding var selectedCategory: Category?
-    let colorScheme: ColorScheme
-    
-    var body: some View {
-        if categories.isEmpty {
-            Text("No categories available")
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.vertical, 40)
-        } else {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
-                spacing: 16
-            ) {
-                ForEach(categories) { category in
-                    CategoryCircleButton(
-                        category: category,
-                        isSelected: selectedCategory?.id == category.id,
-                        colorScheme: colorScheme
-                    ) {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            selectedCategory = category
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Category Circle Button
-
-struct CategoryCircleButton: View {
-    let category: Category
-    let isSelected: Bool
-    let colorScheme: ColorScheme
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Image(category.iconName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(
-                        isSelected
-                        ? (colorScheme == .light ? Color.white : Color.black)
-                        : Color.primary
-                    )
-                    .padding(14)
-                    .background(
-                        Circle()
-                            .fill(isSelected ? Color.primary : Color.secondary.opacity(0.07))
-                    )
-                
-                Text(category.name)
-                    .font(.system(.caption, design: .rounded))
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
-        }
-        .buttonStyle(.plain)
     }
 }
 

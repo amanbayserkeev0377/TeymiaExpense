@@ -6,7 +6,7 @@ enum AccountColor: String, CaseIterable, Codable {
     case color7, color8, color9, color10, color11, color12
     case color13, color14, color15, color16, color17, color18
     case color19, color20, color21, color22, color23
-    case color24, color25, color26, color27, color28
+    case color24, color25, color26, color27
     
     var colors: (dark: Color, light: Color) {
         switch self {
@@ -37,7 +37,6 @@ enum AccountColor: String, CaseIterable, Codable {
         case .color25: return (Color(#colorLiteral(red: 0.9921568627, green: 0.3960784314, blue: 0.5215686275, alpha: 1)), Color(#colorLiteral(red: 0.05098039216, green: 0.1450980392, blue: 0.7254901961, alpha: 1)))
         case .color26: return (Color(#colorLiteral(red: 0.9607843137, green: 0.7960784314, blue: 1, alpha: 1)), Color(#colorLiteral(red: 0.7647058824, green: 0.2745098039, blue: 0.7607843137, alpha: 1)))
         case .color27: return (Color(#colorLiteral(red: 0.8901960784, green: 0.8901960784, blue: 0.8901960784, alpha: 1)), Color(#colorLiteral(red: 0.05490196078, green: 0.3607843137, blue: 0.6784313725, alpha: 1)))
-        case .color28: return (Color(#colorLiteral(red: 0.6705882353, green: 0.862745098, blue: 1, alpha: 1)), Color(#colorLiteral(red: 0.01176470588, green: 0.5882352941, blue: 1, alpha: 1)))
         }
     }
     

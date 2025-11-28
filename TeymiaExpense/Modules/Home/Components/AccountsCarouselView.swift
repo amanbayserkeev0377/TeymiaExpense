@@ -13,9 +13,10 @@ struct AccountsCarouselView: View {
     var body: some View {
         VStack(spacing: 0) {
             if accounts.isEmpty {
-                // Empty state when no accounts
-                EmptyAccountsCarouselView()
-                    .frame(height: 220)
+                ContentUnavailableView(
+                    "No accounts",
+                    systemImage: "magnifyingglass",
+                    )
             } else {
                 // Accounts carousel
                 ScrollView(.horizontal) {
@@ -69,37 +70,7 @@ struct AccountsCarouselView: View {
         }
         .sheet(item: $selectedAccount) { account in
             AccountTransactionsView(account: account)
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(40)
         }
-    }
-}
-
-// MARK: - Empty Accounts Carousel View
-struct EmptyAccountsCarouselView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image("credit.card")
-                .resizable()
-                .frame(width: 50, height: 50)
-                .foregroundStyle(.secondary)
-            
-            VStack(spacing: 8) {
-                Text("No Accounts")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.primary)
-                
-                Text("Tap the cards icon above to create your first account")
-                    .font(.subheadline)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -146,10 +117,10 @@ struct CarouselBackdropView: View {
                 }
             }
             .compositingGroup()
-            .blur(radius: 10, opaque: true)
+            .blur(radius: 8, opaque: true)
             .overlay {
                 Rectangle()
-                    .fill(.black.opacity(0.25))
+                    .fill(.black.opacity(0.15))
             }
             .mask {
                 Rectangle()
@@ -157,8 +128,8 @@ struct CarouselBackdropView: View {
                         .black,
                         .black.opacity(0.8),
                         .black.opacity(0.7),
-                        .black.opacity(0.4),
-                        .black.opacity(0.25),
+                        .black.opacity(0.3),
+                        .black.opacity(0.1),
                         .clear
                     ], startPoint: .top, endPoint: .bottom))
             }
