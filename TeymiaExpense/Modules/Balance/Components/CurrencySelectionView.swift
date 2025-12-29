@@ -63,11 +63,7 @@ struct CurrencySelectionView: View {
         NavigationStack {
             List {
                 if filteredCurrencies.isEmpty {
-                    ContentUnavailableView(
-                        "No currencies found",
-                        systemImage: "magnifyingglass",
-                        description: Text("Try adjusting your search")
-                    )
+                    ContentUnavailableView.search(text: searchText)
                     .listRowBackground(Color.clear)
                 } else {
                     ForEach(filteredCurrencies, id: \.code) { currency in
@@ -91,7 +87,7 @@ struct CurrencySelectionView: View {
                 CloseToolbarButton()
                 
                 ToolbarItem(placement: .principal) {
-                    Picker("Currency Type", selection: $selectedType) {
+                    Picker("", selection: $selectedType) {
                         Text("fiat".localized).tag(CurrencyType.fiat)
                         Text("crypto".localized).tag(CurrencyType.crypto)
                     }

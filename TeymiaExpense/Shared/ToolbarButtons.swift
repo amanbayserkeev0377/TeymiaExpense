@@ -61,7 +61,7 @@ struct EditDoneToolbarButton: ToolbarContent {
             if #available(iOS 26.0, *) {
                 Button {
                     action?()
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         isEditMode.toggle()
                     }
                 } label: {
@@ -75,8 +75,14 @@ struct EditDoneToolbarButton: ToolbarContent {
                         isEditMode.toggle()
                     }
                 } label: {
-                    Text(isEditMode ? "done".localized : "edit".localized)
-                        .fontWeight(isEditMode ? .semibold : .regular)
+                    Image(systemName: isEditMode ? "checkmark" : "pencil")
+                        .font(.system(size: 12, weight: .bold))
+                        .padding(6)
+                        .background(
+                            Circle()
+                                .fill(Color.secondary.opacity(0.1))
+                        )
+                        .contentShape(Circle())
                 }
             }
         }

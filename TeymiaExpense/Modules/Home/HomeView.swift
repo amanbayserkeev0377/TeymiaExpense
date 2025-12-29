@@ -84,15 +84,17 @@ struct HomeView: View {
                                     )
                                 }
                             }
+                            .padding(.top, 10)
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                         }
+                        .listSectionSpacing(16)
                         
                         // Transactions List
                         if filteredTransactions.isEmpty {
                             Section {
                                 ContentUnavailableView(
-                                    "No Transactions",
+                                    "no_transactions".localized,
                                     systemImage: "magnifyingglass"
                                 )
                                     .listRowBackground(Color.clear)
@@ -210,9 +212,9 @@ struct DaySectionHeader: View {
         let calendar = Calendar.current
         
         if calendar.isDateInToday(date) {
-            return "Today"
+            return "today".localized
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return "yesterday".localized
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
@@ -237,7 +239,7 @@ struct DaySectionHeader: View {
                 .foregroundStyle(dayTotal >= 0 ? Color("IncomeColor") : Color("ExpenseColor"))
         }
         .padding(.horizontal, 4)
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
         .textCase(nil)
     }
 }

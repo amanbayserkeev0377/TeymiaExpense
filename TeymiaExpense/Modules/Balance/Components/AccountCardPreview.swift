@@ -36,7 +36,7 @@ struct AccountCardPreview: View {
                 
                 HStack(alignment: .bottom, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(name.isEmpty ? "Account Name" : name)
+                        Text(name.isEmpty ? "account_name".localized : name)
                             .font(.title3)
                             .fontWeight(.semibold)
                             .fontDesign(.rounded)

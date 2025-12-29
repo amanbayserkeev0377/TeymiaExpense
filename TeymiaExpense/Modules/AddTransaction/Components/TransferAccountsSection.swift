@@ -8,10 +8,10 @@ struct TransferAccountsSection: View {
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        Section("from_account".localized) {
+        Section("transfer_from".localized) {
             if accounts.isEmpty {
                 ContentUnavailableView(
-                    "No accounts",
+                    "no_accounts".localized,
                     systemImage: "magnifyingglass"
                 )
             } else {
@@ -39,18 +39,13 @@ struct TransferAccountsSection: View {
         .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
         
-        Section("to_account".localized) {
+        Section("transfer_to".localized) {
             let availableToAccounts = accounts.filter { $0 != fromAccount }
             
             if availableToAccounts.isEmpty {
                 ContentUnavailableView(
-                    accounts.isEmpty ? "No accounts" : "Create second account",
+                    accounts.isEmpty ? "no_accounts".localized : "create_second_account".localized,
                     systemImage: "arrow.2.circlepath",
-                    description: Text(
-                        accounts.isEmpty
-                        ? "Add an account to start managing finances"
-                        : "Add another account to make transfers"
-                    )
                 )
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {

@@ -29,9 +29,9 @@ struct CardDesignSelectionSection: View {
         Section("design".localized) {
             VStack(spacing: 16) {
                 // Segmented Picker
-                Picker("Design Type", selection: $selectedDesignType) {
-                    Text("photo").tag(AccountDesignType.image)
-                    Text("color").tag(AccountDesignType.color)
+                Picker("", selection: $selectedDesignType) {
+                    Text("photo".localized).tag(AccountDesignType.image)
+                    Text("color".localized).tag(AccountDesignType.color)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal, 40)

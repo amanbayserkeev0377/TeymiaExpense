@@ -38,7 +38,7 @@ struct CategoryFormView: View {
     }
     
     private var navigationTitle: String {
-        isEditing ? "Edit Category" : "New Category"
+        isEditing ? "edit_category".localized : "new_category".localized
     }
     
     private var canSave: Bool {
@@ -48,9 +48,9 @@ struct CategoryFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(categoryType == .expense ? "Expense" : "Income") {
+                Section(categoryType == .expense ? "expense".localized : "income".localized) {
                     HStack {
-                        TextField("Category Name", text: $categoryName)
+                        TextField("category_name".localized, text: $categoryName)
                             .autocorrectionDisabled()
                             .focused($isCategoryNameFocused)
                             .fontDesign(.rounded)
@@ -82,7 +82,7 @@ struct CategoryFormView: View {
                                 .frame(width: 18, height: 18)
                                 .foregroundStyle(.primary)
                             
-                            Text("Icon")
+                            Text("icon".localized)
                                 .foregroundColor(.primary)
                             
                             Spacer()

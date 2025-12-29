@@ -20,7 +20,7 @@ struct CategoriesSection: View {
     var body: some View {
         if categories.isEmpty {
             ContentUnavailableView(
-                "No categories",
+                "no_categories".localized,
                 systemImage: "circle.grid.2x2"
             )
         } else {

@@ -10,12 +10,14 @@ extension DateFormatter {
             let monthStart = monthInterval.start
             let monthEnd = calendar.date(byAdding: .day, value: -1, to: monthInterval.end)!
             
-            if calendar .isDate(startDate, inSameDayAs: monthStart) &&
-                calendar.isDate(endDate, inSameDayAs: monthEnd) {
-                formatter.dateFormat = "MMMM yyyy"
-                return formatter.string(from: startDate)
+            if calendar.isDate(startDate, inSameDayAs: monthStart) &&
+               calendar.isDate(endDate, inSameDayAs: monthEnd) {
+                
+                formatter.dateFormat = "LLLL yyyy"
+                let formattedString = formatter.string(from: startDate)
+                return formattedString.prefix(1).uppercased() + formattedString.dropFirst()
+            }
         }
-    }
         
         // Check if it's a full year (from start of year to today or end of year)
         if let yearInterval = calendar.dateInterval(of: .year, for: startDate) {

@@ -9,7 +9,7 @@ struct AccountSelectionSection: View {
         Section("account".localized) {
             if accounts.isEmpty {
                 ContentUnavailableView(
-                    "No accounts",
+                    "no_accounts".localized,
                     systemImage: "magnifyingglass"
                 )
             } else {

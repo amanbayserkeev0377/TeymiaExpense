@@ -15,18 +15,18 @@ struct TeymiaOnBoardingView: View {
     private let features: [OnBoardingFeature] = [
         OnBoardingFeature(
             icon: "categories",
-            title: "Stay Organized",
-            description: "Categorize expenses and see where your money goes"
+            title: "onboarding_feature_1_title".localized,
+            description: "onboarding_feature_1_description".localized
         ),
         OnBoardingFeature(
             icon: "cards.blank",
-            title: "Multiple Accounts",
-            description: "Manage all your accounts in one place"
+            title: "onboarding_feature_2_title".localized,
+            description: "onboarding_feature_2_description".localized
         ),
         OnBoardingFeature(
             icon: "bitcoin.symbol",
-            title: "Multi-Currency Support",
-            description: "Track expenses in 200+ fiat and crypto currencies"
+            title: "onboarding_feature_3_title".localized,
+            description: "onboarding_feature_3_description".localized
         )
     ]
     
@@ -41,7 +41,7 @@ struct TeymiaOnBoardingView: View {
                             .frame(width: 80, height: 80)
                         
                         VStack {
-                            Text("Welcome to")
+                            Text("welcome_to".localized)
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
@@ -79,7 +79,7 @@ struct TeymiaOnBoardingView: View {
                             .frame(width: 20, height: 20)
                             .foregroundStyle(Color.appTint)
                         
-                        Text("Your financial data stays on your device and is never shared.")
+                        Text("onboarding_privacy_disclaimer".localized)
                             .font(.caption)
                             .fontDesign(.rounded)
                             .foregroundStyle(.secondary)
@@ -88,7 +88,7 @@ struct TeymiaOnBoardingView: View {
                     .padding(.horizontal, 24)
                     
                     Button(action: onComplete) {
-                        Text("Continue")
+                        Text("continue".localized)
                             .fontWeight(.semibold)
                             .fontDesign(.rounded)
                             .frame(maxWidth: .infinity)

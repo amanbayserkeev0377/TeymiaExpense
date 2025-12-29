@@ -146,13 +146,13 @@ struct AddTransactionView: View {
                     .transition(.opacity)
                 }
             }
-            .navigationTitle(isEditMode ? "Edit Transaction" : "New Transaction")
+            .navigationTitle(isEditMode ? "edit_transaction".localized : "new_transaction".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbarButton()
                 
                 ToolbarItem(placement: .principal) {
-                    Picker("Type", selection: $selectedType) {
+                    Picker("", selection: $selectedType) {
                         ForEach(TransactionType.allCases, id: \.self) { type in
                             Text(type.displayName).tag(type)
                         }

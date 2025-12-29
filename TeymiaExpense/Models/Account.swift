@@ -71,7 +71,7 @@ extension Account {
         }
         
         let mainAccount = Account(
-            name: "Main Account",
+            name: "main_account".localized,
             balance: 0,
             currency: defaultCurrency,
             isDefault: true,

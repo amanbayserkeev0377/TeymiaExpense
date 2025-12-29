@@ -4,6 +4,8 @@ import SwiftData
 struct BalanceView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(UserPreferences.self) private var userPreferences
+    @Query private var allCurrencies: [Currency]
     @Query(sort: \Account.sortOrder) private var accounts: [Account]
     
     @State private var showingAddAccount = false
@@ -13,13 +15,32 @@ struct BalanceView: View {
     @State private var pendingDeleteAction: (() -> Void)?
     @State private var isEditMode = false
     
+    var baseCurrency: Currency {
+        let baseCode = userPreferences.baseCurrencyCode
+        
+        return allCurrencies.first(where: { $0.code == baseCode }) ?? Currency(
+            code: "USD",
+            symbol: "$",
+            name: "US Dollar",
+            type: .fiat
+        )
+    }
+    
+    var totalBalanceInBaseCurrency: Decimal {
+        let accountsInBaseCurrency = accounts.filter { $0.currency?.code == baseCurrency.code }
+        
+        return accountsInBaseCurrency.reduce(0) { total, account in
+            total + account.balance
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             List {
                 if accounts.isEmpty {
                     Section {
                         ContentUnavailableView(
-                            "No accounts",
+                            "no_accounts".localized,
                             systemImage: "magnifyingglass",
                             description: Text("Create your first account to start tracking expenses")
                         )
@@ -46,11 +67,21 @@ struct BalanceView: View {
                         }
                         .onMove(perform: isEditMode ? moveAccounts : nil)
                     } header: {
-                        Text("Total:")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.primary)
+                        HStack {
+                            Text("total".localized + ":")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+                            
+                            Spacer()
+                            
+                            Text(totalBalanceInBaseCurrency.formatted(currency: baseCurrency))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+                        }
                     }
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
@@ -62,7 +93,7 @@ struct BalanceView: View {
             .background {
                 LivelyFloatingBlobsBackground()
             }
-            .navigationTitle("Balance")
+            .navigationTitle("balance".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 EditDoneToolbarButton(isEditMode: $isEditMode, action: nil)
@@ -78,11 +109,11 @@ struct BalanceView: View {
         .sheet(item: $editingAccount) { account in
             AddAccountView(editingAccount: account)
         }
-        .alert("Delete Account", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) {
+        .alert("", isPresented: $showingDeleteAlert) {
+            Button("cancel".localized, role: .cancel) {
                 pendingDeleteAction = nil
             }
-            Button("Delete", role: .destructive) {
+            Button("delete".localized, role: .destructive) {
                 pendingDeleteAction?()
                 pendingDeleteAction = nil
             }
@@ -109,9 +140,9 @@ struct BalanceView: View {
         let transactionCount = account.transactions?.count ?? 0
         
         if transactionCount > 0 {
-            deleteAlertMessage = "This account has \(transactionCount) transactions. Deleting it will also delete all associated transactions."
+            deleteAlertMessage = "account_delete_alert_txn"
         } else {
-            deleteAlertMessage = "This will delete the account."
+            deleteAlertMessage = "account_delete_alert".localized
         }
         
         pendingDeleteAction = {
@@ -131,7 +162,6 @@ struct AccountRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Account icon or design preview
             Group {
                 if account.designType == .image {
                     if account.designIndex == -1, let customImage = account.customUIImage {

@@ -14,7 +14,7 @@ struct AccountsCarouselView: View {
         VStack(spacing: 0) {
             if accounts.isEmpty {
                 ContentUnavailableView(
-                    "No accounts",
+                    "no_accounts".localized,
                     systemImage: "magnifyingglass",
                     )
             } else {

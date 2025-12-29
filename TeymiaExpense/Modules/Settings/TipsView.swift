@@ -48,14 +48,14 @@ struct InfoSection: View {
                 .frame(width: 70, height: 70)
             
             VStack(spacing: 16) {
-                Text("All features in Teymia Expense are free")
+                Text("tips_title".localized)
                     .font(.title3)
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.primary)
                 
-                Text("You can leave a tip to support ongoing development and future updates.")
+                Text("tips_description".localized)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
@@ -195,12 +195,12 @@ struct ThankYouOverlay: View {
                     .frame(width: 100, height: 100)
                 
                 VStack(spacing: 8) {
-                    Text("Thank You!")
+                    Text("thanks".localized)
                         .font(.title.bold())
                         .fontDesign(.rounded)
                         .foregroundStyle(.primary)
                     
-                    Text("Every tip helps Teymia Expense grow and stay free.")
+                    Text("thanks_title".localized)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .fontDesign(.rounded)
@@ -213,7 +213,7 @@ struct ThankYouOverlay: View {
                         isShowing = false
                     }
                 } label: {
-                    Text("Continue")
+                    Text("contine".localized)
                         .font(.headline)
                         .fontWeight(.medium)
                         .foregroundStyle(.white)

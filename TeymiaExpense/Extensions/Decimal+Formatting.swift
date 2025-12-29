@@ -1,11 +1,16 @@
 import Foundation
 
 extension Decimal {
+    
+    var isInteger: Bool {
+        var rounded = self
+        var original = self
+        NSDecimalRound(&rounded, &original, 0, .plain)
+        
+        return rounded == original
+    }
+    
     func formatted(currency: Currency) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency.code
-        formatter.currencySymbol = currency.symbol
-        return formatter.string(from: self as NSDecimalNumber) ?? "\(currency.symbol)0"
+        return CurrencyFormatter.format(self, currency: currency)
     }
 }

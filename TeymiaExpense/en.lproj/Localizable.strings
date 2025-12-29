@@ -1,38 +1,108 @@
+/* ========================================================================= */
+/* 1. MAIN NAVIGATION                         */
+/* ========================================================================= */
+
 "home" = "Home";
+"balance" = "Balance";
 "overview" = "Overview";
 "settings" = "Settings";
-
-/* ===================== Buttons ===================== */
-"save" = "Save";
-
+"today" = "Today";
+"yesterday" = "Yesterday";
 
 
-"transfer_to" = "Transfer to";
-"transfer_from" = "Transfer from";
-"general_category" = "General";
+/* ========================================================================= */
+/* 2. ONBOARDING & FEATURES                   */
+/* ========================================================================= */
+
+"welcome_to" = "Welcome to";
+"continue" = "Continue";
+"onboarding_privacy_disclaimer" = "Your financial data stays on your device and is never shared";
+
+/* Onboarding Features */
+"onboarding_feature_1_title" = "Stay Organized";
+"onboarding_feature_1_description" = "Categorize expenses and see where your money goes";
+"onboarding_feature_2_title" = "Multiple Accounts";
+"onboarding_feature_2_description" = "Manage all your accounts in one place";
+"onboarding_feature_3_title" = "Multi-Currency Support";
+"onboarding_feature_3_description" = "Track expenses in 200+ fiat and crypto currencies";
+
+
+/* ========================================================================= */
+/* 3. EMPTY STATES & STATUS MESSAGES          */
+/* ========================================================================= */
+
+"no_transactions" = "No Transactions";
+"no_accounts" = "No Accounts";
+"no_categories" = "No categories";
+"no_categories_description" = "Tap + to add a category";
+"no_hidden_transactions" = "No Hidden Transactions";
+
+
+/* ========================================================================= */
+/* 4. TRANSACTION & ACCOUNT FORMS             */
+/* ========================================================================= */
+
+"expense" = "Expense";
+"expenses" = "Expenses";
+"income" = "Income";
+"main_account" = "Main Account";
+"photo" = "Photo";
+"color" = "Color";
+
+/* Transaction Types */
 "transaction_type_expense" = "Expense";
 "transaction_type_income" = "Income";
 "transaction_type_transfer" = "Transfer";
+"transfer_to" = "Transfer to";
+"transfer_from" = "Transfer from";
 
+/* Data Fields & Labels */
+"icon" = "Icon";
 "category" = "Category";
 "account" = "Account";
 "date" = "Date";
 "note" = "Note";
+"design" = "Design";
+"currency" = "Currency";
+"fiat" = "Fiat";
+"crypto" = "Crypto";
+"select_currency" = "Select currency";
+"total" = "Total";
+"week" = "Week";
+"month" = "Month";
+"year" = "Year";
+"start" = "Start";
+"end" = "End";
+
+/* Form Titles & Actions */
+"new_transaction" = "New Transaction";
+"edit_transaction" = "Edit Transaction";
+"add_account" = "Add Account";
+"edit_account" = "Edit Account";
+"new_category" = "New Category";
+"edit_category" = "Edit Category";
+
+/* Field Labels */
+"account_name" = "Account Name";
+"current_balance" = "Current Balance";
+"initial_balance" = "Initial Balance";
+"category_name" = "Category Name";
 
 
-/* ===================== Category Groups ===================== */
-"food.drinks" = "Food & Drinks";
+/* ========================================================================= */
+/* 5. CATEGORIES & GROUPS                     */
+/* ========================================================================= */
+
+"other" = "Other";
+"groceries" = "Groceries";
+"cafe" = "Cafe";
 "transport" = "Transport";
-"entertainment" = "Entertainment";
-"sports" = "Sports";
 "shopping" = "Shopping";
+"entertainment" = "Entertainment";
 "health" = "Health";
 "housing" = "Housing";
-"travel" = "Travel";
 "education" = "Education";
-"pet" = "Pet";
-"child" = "Child";
-"other" = "Other";
+"family" = "Family";
 "salary" = "Salary";
 "gift" = "Gift";
 "bonuses" = "Bonuses";
@@ -40,87 +110,82 @@
 "investment" = "Investment";
 
 
+/* ========================================================================= */
+/* 6. ACTIONS & ALERTS                        */
+/* ========================================================================= */
 
-/* ===================== Categories ===================== */
-"delivery" = "Delivery";
-"groceries" = "Groceries";
-"restaurant" = "Restaurant";
-"coffee" = "Coffee";
-"fast.food" = "Fast Food";
-"alcohol" = "Alcohol";
-"lunches" = "Lunches";
-"taxi" = "Taxi";
-"public.transport" = "Public Transport";
-"fuel" = "Fuel";
-"parking" = "Parking";
-"repair" = "Repair";
-"washing" = "Car Wash";
-"cinema" = "Cinema";
-"events" = "Events";
-"subscriptions" = "Subscriptions";
-"hobbies" = "Hobbies";
-"gaming" = "Gaming";
-"vacation" = "Vacation";
-"equipment" = "Equipment";
-"gym" = "Gym";
-"swimming" = "Swimming";
-"yoga" = "Yoga";
-"clothing" = "Clothing";
-"cosmetics" = "Cosmetics";
-"electronics" = "Electronics";
-"gifts" = "Gifts";
-"marketplaces" = "Marketplaces";
-"dental" = "Dental";
-"hospital" = "Hospital";
-"pharmacy" = "Pharmacy";
-"checkups" = "Check-ups";
-"therapy" = "Therapy";
-"rent" = "Rent";
-"furniture" = "Furniture";
-"home.maintenance" = "Home Maintenance";
-"internet" = "Internet";
-"telephone" = "Telephone";
-"water" = "Water";
-"electricity" = "Electricity";
-"gas" = "Gas";
-"tv.cable" = "TV & Cable";
-"flights" = "Flights";
-"visadocument" = "Visa & Documents";
-"hotel" = "Hotel";
-"tours" = "Tours";
-"books" = "Books";
-"courses" = "Courses";
-"student.loan" = "Student Loan";
-"materials" = "Materials";
-"pet.food" = "Pet Food";
-"veterinary" = "Veterinary";
-"toys.accessories" = "Toys & Accessories";
-"kids.clothes" = "Kids Clothes";
-"school.supplies" = "School Supplies";
-"kids.food" = "Kids Food";
-"kids.healthcare" = "Kids Healthcare";
-"toys.entertainment" = "Toys & Entertainment";
-"gifts.parties" = "Gifts & Parties";
-"general" = "General";
-"monthly.salary" = "Monthly Salary";
-"overtime" = "Overtime";
-"bonus" = "Bonus";
-"birthday.gift" = "Birthday Gift";
-"event.gift" = "Event Gift";
-"performance.bonus" = "Performance Bonus";
-"yearend.bonus" = "Year-end Bonus";
-"commission" = "Commission";
-"freelance" = "Freelance";
-"consulting" = "Consulting";
-"business.revenue" = "Business Revenue";
-"dividends" = "Dividends";
-"interest" = "Interest";
-"crypto" = "Crypto";
-"rental.income" = "Rental Income";
-"refund" = "Refund";
-"cashback" = "Cashback";
+"save" = "Save";
+"cancel" = "Cancel";
+"delete" = "Delete";
+"select_all" = "Select All";
+"deselect_all" = "Deselect All";
+"unhide" = "Unhide";
+"create_second_account" = "Create second account";
 
-/* ===================== Currency Data ===================== */
+/* Delete Buttons & Counters */
+"delete_count_button_label" = "Delete (%lld)";
+"alert_delete_category" = "Delete category?";
+
+/* Account Deletion Alerts */
+"account_delete_alert" = "Are you sure you want to delete this account?";
+"account_delete_alert_txn" = "This account has %lld transactions. Deleting it will also delete all associated transactions.";
+
+/* Transaction Deletion Alerts */
+"transaction_delete_alert_single" = "Are you sure you want to delete this transaction?";
+"transaction_delete_alert_multiple" = "Are you sure you want to delete selected items? (%lld)";
+
+/* Category Deletion Alerts */
+"category_delete_alert_single_no_txn" = "Category \"%@\" will be deleted.";
+"category_delete_alert_single_with_txn" = "Category \"%@\" has %lld transactions. They will be kept but unassigned.";
+"category_delete_alert_multiple_no_txn" = "Are you sure you want to delete %lld categories?";
+"category_delete_alert_multiple_with_txn" = "Are you sure you want to delete %lld categories? They contain a total of %lld transactions, which will be kept but unassigned.";
+
+
+/* ========================================================================= */
+/* 7. SETTINGS & SUPPORT                      */
+/* ========================================================================= */
+
+/* Main Settings Menu */
+"categories" = "Categories"; /* NOTE: Conflict with category list, consider renaming to SETTINGS_CATEGORIES */
+"icloud" = "iCloud";
+"hidden_transactions" = "Hidden Transactions";
+"language" = "Language";
+
+/* Appearance Settings */
+"appearance" = "Appearance";
+"appearance_mode" = "Appearance mode";
+"appearance_dark" = "Dark";
+"appearance_light" = "Light";
+"appearance_system" = "System";
+"app_color" = "App Color";
+"app_icon" = "App Icon";
+
+/* Legal & Info */
+"terms_of_service" = "Terms of Service";
+"privacy_policy" = "Privacy Policy";
+"attributions" = "Attributions";
+"version" = "version";
+"made_with" = "Made with";
+"in_kyrgyzstan" = "in Kyrgyzstan";
+
+/* Tips / Support */
+"buy_me_a_matcha" = "Buy me a matcha";
+"tips_title" = "All features in Teymia Expense are free";
+"tips_description" = "You can leave a tip to support ongoing development and future updates.";
+"apple" = "Apple";
+"matcha" = "Matcha";
+"salad" = "Salad";
+"bowl" = "Bowl";
+"tip_mini" = "Tip Mini";
+"tip" = "Tip";
+"tip_pro" = "Tip Pro";
+"tip_max" = "Tip Max";
+"thanks" = "Thanks!";
+"thanks_title" = "Every tip helps Teymia Expense grow and stay free.";
+
+/* ========================================================================= */
+/* 8. CURRENCIES & SYMBOLS                    */
+/* ========================================================================= */
 
 /* Major Global Currencies (Tier 1) */
 "currency_us_dollar" = "US Dollar";
@@ -293,5 +358,3 @@
 "currency_latvian_lats" = "Latvian Lats";
 "currency_zambian_kwacha_old" = "Zambian Kwacha (Old)";
 "currency_zimbabwean_dollar" = "Zimbabwean Dollar";
-
-"KGS_symbol" = "KGS";

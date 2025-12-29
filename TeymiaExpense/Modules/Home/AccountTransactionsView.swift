@@ -47,17 +47,14 @@ struct AccountTransactionsView: View {
                 transactionsSection
             }
             .scrollContentBackground(.hidden)
-            .background(.mainBackground)
+            .background(.mainGroupBackground)
             .navigationTitle(account.name)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddTransaction = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                    }
+                CloseToolbarButton()
+                
+                AddToolbarButton {
+                    showingAddTransaction = true
                 }
             }
             .sheet(isPresented: $showingAddTransaction) {
@@ -93,6 +90,7 @@ struct AccountTransactionsView: View {
                         endDate: $endDate
                     )
                 }
+                .padding(10)
             }
         }
         .listRowInsets(EdgeInsets())
@@ -104,7 +102,7 @@ struct AccountTransactionsView: View {
         if filteredTransactions.isEmpty {
             Section {
                 ContentUnavailableView(
-                    "No Transactions",
+                    "no_transactions".localized,
                     systemImage: "magnifyingglass"
                 )
             }
@@ -146,9 +144,9 @@ struct AccountTransactionsView: View {
         let formatter = DateFormatter()
         
         if calendar.isDateInToday(date) {
-            return "Today"
+            return "today".localized
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return "yesterday".localized
         } else {
             formatter.dateStyle = .medium
             return formatter.string(from: date)

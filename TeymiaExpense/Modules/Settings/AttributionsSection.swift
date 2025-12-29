@@ -33,7 +33,7 @@ struct LicenseRow: View {
     let url: String
     let iconSize: CGFloat
     
-    init(iconName: String, name: String, attribution: String, url: String, iconSize: CGFloat = 26) {
+    init(iconName: String, name: String, attribution: String, url: String, iconSize: CGFloat = 20) {
         self.iconName = iconName
         self.name = name
         self.attribution = attribution
@@ -69,8 +69,7 @@ struct LicenseRow: View {
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tertiary)
             }
-            .padding(.leading, 8)
-            .padding(.vertical, 6)
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

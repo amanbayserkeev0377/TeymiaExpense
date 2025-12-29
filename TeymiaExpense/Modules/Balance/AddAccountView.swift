@@ -40,7 +40,7 @@ struct AddAccountView: View {
                 // Card Preview Section
                 Section {
                     AccountCardPreview(
-                        name: accountName.isEmpty ? (isEditMode ? editingAccount?.name ?? "Account Name" : "Account Name") : accountName,
+                        name: accountName.isEmpty ? (isEditMode ? editingAccount?.name ?? "account_name".localized : "account_name".localized) : accountName,
                         balance: initialBalance.isEmpty ? (isEditMode ? String(describing: editingAccount?.balance ?? 0) : "0") : initialBalance,
                         designType: selectedDesignType,
                         designIndex: selectedDesignIndex,
@@ -58,7 +58,7 @@ struct AddAccountView: View {
                 // Account Details
                 Section {
                     HStack {
-                        TextField("Account Name", text: $accountName)
+                        TextField("account_name".localized, text: $accountName)
                             .autocorrectionDisabled()
                             .focused($isAccountNameFocused)
                             .submitLabel(.next)
@@ -86,7 +86,7 @@ struct AddAccountView: View {
                     .contentShape(Rectangle())
                     
                     HStack {
-                        TextField(isEditMode ? "Current Balance" : "Initial Balance", text: $initialBalance)
+                        TextField(isEditMode ? "current_balance".localized : "initial_balance".localized, text: $initialBalance)
                             .keyboardType(.decimalPad)
                             .focused($isInitialBalanceFocused)
                             .submitLabel(.done)
@@ -126,7 +126,7 @@ struct AddAccountView: View {
                                 .frame(width: 24, height: 24)
                                 .foregroundStyle(.primary)
                             
-                            Text("Currency")
+                            Text("currency".localized)
                                 .foregroundStyle(.primary)
                             
                             Spacer()
@@ -147,7 +147,7 @@ struct AddAccountView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.mainGroupBackground.ignoresSafeArea())
-            .navigationTitle(isEditMode ? "Edit Account" : "Add Account")
+            .navigationTitle(isEditMode ? "edit_account" : "add_account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbarButton()

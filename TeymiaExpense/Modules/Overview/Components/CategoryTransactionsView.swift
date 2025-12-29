@@ -81,7 +81,7 @@ struct CategoryTransactionsView: View {
             if filteredTransactions.isEmpty {
                 Section {
                     ContentUnavailableView(
-                        "No Transactions",
+                        "no_transactions".localized,
                         systemImage: "magnifyingglass"
                     )
                 }
@@ -138,9 +138,9 @@ struct CategoryTransactionsView: View {
         let calendar = Calendar.current
         
         if calendar.isDateInToday(date) {
-            return "Today"
+            return "today".localized
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return "yesterday".localized
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium

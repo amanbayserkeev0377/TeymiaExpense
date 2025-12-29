@@ -75,16 +75,16 @@ extension Category {
     
     private static func createExpenseCategories(context: ModelContext) {
         let expenseCategories: [(String, String)] = [
-            ("Other", "other"),
-            ("Groceries", "groceries"),
-            ("Cafe", "fork.knife"),
-            ("Transport", "transport"),
-            ("Shopping", "shopping"),
-            ("Entertainment", "cinema"),
-            ("Health", "health"),
-            ("Housing", "housing"),
-            ("Education", "education"),
-            ("Family", "family"),
+            ("other".localized, "other"),
+            ("groceries".localized, "groceries"),
+            ("cafe".localized, "fork.knife"),
+            ("transport".localized, "transport"),
+            ("shopping".localized, "shopping"),
+            ("entertainment".localized, "cinema"),
+            ("health".localized, "health"),
+            ("housing".localized, "housing"),
+            ("education".localized, "education"),
+            ("family".localized, "family"),
         ]
         
         for (index, (name, icon)) in expenseCategories.enumerated() {
@@ -105,12 +105,12 @@ extension Category {
     
     private static func createIncomeCategories(context: ModelContext) {
         let incomeCategories: [(String, String)] = [
-            ("Salary", "salary"),
-            ("Gift", "gift"),
-            ("Bonuses", "bonuses"),
-            ("Business", "business"),
-            ("Investment", "investment"),
-            ("Other", "other")
+            ("salary".localized, "salary"),
+            ("gift".localized, "gift"),
+            ("bonuses".localized, "bonuses"),
+            ("business".localized, "business"),
+            ("investment".localized, "investment"),
+            ("other".localized, "other")
         ]
         
         for (index, (name, icon)) in incomeCategories.enumerated() {

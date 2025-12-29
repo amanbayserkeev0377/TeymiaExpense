@@ -1,1 +1,360 @@
-///
+/* ========================================================================= */
+/* 1. MAIN NAVIGATION                         */
+/* ========================================================================= */
+
+"home" = "Главная";
+"balance" = "Баланс";
+"overview" = "Обзор";
+"settings" = "Настройки";
+"today" = "Сегодня";
+"yesterday" = "Вчера";
+
+
+/* ========================================================================= */
+/* 2. ONBOARDING & FEATURES                   */
+/* ========================================================================= */
+
+"welcome_to" = "Добро пожаловать в";
+"continue" = "Продолжить";
+"onboarding_privacy_disclaimer" = "Ваши финансовые данные остаются только на устройстве и никогда не передаются";
+
+/* Onboarding Features */
+"onboarding_feature_1_title" = "Оставайтесь организованными";
+"onboarding_feature_1_description" = "Категоризируйте расходы и отслеживайте, куда уходят деньги";
+"onboarding_feature_2_title" = "Несколько счетов";
+"onboarding_feature_2_description" = "Управляйте всеми счетами в одном месте";
+"onboarding_feature_3_title" = "Поддержка множества валют";
+"onboarding_feature_3_description" = "Учитывайте расходы в более чем 200 фиатных и криптовалютах";
+
+
+/* ========================================================================= */
+/* 3. EMPTY STATES & STATUS MESSAGES          */
+/* ========================================================================= */
+
+"no_transactions" = "Нет транзакций";
+"no_accounts" = "Нет счетов";
+"no_categories" = "Нет категорий";
+"no_categories_description" = "Нажмите + чтобы добавить категорию";
+"no_hidden_transactions" = "Нет скрытых транзакций";
+
+
+/* ========================================================================= */
+/* 4. TRANSACTION & ACCOUNT FORMS             */
+/* ========================================================================= */
+
+"expense" = "Расход";
+"expenses" = "Расходы";
+"income" = "Доход";
+"main_account" = "Основной счёт";
+"photo" = "Фото";
+"color" = "Цвет";
+
+/* Transaction Types */
+"transaction_type_expense" = "Расход";
+"transaction_type_income" = "Доход";
+"transaction_type_transfer" = "Перевод";
+"transfer_to" = "Перевод на";
+"transfer_from" = "Перевод с";
+
+/* Data Fields & Labels */
+"icon" = "Иконка";
+"category" = "Категория";
+"account" = "Счёт";
+"date" = "Дата";
+"note" = "Заметка";
+"design" = "Оформление";
+"currency" = "Валюта";
+"fiat" = "Фиат";
+"crypto" = "Крипто";
+"select_currency" = "Выберите валюту";
+"total" = "Всего";
+"week" = "Неделя";
+"month" = "Месяц";
+"year" = "Год";
+"start" = "Начало";
+"end" = "Конец";
+
+/* Form Titles & Actions */
+"new_transaction" = "Новая транзакция";
+"edit_transaction" = "Редактировать транзакцию";
+"add_account" = "Добавить счёт";
+"edit_account" = "Редактировать счёт";
+"new_category" = "Новая категория";
+"edit_category" = "Редактировать категорию";
+
+/* Field Labels */
+"account_name" = "Название счёта";
+"current_balance" = "Текущий баланс";
+"initial_balance" = "Начальный баланс";
+"category_name" = "Название категории";
+
+
+/* ========================================================================= */
+/* 5. CATEGORIES & GROUPS                     */
+/* ========================================================================= */
+
+"other" = "Прочее";
+"groceries" = "Продукты";
+"cafe" = "Кафе";
+"transport" = "Транспорт";
+"shopping" = "Покупки";
+"entertainment" = "Развлечения";
+"health" = "Здоровье";
+"housing" = "Жильё";
+"education" = "Образование";
+"family" = "Семья";
+"salary" = "Зарплата";
+"gift" = "Подарок";
+"bonuses" = "Бонусы";
+"business" = "Бизнес";
+"investment" = "Инвестиции";
+
+
+/* ========================================================================= */
+/* 6. ACTIONS & ALERTS                        */
+/* ========================================================================= */
+
+"save" = "Сохранить";
+"cancel" = "Отмена";
+"delete" = "Удалить";
+"select_all" = "Выбрать все";
+"deselect_all" = "Снять выделение";
+"unhide" = "Показать";
+"create_second_account" = "Создать второй счёт";
+
+/* Delete Buttons & Counters */
+"delete_count_button_label" = "Удалить (%lld)";
+"alert_delete_category" = "Удалить категорию?";
+
+/* Account Deletion Alerts */
+"account_delete_alert" = "Вы уверены что хотите удалить счёт?";
+"account_delete_alert_txn" = "На этом счёте %lld транзакций. При удалении счёта все связанные транзакции тоже будут удалены.";
+
+/* Transaction Deletion Alerts */
+"transaction_delete_alert_single" = "Вы уверены, что хотите удалить эту транзакцию?";
+"transaction_delete_alert_multiple" = "Вы уверены, что хотите удалить выбранные элементы? (%lld)";
+
+/* Category Deletion Alerts */
+"category_delete_alert_single_no_txn" = "Категория «%@» будет удалена.";
+"category_delete_alert_single_with_txn" = "В категории «%@» есть %lld транзакций. Они останутся, но будут без категории.";
+"category_delete_alert_multiple_no_txn" = "Вы уверены, что хотите удалить %lld категорий?";
+"category_delete_alert_multiple_with_txn" = "Вы уверены, что хотите удалить %lld категорий? В них всего %lld транзакций — они останутся, но будут без категории.";
+
+
+/* ========================================================================= */
+/* 7. SETTINGS & SUPPORT                      */
+/* ========================================================================= */
+
+/* Main Settings Menu */
+"categories" = "Категории";
+"icloud" = "iCloud";
+"hidden_transactions" = "Скрытые транзакции";
+"language" = "Язык";
+
+/* Appearance Settings */
+"appearance" = "Оформление";
+"appearance_mode" = "Режим оформления";
+"appearance_dark" = "Тёмная";
+"appearance_light" = "Светлая";
+"appearance_system" = "Как в системе";
+"app_color" = "Цвет приложения";
+"app_icon" = "Иконка приложения";
+
+/* Legal & Info */
+"terms_of_service" = "Условия использования";
+"privacy_policy" = "Политика конфиденциальности";
+"attributions" = "Атрибуция";
+"version" = "версия";
+"made_with" = "Сделано с";
+"in_kyrgyzstan" = "в Кыргызстане";
+
+/* Tips / Support */
+"buy_me_a_matcha" = "Поддержать приложение";
+"tips_title" = "Все функции Teymia Expense бесплатны";
+"tips_description" = "Вы можете оставить чаевые, чтобы поддержать дальнейшую разработку и будущие обновления.";
+"apple" = "Яблоко";
+"matcha" = "Матча";
+"salad" = "Салат";
+"bowl" = "Боул";
+"tip_mini" = "Мини";
+"tip" = "Чаевые";
+"tip_pro" = "Про";
+"tip_max" = "Макс";
+"thanks" = "Спасибо!";
+"thanks_title" = "Каждые чаевые помогают Teymia Expense расти и оставаться бесплатным.";
+
+/* ========================================================================= */
+/* 8. CURRENCIES & SYMBOLS                    */
+/* ========================================================================= */
+
+/* Major Global Currencies (Tier 1) */
+"currency_us_dollar" = "Доллар США";
+"currency_euro" = "Евро";
+"currency_japanese_yen" = "Японская иена";
+"currency_british_pound" = "Британский фунт";
+"currency_chinese_yuan" = "Китайский юань";
+"currency_australian_dollar" = "Австралийский доллар";
+"currency_canadian_dollar" = "Канадский доллар";
+"currency_swiss_franc" = "Швейцарский франк";
+"currency_hong_kong_dollar" = "Гонконгский доллар";
+"currency_singapore_dollar" = "Сингапурский доллар";
+
+/* Regional Powerhouses (Tier 2) */
+"currency_new_zealand_dollar" = "Новозеландский доллар";
+"currency_swedish_krona" = "Шведская крона";
+"currency_norwegian_krone" = "Норвежская крона";
+"currency_danish_krone" = "Датская крона";
+"currency_south_korean_won" = "Южнокорейская вона";
+"currency_indian_rupee" = "Индийская рупия";
+"currency_brazilian_real" = "Бразильский реал";
+"currency_mexican_peso" = "Мексиканское песо";
+"currency_south_african_rand" = "Южноафриканский рэнд";
+"currency_russian_ruble" = "Российский рубль";
+
+/* Other Currencies (Tier 3) - Alphabetical */
+"currency_uae_dirham" = "Дирхам ОАЭ";
+"currency_afghan_afghani" = "Афганский афгани";
+"currency_albanian_lek" = "Албанский лек";
+"currency_armenian_dram" = "Армянский драм";
+"currency_netherlands_antillean_guilder" = "Нидерландский антильский гульден";
+"currency_angolan_kwanza" = "Ангольская кванза";
+"currency_argentine_peso" = "Аргентинское песо";
+"currency_aruban_florin" = "Арубанский флорин";
+"currency_azerbaijani_manat" = "Азербайджанский манат";
+"currency_bosnia_herzegovina_convertible_mark" = "Конвертируемая марка Боснии и Герцеговины";
+"currency_barbadian_dollar" = "Барбадосский доллар";
+"currency_bangladeshi_taka" = "Бангладешская така";
+"currency_bulgarian_lev" = "Болгарский лев";
+"currency_bahraini_dinar" = "Бахрейнский динар";
+"currency_burundian_franc" = "Бурундийский франк";
+"currency_bermudian_dollar" = "Бермудский доллар";
+"currency_brunei_dollar" = "Брунейский доллар";
+"currency_bolivian_boliviano" = "Боливийский боливиано";
+"currency_bahamian_dollar" = "Багамский доллар";
+"currency_bhutanese_ngultrum" = "Бутанский нгултрум";
+"currency_botswanan_pula" = "Ботсванская пула";
+"currency_belarusian_ruble" = "Белорусский рубль";
+"currency_belize_dollar" = "Белизский доллар";
+"currency_congolese_franc" = "Конголезский франк";
+"currency_chilean_peso" = "Чилийское песо";
+"currency_colombian_peso" = "Колумбийское песо";
+"currency_costa_rican_colon" = "Костариканский колон";
+"currency_cuban_convertible_peso" = "Кубинский конвертируемый песо";
+"currency_cuban_peso" = "Кубинское песо";
+"currency_cape_verdean_escudo" = "Эскудо Кабо-Верде";
+"currency_czech_koruna" = "Чешская крона";
+"currency_djiboutian_franc" = "Джибутийский франк";
+"currency_dominican_peso" = "Доминиканское песо";
+"currency_algerian_dinar" = "Алжирский динар";
+"currency_egyptian_pound" = "Египетский фунт";
+"currency_eritrean_nakfa" = "Эритрейская накфа";
+"currency_ethiopian_birr" = "Эфиопский быр";
+"currency_fijian_dollar" = "Фиджийский доллар";
+"currency_falkland_islands_pound" = "Фунт Фолклендских островов";
+"currency_faroese_krona" = "Фарерская крона";
+"currency_georgian_lari" = "Грузинский лари";
+"currency_guernsey_pound" = "Гернсийский фунт";
+"currency_ghanaian_cedi" = "Ганский седи";
+"currency_gibraltar_pound" = "Гибралтарский фунт";
+"currency_gambian_dalasi" = "Гамбийский даласи";
+"currency_guinean_franc" = "Гвинейский франк";
+"currency_guatemalan_quetzal" = "Гватемальский кетсаль";
+"currency_guyanaese_dollar" = "Гайанский доллар";
+"currency_honduran_lempira" = "Гондурасская лемпира";
+"currency_croatian_kuna" = "Хорватская куна";
+"currency_haitian_gourde" = "Гаитянский гурд";
+"currency_hungarian_forint" = "Венгерский форинт";
+"currency_indonesian_rupiah" = "Индонезийская рупия";
+"currency_israeli_shekel" = "Израильский шекель";
+"currency_manx_pound" = "Фунт острова Мэн";
+"currency_iraqi_dinar" = "Иракский динар";
+"currency_iranian_rial" = "Иранский риал";
+"currency_icelandic_krona" = "Исландская крона";
+"currency_jersey_pound" = "Джерсийский фунт";
+"currency_jamaican_dollar" = "Ямайский доллар";
+"currency_jordanian_dinar" = "Иорданский динар";
+"currency_kenyan_shilling" = "Кенийский шиллинг";
+"currency_kyrgyzstani_som" = "Кыргызский сом";
+"currency_cambodian_riel" = "Камбоджийский риель";
+"currency_kiribati_dollar" = "Доллар Кирибати";
+"currency_comorian_franc" = "Коморский франк";
+"currency_north_korean_won" = "Северокорейская вона";
+"currency_kuwaiti_dinar" = "Кувейтский динар";
+"currency_cayman_islands_dollar" = "Доллар Каймановых островов";
+"currency_kazakhstani_tenge" = "Казахстанский тенге";
+"currency_laotian_kip" = "Лаосский кип";
+"currency_lebanese_pound" = "Ливанский фунт";
+"currency_sri_lankan_rupee" = "Шри-ланкийская рупия";
+"currency_liberian_dollar" = "Либерийский доллар";
+"currency_lesotho_loti" = "Лоти Лесото";
+"currency_libyan_dinar" = "Ливийский динар";
+"currency_moroccan_dirham" = "Марокканский дирхам";
+"currency_moldovan_leu" = "Молдавский лей";
+"currency_malagasy_ariary" = "Малагасийский ариари";
+"currency_macedonian_denar" = "Македонский денар";
+"currency_myanmar_kyat" = "Мьянманский кьят";
+"currency_mongolian_tugrik" = "Монгольский тугрик";
+"currency_macanese_pataca" = "Макао патака";
+"currency_mauritanian_ouguiya" = "Мавританская угия";
+"currency_mauritian_rupee" = "Маврикийская рупия";
+"currency_maldivian_rufiyaa" = "Мальдивская руфия";
+"currency_malawian_kwacha" = "Малавийская квача";
+"currency_malaysian_ringgit" = "Малайзийский ринггит";
+"currency_mozambican_metical" = "Мозамбикский метикал";
+"currency_namibian_dollar" = "Намибийский доллар";
+"currency_nigerian_naira" = "Нигерийская найра";
+"currency_nicaraguan_cordoba" = "Никарагуанская кордоба";
+"currency_nepalese_rupee" = "Непальская рупия";
+"currency_omani_rial" = "Оманский риал";
+"currency_panamanian_balboa" = "Панамский бальбоа";
+"currency_peruvian_sol" = "Перуанский соль";
+"currency_papua_new_guinean_kina" = "Кина Папуа — Новой Гвинеи";
+"currency_philippine_peso" = "Филиппинское песо";
+"currency_pakistani_rupee" = "Пакистанская рупия";
+"currency_polish_zloty" = "Польский злотый";
+"currency_paraguayan_guarani" = "Парагвайский гуарани";
+"currency_qatari_riyal" = "Катарский риял";
+"currency_romanian_leu" = "Румынский лей";
+"currency_serbian_dinar" = "Сербский динар";
+"currency_rwandan_franc" = "Руандийский франк";
+"currency_saudi_riyal" = "Саудовский риял";
+"currency_solomon_islands_dollar" = "Доллар Соломоновых Островов";
+"currency_seychellois_rupee" = "Сейшельская рупия";
+"currency_sudanese_pound" = "Суданский фунт";
+"currency_saint_helena_pound" = "Фунт острова Святой Елены";
+"currency_sierra_leonean_leone" = "Сьерра-леонский леоне";
+"currency_somali_shilling" = "Сомалийский шиллинг";
+"currency_surinamese_dollar" = "Суринамский доллар";
+"currency_south_sudanese_pound" = "Южносуданский фунт";
+"currency_sao_tome_and_principe_dobra" = "Добра Сан-Томе и Принсипи";
+"currency_salvadoran_colon" = "Сальвадорский колон";
+"currency_syrian_pound" = "Сирийский фунт";
+"currency_swazi_lilangeni" = "Свазилендский лилангени";
+"currency_thai_baht" = "Тайский бат";
+"currency_tajikistani_somoni" = "Таджикский сомони";
+"currency_turkmenistan_manat" = "Туркменский манат";
+"currency_tunisian_dinar" = "Тунисский динар";
+"currency_tongan_paanga" = "Тонганская паанга";
+"currency_turkish_lira" = "Турецкая лира";
+"currency_trinidad_and_tobago_dollar" = "Доллар Тринидада и Тобаго";
+"currency_tuvaluan_dollar" = "Доллар Тувалу";
+"currency_taiwan_new_dollar" = "Новый тайваньский доллар";
+"currency_tanzanian_shilling" = "Танзанийский шиллинг";
+"currency_ukrainian_hryvnia" = "Украинская гривна";
+"currency_ugandan_shilling" = "Угандийский шиллинг";
+"currency_uruguayan_peso" = "Уругвайское песо";
+"currency_uzbekistani_som" = "Узбекский сум";
+"currency_venezuelan_bolivar" = "Венесуэльский боливар";
+"currency_vietnamese_dong" = "Вьетнамский донг";
+"currency_vanuatu_vatu" = "Вануатский вату";
+"currency_samoan_tala" = "Самоанская тала";
+"currency_central_african_cfa_franc" = "Франк КФА Центральной Африки";
+"currency_east_caribbean_dollar" = "Восточнокарибский доллар";
+"currency_west_african_cfa_franc" = "Франк КФА Западной Африки";
+"currency_cfp_franc" = "Франк КФП";
+"currency_yemeni_rial" = "Йеменский риал";
+"currency_zambian_kwacha" = "Замбийская квача";
+"currency_lithuanian_litas" = "Литовский лит";
+"currency_latvian_lats" = "Латвийский лат";
+"currency_zambian_kwacha_old" = "Замбийская квача (старая)";
+"currency_zimbabwean_dollar" = "Зимбабвийский доллар";

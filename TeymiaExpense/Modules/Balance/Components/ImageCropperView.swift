@@ -83,7 +83,7 @@ struct ImageCropperView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .ignoresSafeArea(.all)
-            .navigationTitle("Crop Image")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

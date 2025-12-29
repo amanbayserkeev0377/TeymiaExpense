@@ -117,7 +117,7 @@ struct OverviewView: View {
     private var expensesSection: some View {
         if !expenseCategoriesWithTransactions.isEmpty {
             OverviewCategorySection(
-                title: "Expenses",
+                title: "expenses".localized,
                 total: totalExpenses,
                 color: Color("ExpenseColor"),
                 categories: expenseCategoriesWithTransactions,
@@ -133,7 +133,7 @@ struct OverviewView: View {
     private var incomeSection: some View {
         if !incomeCategoriesWithTransactions.isEmpty {
             OverviewCategorySection(
-                title: "Income",
+                title: "income".localized,
                 total: totalIncome,
                 color: Color("IncomeColor"),
                 categories: incomeCategoriesWithTransactions,
@@ -149,7 +149,7 @@ struct OverviewView: View {
     private var emptyStateSection: some View {
         if expenseCategoriesWithTransactions.isEmpty && incomeCategoriesWithTransactions.isEmpty {
             ContentUnavailableView(
-                "No Transactions",
+                "no_transactions".localized,
                 systemImage: "magnifyingglass"
             )
         }

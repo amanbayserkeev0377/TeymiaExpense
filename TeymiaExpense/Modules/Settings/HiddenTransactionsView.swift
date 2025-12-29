@@ -29,9 +29,8 @@ struct HiddenTransactionsView: View {
         List(selection: $selectedTransactions) {
             if hiddenTransactions.isEmpty {
                 ContentUnavailableView(
-                    "No Hidden Transactions",
-                    systemImage: "eye.slash",
-                    description: Text("Hidden transactions will appear here")
+                    "no_hidden_transactions".localized,
+                    systemImage: "eye.slash"
                 )
                 .listRowBackground(Color.clear)
             } else {
@@ -198,9 +197,11 @@ struct HiddenTransactionsView: View {
         let transactionsToDelete = Array(selectedTransactions)
         
         if transactionsToDelete.count == 1 {
-            deleteAlertMessage = "transaction_delete_message_single".localized
+            deleteAlertMessage = "transaction_delete_alert_single".localized
         } else {
-            deleteAlertMessage = String(format: "transaction_delete_message_multiple".localized, transactionsToDelete.count)
+            deleteAlertMessage = "transaction_delete_alert_multiple".localized(
+                with: transactionsToDelete.count
+            )
         }
         
         pendingDeleteAction = {

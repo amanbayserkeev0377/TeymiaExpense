@@ -12,7 +12,7 @@ struct DateFilterView: View {
                 Image("calendar.week")
                     .resizable()
                     .frame(width: 18, height: 18)
-                Text("Week")
+                Text("week".localized)
                 .foregroundStyle(.primary)
                 Spacer()
             }
@@ -26,7 +26,7 @@ struct DateFilterView: View {
                 Image("calendar.month")
                     .resizable()
                     .frame(width: 18, height: 18)
-                Text("Month")
+                Text("month".localized)
                 .foregroundStyle(.primary)
                 Spacer()
             }
@@ -40,7 +40,7 @@ struct DateFilterView: View {
                 Image("calendar.year")
                     .resizable()
                     .frame(width: 18, height: 18)
-                Text("Year")
+                Text("year".localized)
                 .foregroundStyle(.primary)
                 Spacer()
             }
@@ -57,7 +57,7 @@ struct DateFilterView: View {
                 Image("calendar.custom")
                     .resizable()
                     .frame(width: 18, height: 18)
-                DatePicker("Start", selection: $startDate, displayedComponents: [.date])
+                DatePicker("start".localized, selection: $startDate, displayedComponents: [.date])
                     .datePickerStyle(.compact)
             }
             
@@ -65,7 +65,7 @@ struct DateFilterView: View {
                 Image("calendar.custom")
                     .resizable()
                     .frame(width: 18, height: 18)
-                DatePicker("End", selection: $endDate, displayedComponents: [.date])
+                DatePicker("end".localized, selection: $endDate, displayedComponents: [.date])
                     .datePickerStyle(.compact)
             }
         }
@@ -162,15 +162,15 @@ fileprivate extension View {
         } else {
             self
                 .buttonStyle(.borderless)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
                 .background {
                     TransparentBlurView(removeAllFilters: true)
                         .blur(radius: 2, opaque: true)
                         .background(Color.mainRowBackground.opacity(0.2))
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .shadow(color: .black.opacity(0.08), radius: 10)
+                .shadow(color: .black.opacity(0.08), radius: 8)
         }
     }
 }

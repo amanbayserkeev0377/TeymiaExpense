@@ -35,7 +35,7 @@ struct SettingsView: View {
                     CurrencySettingsView()
                 } label: {
                     Label {
-                        Text("currencies".localized)
+                        Text("currency".localized)
                     } icon: {
                         Image("usd.circle")
                             .settingsIcon()
@@ -161,9 +161,9 @@ struct SettingsView: View {
                             .multilineTextAlignment(.center)
                         
                         HStack(spacing: 4) {
-                            Text("Made with")
+                            Text("made_with".localized)
                             Image(systemName: "heart.fill")
-                            Text("in Kyrgyzstan")
+                            Text("in_kyrgyzstan")
                             Text("🇰🇬")
                         }
                         .font(.footnote)
@@ -197,7 +197,7 @@ struct TipsSection: View {
             HStack {
                 Label(
                     title: {
-                        Text("Buy me a matcha")
+                        Text("buy_me_a_matcha".localized)
                             .font(.body)
                             .fontWeight(.medium)
                             .foregroundStyle(

@@ -80,7 +80,7 @@ struct CategoryIconSelectionView: View {
                 }
             }
             .background(Color.mainBackground)
-            .navigationTitle("Icon")
+            .navigationTitle("icon".localized)
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, placement: .automatic)
             .focused($isSearchFocused)

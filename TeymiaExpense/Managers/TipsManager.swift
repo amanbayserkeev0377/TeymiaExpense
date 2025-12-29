@@ -9,10 +9,10 @@ struct Tip: Identifiable {
     let message: String
     
     static let allTips: [Tip] = [
-        Tip(id: "tip_apple", image: "tip.apple", name: "Apple", message: "Tip mini"),
-        Tip(id: "tip_matcha", image: "tip.matcha", name: "Matcha", message: "Tip"),
-        Tip(id: "tip_salad", image: "tip.salad", name: "Salad", message: "Tip Pro"),
-        Tip(id: "tip_bowl", image: "tip.bowl", name: "Bowl", message: "Tip Pro Max")
+        Tip(id: "tip_apple", image: "tip.apple", name: "apple".localized, message: "tip_mini".localized),
+        Tip(id: "tip_matcha", image: "tip.matcha", name: "matcha".localized, message: "tip".localized),
+        Tip(id: "tip_salad", image: "tip.salad", name: "salad".localized, message: "tip_pro".localized),
+        Tip(id: "tip_bowl", image: "tip.bowl", name: "bowl".localized, message: "tip_max".localized)
     ]
 }
 

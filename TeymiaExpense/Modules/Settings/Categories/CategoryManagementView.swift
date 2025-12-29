@@ -35,9 +35,9 @@ struct CategoryManagementView: View {
     var body: some View {
         List(selection: $selectedCategories) {
             Section {
-                Picker("Type", selection: $selectedType) {
-                    Text("Expense").tag(CategoryType.expense)
-                    Text("Income").tag(CategoryType.income)
+                Picker("", selection: $selectedType) {
+                    Text("expense".localized).tag(CategoryType.expense)
+                    Text("income".localized).tag(CategoryType.income)
                 }
                 .pickerStyle(.segmented)
             }
@@ -47,9 +47,9 @@ struct CategoryManagementView: View {
             if filteredCategories.isEmpty {
                 Section {
                     ContentUnavailableView(
-                        "No categories",
+                        "no_categories".localized,
                         systemImage: "circle.grid.2x2",
-                        description: Text("Tap + to add a category")
+                        description: Text("no_categories_description".localized)
                     )
                 }
                 .listRowBackground(Color.clear)
@@ -102,7 +102,7 @@ struct CategoryManagementView: View {
                             selectedCategories = []
                         }
                     } label: {
-                        Text(selectedCategories.count < filteredCategories.count ? "Select All" : "Deselect All")
+                        Text(selectedCategories.count < filteredCategories.count ? "select_all".localized : "deselect_all".localized)
                             .padding(4)
                     }
                     .buttonStyle(.borderedProminent)
@@ -110,7 +110,7 @@ struct CategoryManagementView: View {
                     Button(role: .destructive) {
                         confirmDeleteSelectedCategories()
                     } label: {
-                        Text("Delete (\(selectedCategories.count))")
+                        Text("delete_count_button_label".localized(with: selectedCategories.count))
                             .padding(4)
                     }
                     .tint(.red)
@@ -133,11 +133,11 @@ struct CategoryManagementView: View {
                 CategoryFormView(editingCategory: category)
             }
         }
-        .alert("Delete Category?", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) {
+        .alert("alert_delete_category".localized, isPresented: $showingDeleteAlert) {
+            Button("cancel".localized, role: .cancel) {
                 pendingDeleteAction = nil
             }
-            Button("Delete", role: .destructive) {
+            Button("delete".localized, role: .destructive) {
                 pendingDeleteAction?()
                 pendingDeleteAction = nil
             }
@@ -165,15 +165,25 @@ struct CategoryManagementView: View {
         if categoriesToDelete.count == 1 {
             let category = categoriesToDelete.first!
             if totalTransactions > 0 {
-                deleteAlertMessage = "Category \"\(category.name)\" has \(totalTransactions) transactions. They will be kept but unassigned."
+                deleteAlertMessage = "category_delete_alert_single_with_txn".localized(
+                    with: category.name,
+                    totalTransactions
+                )
             } else {
-                deleteAlertMessage = "Category \"\(category.name)\" will be deleted."
+                deleteAlertMessage = "category_delete_alert_single_no_txn".localized(
+                    with: category.name
+                )
             }
         } else {
             if totalTransactions > 0 {
-                deleteAlertMessage = "Are you sure you want to delete \(categoriesToDelete.count) categories? They contain a total of \(totalTransactions) transactions, which will be kept but unassigned."
+                deleteAlertMessage = "category_delete_alert_multiple_with_txn".localized(
+                    with: categoriesToDelete.count,
+                    totalTransactions
+                )
             } else {
-                deleteAlertMessage = "Are you sure you want to delete \(categoriesToDelete.count) categories?"
+                deleteAlertMessage = "category_delete_alert_multiple_no_txn".localized(
+                    with: categoriesToDelete.count
+                )
             }
         }
         

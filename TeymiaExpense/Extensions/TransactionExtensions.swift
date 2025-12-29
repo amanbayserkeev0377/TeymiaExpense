@@ -41,7 +41,7 @@ extension Transaction {
                 return "transfer".localized
             }
         }
-        return category?.name ?? "general_category".localized
+        return category?.name ?? ""
     }
     
     /// Get icon name for transaction
@@ -49,7 +49,7 @@ extension Transaction {
         if type == .transfer {
             return "transfer"
         }
-        return category?.iconName ?? "general"
+        return category?.iconName ?? ""
     }
 }
 
