@@ -75,12 +75,9 @@ struct CategoryManagementView: View {
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
         }
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
-        .scrollContentBackground(.hidden)
-        .background(Color.mainGroupBackground)
         .navigationTitle("categories".localized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

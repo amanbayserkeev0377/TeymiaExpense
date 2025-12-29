@@ -45,7 +45,6 @@ struct CardDesignSelectionSection: View {
             }
             .padding(.vertical, 16)
         }
-        .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
         .onChange(of: customImage) { oldValue, newValue in
             if newValue != nil {
@@ -113,7 +112,7 @@ struct CardDesignSelectionSection: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: cornerRadius)
                                 .stroke(
-                                    selectedDesignIndex == -1 ? Color.appTint : Color.clear,
+                                    selectedDesignIndex == -1 ? Color.primary : Color.clear,
                                     lineWidth: lineWidth
                                 )
                         )
@@ -124,11 +123,11 @@ struct CardDesignSelectionSection: View {
                         .overlay {
                             Image(systemName: "plus")
                                 .fontWeight(.semibold)
-                                .foregroundStyle(.appTint)
+                                .foregroundStyle(.primary)
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .strokeBorder(Color.appTint, style: StrokeStyle(lineWidth: 2, dash: [8]))
+                                .strokeBorder(Color.primary, style: StrokeStyle(lineWidth: 2, dash: [8]))
                         )
                 }
             }
@@ -155,7 +154,7 @@ struct CardDesignSelectionSection: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(
-                            (selectedDesignType == .image && selectedDesignIndex == index) ? Color.appTint : Color.clear,
+                            (selectedDesignType == .image && selectedDesignIndex == index) ? Color.primary : Color.clear,
                             lineWidth: lineWidth
                         )
                 )
@@ -180,7 +179,7 @@ struct CardDesignSelectionSection: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(
-                            (selectedDesignType == .color && selectedDesignIndex == index) ? Color.appTint : Color.clear,
+                            (selectedDesignType == .color && selectedDesignIndex == index) ? Color.primary : Color.clear,
                             lineWidth: lineWidth
                         )
                 )

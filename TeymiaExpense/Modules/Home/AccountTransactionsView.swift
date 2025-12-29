@@ -19,7 +19,7 @@ struct AccountTransactionsView: View {
             let belongsToAccount = transaction.account?.id == account.id ||
                                   transaction.toAccount?.id == account.id
             let inDateRange = transaction.date >= startDate && transaction.date <= endDate
-            return belongsToAccount && inDateRange && !transaction.isHidden
+            return belongsToAccount && inDateRange
         }
         .sorted { $0.date > $1.date }
     }
@@ -46,8 +46,6 @@ struct AccountTransactionsView: View {
                 dateFilterHeader
                 transactionsSection
             }
-            .scrollContentBackground(.hidden)
-            .background(.mainGroupBackground)
             .navigationTitle(account.name)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -132,7 +130,6 @@ struct AccountTransactionsView: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(.primary)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
         }
     }

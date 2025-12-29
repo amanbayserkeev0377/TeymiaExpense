@@ -74,13 +74,10 @@ struct CurrencySelectionView: View {
                             selectedCurrency = currency
                             dismiss()
                         }
-                        .listRowBackground(Color.mainRowBackground)
                     }
                 }
             }
             .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
-            .background(Color.mainGroupBackground)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -147,7 +144,7 @@ struct CurrencyRowView: View {
                     Image("check")
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .foregroundStyle(.appTint)
+                        .foregroundStyle(.primary)
                 }
             }
             .padding(.vertical, 2)

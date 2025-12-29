@@ -51,8 +51,6 @@ struct TeymiaExpenseApp: App {
         WindowGroup {
             MainTabView()
                 .environment(userPreferences)
-                .environment(AppColorManager.shared)
-                .environment(AppIconManager.shared)
                 .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
                     TeymiaOnBoardingView() {
                         firstLaunchManager.completeOnboarding()

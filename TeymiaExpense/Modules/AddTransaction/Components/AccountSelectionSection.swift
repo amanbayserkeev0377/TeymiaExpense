@@ -24,7 +24,6 @@ struct AccountSelectionSection: View {
                 }
             }
         }
-        .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
     }
     

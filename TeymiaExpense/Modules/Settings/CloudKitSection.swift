@@ -23,7 +23,6 @@ struct CloudKitSyncView: View {
                     }
                 }
             }
-            .listRowBackground(Color.mainRowBackground)
             
             // Actions Section (only when available)
             if case .available = cloudKitStatus {
@@ -36,7 +35,7 @@ struct CloudKitSyncView: View {
                             Text("Force Sync")
                                 .fontWeight(.medium)
                                 .fontDesign(.rounded)
-                                .foregroundStyle(.appTint)
+                                .foregroundStyle(.primary)
                             
                             Spacer()
                             
@@ -64,7 +63,6 @@ struct CloudKitSyncView: View {
                         }
                     }
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
             
             // Troubleshooting Section (when unavailable)
@@ -82,7 +80,6 @@ struct CloudKitSyncView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
             
             // Error Section
@@ -104,13 +101,12 @@ struct CloudKitSyncView: View {
                             Text("Retry")
                                 .fontWeight(.medium)
                                 .fontDesign(.rounded)
-                                .foregroundStyle(.appTint)
+                                .foregroundStyle(.primary)
                         }
                         .padding(.top, 8)
                     }
                     .padding(.vertical, 4)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
             
             // Restricted Section
@@ -128,11 +124,8 @@ struct CloudKitSyncView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.mainGroupBackground)
         .navigationTitle("iCloud".localized)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

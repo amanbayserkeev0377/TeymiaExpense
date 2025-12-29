@@ -36,7 +36,6 @@ struct TransferAccountsSection: View {
                 }
             }
         }
-        .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
         
         Section("transfer_to".localized) {
@@ -66,7 +65,6 @@ struct TransferAccountsSection: View {
                 }
             }
         }
-        .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
     }
     

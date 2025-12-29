@@ -142,7 +142,7 @@
 		07EE47092DF3E1A000094E07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Bitcoin AppIcon-Cards3 AppIcon-Cards2 AppIcon-Cards AppIcon-Card AppIcon-Dark AppIcon-OneDollar AppIcon-Light AppIcon-Washington AppIcon-ThreeDollars AppIcon-SquareDollar";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Cards AppIcon-OneDollar";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -182,7 +182,7 @@
 		07EE470A2DF3E1A000094E07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Bitcoin AppIcon-Cards3 AppIcon-Cards2 AppIcon-Cards AppIcon-Card AppIcon-Dark AppIcon-OneDollar AppIcon-Light AppIcon-Washington AppIcon-ThreeDollars AppIcon-SquareDollar";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Cards AppIcon-OneDollar";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;

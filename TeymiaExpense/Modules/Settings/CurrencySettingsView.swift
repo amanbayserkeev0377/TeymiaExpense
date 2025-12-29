@@ -23,13 +23,10 @@ struct CurrencySettingsView: View {
                         userPreferences.baseCurrencyCode = currency.code
                         dismiss()
                     }
-                    .listRowBackground(Color.mainRowBackground)
                 }
             }
         }
         .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(Color.mainGroupBackground)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

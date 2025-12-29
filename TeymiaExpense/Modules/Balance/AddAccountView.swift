@@ -102,7 +102,6 @@ struct AddAccountView: View {
                     .contentShape(Rectangle())
                     .buttonStyle(.plain)
                 }
-                .listRowBackground(Color.mainRowBackground)
                 
                 CardDesignSelectionSection(
                     selectedDesignType: $selectedDesignType,
@@ -143,10 +142,7 @@ struct AddAccountView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.mainGroupBackground.ignoresSafeArea())
             .navigationTitle(isEditMode ? "edit_account" : "add_account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

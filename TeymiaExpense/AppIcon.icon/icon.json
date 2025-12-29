@@ -1,17 +1,19 @@
 {
-  "fill" : {
-    "linear-gradient" : [
-      "display-p3:0.29029,0.68318,0.61921,1.00000",
-      "srgb:0.00000,0.41152,0.36856,1.00000"
-    ]
-  },
+  "fill" : "automatic",
   "groups" : [
     {
-      "blur-material" : 0.5,
       "layers" : [
         {
-          "image-name" : "Дизайн без названия-2-Photoroom.png",
-          "name" : "Дизайн без названия-2-Photoroom"
+          "glass" : false,
+          "image-name" : "vecteezy_credit-card-isolated-transparent-background-3d-render-icon_22583342.png",
+          "name" : "vecteezy_credit-card-isolated-transparent-background-3d-render-icon_22583342",
+          "position" : {
+            "scale" : 0.5,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @Environment(AppColorManager.self) private var colorManager
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
     
     var body: some View {
@@ -13,7 +12,6 @@ struct MainTabView: View {
                 Image("home.fill")
                 Text("home".localized)
             }
-            .fontDesign(.rounded)
             
             NavigationStack {
                 BalanceView()
@@ -22,7 +20,6 @@ struct MainTabView: View {
                 Image("balance.fill")
                 Text("balance".localized)
             }
-            .fontDesign(.rounded)
             
             NavigationStack {
                 OverviewView()
@@ -31,7 +28,6 @@ struct MainTabView: View {
                 Image("overview.fill")
                 Text("overview".localized)
             }
-            .fontDesign(.rounded)
             
             NavigationStack {
                 SettingsView()
@@ -40,10 +36,10 @@ struct MainTabView: View {
                 Image("settings.fill")
                 Text("settings".localized)
             }
-            .fontDesign(.rounded)
         }
+        .fontDesign(.rounded)
         .preferredColorScheme(themeMode.colorScheme)
-        .tint(colorManager.currentTintColor)
+        .tint(.primary)
     }
 }
 

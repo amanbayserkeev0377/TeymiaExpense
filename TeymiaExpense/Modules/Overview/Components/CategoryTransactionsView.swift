@@ -20,7 +20,6 @@ struct CategoryTransactionsView: View {
         let endOfEndDate = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
         
         return (category.transactions ?? []).filter { transaction in
-            !transaction.isHidden &&
             transaction.date >= startOfStartDate &&
             transaction.date < endOfEndDate
         }.sorted { $0.date > $1.date }
@@ -75,7 +74,6 @@ struct CategoryTransactionsView: View {
                 }
                 .padding(.vertical, 8)
             }
-            .listRowBackground(Color.mainRowBackground)
             
             // Transactions List
             if filteredTransactions.isEmpty {
@@ -119,12 +117,9 @@ struct CategoryTransactionsView: View {
                             .foregroundStyle(.primary)
                             .textCase(nil)
                     }
-                    .listRowBackground(Color.mainRowBackground)
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.mainBackground)
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $editingTransaction) { transaction in

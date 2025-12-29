@@ -51,7 +51,7 @@ extension View {
     @ViewBuilder
     func applyGlassEffect() -> some View {
         if #available(iOS 26.0, *) {
-            self.glassEffect(.regular.tint(Color.appTint).interactive(), in: .circle)
+            self.glassEffect(.regular.tint(Color.primary).interactive(), in: .circle)
         } else {
             self.background {
                 ZStack {
@@ -61,7 +61,7 @@ extension View {
                     
                     // Color overlay
                     Circle()
-                        .fill(Color.appTint.opacity(0.7))
+                        .fill(Color.primary.opacity(0.7))
                 }
                 .clipShape(Circle())
             }

@@ -9,11 +9,8 @@ struct HomeView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var currencies: [Currency]
     @Query(sort: \Account.sortOrder) private var accounts: [Account]
-    @Query(
-        filter: #Predicate<Transaction> { !$0.isHidden },
-        sort: \Transaction.date,
-        order: .reverse
-    ) private var allTransactions: [Transaction]
+    @Query(sort: \Transaction.date, order: .reverse)
+    private var allTransactions: [Transaction]
     
     @State private var showingAddTransaction = false
     @State private var editingTransaction: Transaction?
@@ -112,13 +109,6 @@ struct HomeView: View {
                                                     Label("", image: "trash.swipe")
                                                 }
                                                 .tint(.red)
-                                                
-                                                Button {
-                                                    hideTransaction(transaction)
-                                                } label: {
-                                                    Label("", image: "eye.swipe")
-                                                }
-                                                .tint(.gray)
                                             }
                                             .contentShape(Rectangle())
                                             .onTapGesture {
@@ -179,13 +169,6 @@ struct HomeView: View {
     }
     
     // MARK: - Transaction Actions
-    
-    private func hideTransaction(_ transaction: Transaction) {
-        withAnimation(.snappy) {
-            transaction.isHidden = true
-            try? modelContext.save()
-        }
-    }
     
     private func deleteTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {

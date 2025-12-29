@@ -92,7 +92,6 @@ struct AddTransactionView: View {
                         }
                         .contentShape(Rectangle())
                     }
-                    .listRowBackground(Color.mainRowBackground)
                     
                     // Account/Transfer Section
                     if selectedType == .transfer {
@@ -118,7 +117,6 @@ struct AddTransactionView: View {
                                 colorScheme: colorScheme
                             )
                         }
-                        .listRowBackground(Color.mainRowBackground)
                         .listRowInsets(EdgeInsets())
                     }
                     
@@ -130,8 +128,6 @@ struct AddTransactionView: View {
                         .listRowBackground(Color.clear)
                 }
                 .scrollDismissesKeyboard(.immediately)
-                .scrollContentBackground(.hidden)
-                .background(Color.mainGroupBackground)
                 
                 // Floating button
                 if isInitialized {
@@ -343,11 +339,11 @@ struct FloatingSaveButton: View {
     let action: () -> Void
     
     private var buttonColor: Color {
-        isEnabled ? .appTint : .gray.opacity(0.3)
+        isEnabled ? .primary : .gray.opacity(0.3)
     }
     
     private var shadowColor: Color {
-        isEnabled ? .appTint.opacity(0.3) : .clear
+        isEnabled ? .primary.opacity(0.3) : .clear
     }
     
     private var textColor: Color {

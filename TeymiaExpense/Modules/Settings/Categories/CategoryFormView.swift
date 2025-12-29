@@ -96,10 +96,7 @@ struct CategoryFormView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .listRowBackground(Color.mainRowBackground)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.mainGroupBackground)
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

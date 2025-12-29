@@ -7,7 +7,6 @@ final class Transaction {
     var note: String? = nil
     var date: Date = Date()
     private var typeRawValue: String = "expense"
-    var isHidden: Bool = false
     var createdAt: Date = Date()
     var type: TransactionType {
         get { TransactionType(rawValue: typeRawValue) ?? .expense }
@@ -26,13 +25,11 @@ final class Transaction {
         category: Category? = nil,
         account: Account? = nil,
         toAccount: Account? = nil,
-        isHidden: Bool = false
     ) {
         self.amount = amount
         self.note = note
         self.date = date
         self.typeRawValue = type.rawValue
-        self.isHidden = isHidden
         self.category = category
         self.account = account
         self.toAccount = toAccount

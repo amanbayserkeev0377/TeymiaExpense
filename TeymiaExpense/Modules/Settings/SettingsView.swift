@@ -5,13 +5,13 @@ struct SettingsView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
     @State private var changeTheme = false
+    @Environment(\.openURL) var openURL
     
     var body: some View {
         List {
             Section {
                 TipsSection()
             }
-            .listRowBackground(Color.mainRowBackground)
             
             Section {
                 NavigationLink {
@@ -20,13 +20,12 @@ struct SettingsView: View {
                     Label {
                         Text("categories".localized)
                     } icon: {
-                        Image("categories")
-                            .settingsIcon()
+                        Image(systemName: "square.grid.2x2.fill")
+                            .settingsIcon(color: .orange)
                     }
                 }
             }
-            .listRowBackground(Color.mainRowBackground)
-
+            
             
             Section {
                 LanguageSection()
@@ -37,8 +36,8 @@ struct SettingsView: View {
                     Label {
                         Text("currency".localized)
                     } icon: {
-                        Image("usd.circle")
-                            .settingsIcon()
+                        Image(systemName: "coloncurrencysign.circle.fill")
+                            .settingsIcon(color: .green)
                     }
                 }
                 
@@ -48,8 +47,8 @@ struct SettingsView: View {
                     Label {
                         Text("appearance".localized)
                     } icon: {
-                        Image("paintbrush")
-                            .settingsIcon()
+                        Image(systemName: "paintbrush.fill")
+                            .settingsIcon(color: .blue)
                     }
                 }
                 
@@ -59,23 +58,11 @@ struct SettingsView: View {
                     Label {
                         Text("icloud".localized)
                     } icon: {
-                        Image("cloud.upload")
-                            .settingsIcon()
-                    }
-                }
-                
-                NavigationLink {
-                    HiddenTransactionsView()
-                } label: {
-                    Label {
-                        Text("hidden_transactions".localized)
-                    } icon: {
-                        Image("eye.crossed")
-                            .settingsIcon()
+                        Image(systemName: "icloud.fill")
+                            .settingsIcon(color: .cyan)
                     }
                 }
             }
-            .listRowBackground(Color.mainRowBackground)
             
             Section {
                 Button {
@@ -86,8 +73,8 @@ struct SettingsView: View {
                     Label(
                         title: { Text("privacy_policy".localized) },
                         icon: {
-                            Image("user.shield")
-                                .settingsIcon()
+                            Image(systemName: "hand.raised.fill")
+                                .settingsIcon(color: .blue)
                         }
                     )
                 }
@@ -101,8 +88,8 @@ struct SettingsView: View {
                     Label(
                         title: { Text("terms_of_service".localized) },
                         icon: {
-                            Image("user.document")
-                                .settingsIcon()
+                            Image(systemName: "doc.text.fill")
+                                .settingsIcon(color: .gray)
                         }
                     )
                 }
@@ -114,12 +101,11 @@ struct SettingsView: View {
                     Label {
                         Text("attributions".localized)
                     } icon: {
-                        Image("link.alt")
-                            .settingsIcon()
+                        Image(systemName: "quote.bubble.fill")
+                            .settingsIcon(color: .indigo)
                     }
                 }
             }
-            .listRowBackground(Color.mainRowBackground)
             
             Section {
                 // Social & Version Section
@@ -137,10 +123,9 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.plain)
                         
+                        let website = URL(string: "https://instagram.com/teymiapps")!
                         Button {
-                            if let url = URL(string: "https://instagram.com/teymiapps") {
-                                UIApplication.shared.open(url)
-                            }
+                            openURL(website, prefersInApp: true)
                         } label: {
                             Image("instagram")
                                 .resizable()
@@ -177,10 +162,8 @@ struct SettingsView: View {
             .listRowBackground(Color.clear)
         }
         .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(Color.mainGroupBackground)
         .navigationTitle("settings".localized)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         
     }
 }
@@ -230,17 +213,18 @@ struct TipsSection: View {
         }
         .sheet(isPresented: $showingTips) {
             TipsView()
-                .presentationCornerRadius(30)
                 .presentationDragIndicator(.visible)
         }
     }
 }
 
-extension Image {
-    func settingsIcon() -> some View {
+extension View {
+    func settingsIcon(color: Color) -> some View {
         self
-            .resizable()
-            .frame(width: 18, height: 18)
-            .foregroundStyle(Color.primary)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundStyle(.white)
+            .frame(width: 29, height: 29)
+            .background(color.gradient)
+            .clipShape(.rect(cornerRadius: 8))
     }
 }

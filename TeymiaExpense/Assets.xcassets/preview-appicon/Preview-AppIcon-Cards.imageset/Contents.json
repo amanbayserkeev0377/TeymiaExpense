@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "AppIcon-Cards-iOS-Default-60x60@2x.png",
+      "filename" : "AppIcon-Cards3-iOS-Default-60x60@2x.png",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "AppIcon-Cards-iOS-Dark-60x60@2x.png",
+      "filename" : "AppIcon-Cards3-iOS-Dark-60x60@2x.png",
       "idiom" : "universal"
     }
   ],

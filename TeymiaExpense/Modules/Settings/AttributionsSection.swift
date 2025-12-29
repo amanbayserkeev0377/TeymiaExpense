@@ -22,7 +22,6 @@ struct AttributionsView: View {
                     url: "https://www.flaticon.com/packs/cryptocurrency-15207963"
                 )
         }
-        .background(Color.mainBackground)
     }
 }
 

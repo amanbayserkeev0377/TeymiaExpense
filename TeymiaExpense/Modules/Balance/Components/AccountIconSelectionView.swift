@@ -37,7 +37,6 @@ struct AccountIconSection: View {
                 .padding(.horizontal, 16)
             }
         }
-        .listRowBackground(Color.mainRowBackground)
         .listRowInsets(EdgeInsets())
     }
     

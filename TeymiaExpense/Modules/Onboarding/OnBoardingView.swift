@@ -50,7 +50,7 @@ struct TeymiaOnBoardingView: View {
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
-                                .foregroundStyle(.appTint)
+                                .foregroundStyle(.primary)
                                 .multilineTextAlignment(.center)
                         }
                     }
@@ -77,7 +77,7 @@ struct TeymiaOnBoardingView: View {
                         Image("user.shield")
                             .resizable()
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(Color.appTint)
+                            .foregroundStyle(Color.primary)
                         
                         Text("onboarding_privacy_disclaimer".localized)
                             .font(.caption)
@@ -94,7 +94,7 @@ struct TeymiaOnBoardingView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                     }
-                    .tint(Color.appTint)
+                    .tint(Color.primary)
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
                     .padding(.horizontal, 20)
@@ -116,7 +116,7 @@ struct FeatureRow: View {
             Image(feature.icon)
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundStyle(Color.appTint)
+                .foregroundStyle(Color.primary)
             
             // Text Content
             VStack(alignment: .leading, spacing: 4) {

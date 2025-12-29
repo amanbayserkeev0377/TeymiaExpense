@@ -79,7 +79,6 @@ struct CategoryIconSelectionView: View {
                     .padding(.vertical, 20)
                 }
             }
-            .background(Color.mainBackground)
             .navigationTitle("icon".localized)
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, placement: .automatic)

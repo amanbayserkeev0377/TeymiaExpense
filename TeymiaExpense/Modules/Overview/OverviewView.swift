@@ -22,7 +22,6 @@ struct OverviewView: View {
         let endOfEndDate = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
         
         return allTransactions.filter { transaction in
-            !transaction.isHidden &&
             transaction.date >= startOfStartDate &&
             transaction.date < endOfEndDate &&
             transaction.type != .transfer
