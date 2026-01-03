@@ -32,7 +32,6 @@ struct BalanceView: View {
                         ContentUnavailableView(
                             "no_accounts".localized,
                             systemImage: "magnifyingglass",
-                            description: Text("Create your first account to start tracking expenses")
                         )
                     }
                     .listRowSeparator(.hidden)

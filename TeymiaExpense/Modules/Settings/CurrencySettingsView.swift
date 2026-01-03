@@ -24,10 +24,11 @@ struct CurrencySettingsView: View {
                         dismiss()
                     }
                 }
-                .listRowBackground(Color.secondary.opacity(0.05))
+                .listRowBackground(Color.clear)
+                .listRowSeparatorTint(Color.secondary.opacity(0.1))
             }
         }
-        .listStyle(.insetGrouped)
+        .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(BackgroundView())
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))

@@ -35,7 +35,7 @@ struct AddAccountView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 // Card Preview Section
                 Section {
                     AccountCardPreview(
@@ -51,8 +51,10 @@ struct AddAccountView: View {
                     .animation(.smooth(duration: 0.4), value: selectedDesignType)
                     .animation(.smooth(duration: 0.4), value: selectedDesignIndex)
                 }
+                .listRowSpacing(0)
+                .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                 
                 // Account Details
                 Section {
@@ -93,27 +95,10 @@ struct AddAccountView: View {
                                 isInitialBalanceFocused = false
                             }
                             .fontDesign(.rounded)
-                        
-                        Text(selectedCurrency?.symbol ?? "$")
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.rounded)
                     }
                     .contentShape(Rectangle())
                     .buttonStyle(.plain)
-                }
-                
-                CardDesignSelectionSection(
-                    selectedDesignType: $selectedDesignType,
-                    selectedDesignIndex: $selectedDesignIndex,
-                    customImage: $customImage,
-                    imageForCropping: $imageForCropping,
-                    showingPhotoPicker: $showingPhotoPicker
-                )
-                
-                AccountIconSection(selectedIcon: $selectedIcon)
-                
-                Section {
-                    // Currency Selection
+                    
                     Button {
                         showingCurrencySelection = true
                     } label: {
@@ -141,7 +126,25 @@ struct AddAccountView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                .listRowSpacing(0)
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                
+                CardDesignSelectionSection(
+                    selectedDesignType: $selectedDesignType,
+                    selectedDesignIndex: $selectedDesignIndex,
+                    customImage: $customImage,
+                    imageForCropping: $imageForCropping,
+                    showingPhotoPicker: $showingPhotoPicker
+                )
+                
+                AccountIconSection(selectedIcon: $selectedIcon)
             }
+            .listStyle(.grouped)
+            .scrollContentBackground(.hidden)
+            .scrollIndicators(.hidden)
+            .background(BackgroundView())
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle(isEditMode ? "edit_account" : "add_account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -75,10 +75,11 @@ struct CurrencySelectionView: View {
                             dismiss()
                         }
                     }
-                    .listRowBackground(Color.secondary.opacity(0.05))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparatorTint(Color.secondary.opacity(0.1))
                 }
             }
-            .listStyle(.insetGrouped)
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(BackgroundView())
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
@@ -150,7 +151,6 @@ struct CurrencyRowView: View {
                         .foregroundStyle(.primary)
                 }
             }
-            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

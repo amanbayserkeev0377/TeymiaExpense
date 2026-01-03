@@ -75,7 +75,6 @@ struct AccountCardPreview: View {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .containerRelativeFrame(.horizontal)
                 .frame(height: 220)
                 .clipShape(.rect(cornerRadius: 20))
         } else {
@@ -84,7 +83,6 @@ struct AccountCardPreview: View {
                 Image(AccountImageData.image(at: designIndex).imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .containerRelativeFrame(.horizontal)
                     .frame(height: 220)
                     .clipShape(.rect(cornerRadius: 20))
             case .color:

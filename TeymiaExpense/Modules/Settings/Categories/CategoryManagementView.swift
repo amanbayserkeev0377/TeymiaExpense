@@ -41,6 +41,7 @@ struct CategoryManagementView: View {
                 }
                 .pickerStyle(.segmented)
             }
+            .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             
             // Categories list
@@ -52,6 +53,7 @@ struct CategoryManagementView: View {
                         description: Text("no_categories_description".localized)
                     )
                 }
+                .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             } else {
                 Section {
@@ -75,9 +77,11 @@ struct CategoryManagementView: View {
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
                 }
-                .listRowBackground(Color.secondary.opacity(0.05))
+                .listRowBackground(Color.clear)
+                .listRowSeparatorTint(Color.secondary.opacity(0.1))
             }
         }
+        .listStyle(.plain)
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
         .navigationTitle("categories".localized)
         .navigationBarTitleDisplayMode(.inline)

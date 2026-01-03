@@ -21,7 +21,7 @@ struct AccountIconSection: View {
     }
     
     var body: some View {
-        Section("icon".localized) {
+        Section {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     ForEach(iconColumns.indices, id: \.self) { columnIndex in
@@ -35,19 +35,27 @@ struct AccountIconSection: View {
                 .padding(.vertical, 16)
                 .padding(.horizontal, 16)
             }
+        } header: {
+            Text("icon".localized)
+                .padding(.leading, 16)
         }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
     }
     
     private func iconButton(icon: String) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.2)) {
+        let isSelected = selectedIcon == icon
+        
+        return Button {
+            withAnimation(.easeInOut(duration: 0.3)) {
                 selectedIcon = icon
             }
         } label: {
             Image(icon)
                 .resizable()
                 .frame(width: 20, height: 20)
+                .contentTransition(.symbolEffect(.replace))
                 .foregroundStyle(
                     selectedIcon == icon
                     ? Color.primaryInverse
@@ -58,7 +66,9 @@ struct AccountIconSection: View {
                     Circle()
                         .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.07))
                 )
+                .scaleEffect(isSelected ? 1.1 : 1.0)
         }
         .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: selectedIcon)
     }
 }

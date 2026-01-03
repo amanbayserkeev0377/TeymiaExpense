@@ -26,7 +26,7 @@ struct CardDesignSelectionSection: View {
     }
     
     var body: some View {
-        Section("design".localized) {
+        Section {
             VStack(spacing: 16) {
                 // Segmented Picker
                 Picker("", selection: $selectedDesignType) {
@@ -44,7 +44,12 @@ struct CardDesignSelectionSection: View {
                 }
             }
             .padding(.vertical, 16)
+        } header: {
+            Text("design".localized)
+                .padding(.leading, 16)
         }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
         .onChange(of: customImage) { oldValue, newValue in
             if newValue != nil {
