@@ -42,42 +42,20 @@ struct CurrencyService {
         return regionToCurrency[regionCode] ?? "USD"
     }
     
-    static func createDefaultCurrencies() -> [Currency] {
-        let detectedCurrencyCode = detectUserCurrency()
-        var currencies: [Currency] = []
-        
-        // Check if detected currency exists in our list
-        let hasDetectedCurrency = CurrencyDataProvider.fiatCurrencies.contains { $0.code == detectedCurrencyCode }
-
-        let defaultCurrencyCode = hasDetectedCurrency ? detectedCurrencyCode : "USD"
-
-        
-        // Add fiat currencies with auto-detection
-        for currency in CurrencyDataProvider.fiatCurrencies {
-            let currencyWithDefault = Currency(
-                code: currency.code,
-                symbol: currency.symbol,
-                name: currency.name,
-                type: currency.type,
-                isDefault: currency.code == defaultCurrencyCode
-            )
-            currencies.append(currencyWithDefault)
+    static func getSymbol(for code: String?) -> String {
+            guard let code = code else {
+                return "$"
+            }
+            return getCurrency(for: code).symbol
         }
-        
-        // Add crypto currencies (no defaults)
-        for currency in CurrencyDataProvider.cryptoCurrencies {
-            let currencyWithDefault = Currency(
-                code: currency.code,
-                symbol: currency.symbol,
-                name: currency.name,
-                type: currency.type,
-                isDefault: false
-            )
-            currencies.append(currencyWithDefault)
+
+        static func getSymbol(for currency: Currency) -> String {
+            return currency.symbol
         }
-        
-        return currencies
-    }
+    
+    static func getCurrency(for code: String) -> Currency {
+            return CurrencyDataProvider.findCurrency(by: code) ?? .defaultUSD
+        }
     
     static func getCurrencyIcon(for currency: Currency) -> String {
         return currency.code.uppercased()

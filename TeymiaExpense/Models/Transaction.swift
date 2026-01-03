@@ -37,8 +37,30 @@ final class Transaction {
     }
 }
 
-enum TransactionType: String, CaseIterable, Codable {
+enum TransactionType: String, CaseIterable, Codable, Hashable {
     case expense = "expense"
     case income = "income"
     case transfer = "transfer"
+}
+
+extension Transaction {
+    
+    func displayTitle(relativeTo account: Account? = nil) -> String {
+        if type == .transfer {
+            let fromName = self.account?.name ?? "..."
+            let toName = self.toAccount?.name ?? "..."
+            return "\(fromName) → \(toName)"
+        }
+        return category?.name ?? "unrecognized".localized
+    }
+}
+
+extension TransactionType {
+    var displayName: String {
+        switch self {
+        case .expense: return "expense".localized
+        case .income: return "income".localized
+        case .transfer: return "transfer".localized
+        }
+    }
 }

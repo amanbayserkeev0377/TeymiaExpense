@@ -7,7 +7,6 @@ struct OverviewCategorySection: View {
     let color: Color
     let categories: [Category]
     let filteredTransactions: [Transaction]
-    let currencies: [Currency]
     let userPreferences: UserPreferences
     let onCategorySelected: (Category) -> Void
     
@@ -23,9 +22,9 @@ struct OverviewCategorySection: View {
                 
                 Spacer()
                 
-                Text(userPreferences.formatAmount(total, currencies: currencies))
+                Text(userPreferences.formatAmount(total))
                     .font(.title3)
-                    .fontWeight(.medium)
+                    .fontWeight(.bold)
                     .fontDesign(.rounded)
                     .foregroundStyle(color)
             }
@@ -47,7 +46,6 @@ struct OverviewCategorySection: View {
                             totalAmount: getTotalAmount(for: category),
                             transactionCount: getTransactionCount(for: category),
                             color: color,
-                            currencies: currencies,
                             userPreferences: userPreferences
                         )
                     }

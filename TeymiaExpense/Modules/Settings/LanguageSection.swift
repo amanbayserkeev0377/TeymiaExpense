@@ -22,8 +22,8 @@ struct LanguageSection: View {
                 Label(
                     title: { Text("language".localized) },
                     icon: {
-                        Image(systemName: "globe.fill")
-                            .settingsIcon(color: .blue)
+                        Image("globe.america")
+                            .settingsIcon()
                     }
                 )
                 

@@ -45,14 +45,12 @@
 "expense" = "Expense";
 "expenses" = "Expenses";
 "income" = "Income";
+"transfer" = "Transfer";
 "main_account" = "Main Account";
 "photo" = "Photo";
 "color" = "Color";
 
 /* Transaction Types */
-"transaction_type_expense" = "Expense";
-"transaction_type_income" = "Income";
-"transaction_type_transfer" = "Transfer";
 "transfer_to" = "Transfer to";
 "transfer_from" = "Transfer from";
 
@@ -75,8 +73,6 @@
 "end" = "End";
 
 /* Form Titles & Actions */
-"new_transaction" = "New Transaction";
-"edit_transaction" = "Edit Transaction";
 "add_account" = "Add Account";
 "edit_account" = "Edit Account";
 "new_category" = "New Category";
@@ -152,13 +148,11 @@
 "language" = "Language";
 
 /* Appearance Settings */
-"appearance" = "Appearance";
+"theme" = "Theme";
 "appearance_mode" = "Appearance mode";
 "appearance_dark" = "Dark";
 "appearance_light" = "Light";
 "appearance_system" = "System";
-"app_color" = "App Color";
-"app_icon" = "App Icon";
 
 /* Legal & Info */
 "terms_of_service" = "Terms of Service";

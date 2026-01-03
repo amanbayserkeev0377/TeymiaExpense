@@ -7,7 +7,6 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(UserPreferences.self) private var userPreferences
-    @Query private var currencies: [Currency]
     @Query(sort: \Account.sortOrder) private var accounts: [Account]
     @Query(sort: \Transaction.date, order: .reverse)
     private var allTransactions: [Transaction]
@@ -17,7 +16,6 @@ struct HomeView: View {
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
     
-    // View Properties
     @State private var topInset: CGFloat = 0
     @State private var scrollOffsetY: CGFloat = 0
     @State private var scrollProgressX: CGFloat = 0
@@ -61,15 +59,14 @@ struct HomeView: View {
                         Section {
                             HStack {
                                 Text(dateRangeText)
-                                    .font(.headline)
-                                    .fontWeight(.medium)
+                                    .font(.title3)
+                                    .fontWeight(.bold)
                                     .fontDesign(.rounded)
                                     .foregroundStyle(.primary)
                                 
                                 Spacer()
                                 
-                                // Date Filter Menu
-                                CustomMenuView(style: .glass) {
+                                CustomMenuView() {
                                     Image("calendar")
                                         .resizable()
                                         .frame(width: 20, height: 20)
@@ -94,15 +91,15 @@ struct HomeView: View {
                                     "no_transactions".localized,
                                     systemImage: "magnifyingglass"
                                 )
-                                    .listRowBackground(Color.clear)
-                                    .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
                             }
                         } else {
                             ForEach(sortedDates, id: \.self) { date in
                                 Section {
                                     ForEach(groupedTransactions[date] ?? []) { transaction in
                                         TransactionRowView(transaction: transaction)
-                                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                            .swipeActions(edge: .trailing) {
                                                 Button(role: .destructive) {
                                                     deleteTransaction(transaction)
                                                 } label: {
@@ -119,8 +116,7 @@ struct HomeView: View {
                                     DaySectionHeader(
                                         date: date,
                                         transactions: groupedTransactions[date] ?? [],
-                                        userPreferences: userPreferences,
-                                        currencies: currencies
+                                        userPreferences: userPreferences
                                     )
                                 }
                             }
@@ -131,7 +127,8 @@ struct HomeView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background {
-                        LivelyFloatingBlobsBackground()
+                        Color.mainBackground
+                            .ignoresSafeArea()
                     }
                     .onScrollGeometryChange(for: ScrollGeometry.self) {
                         $0
@@ -156,8 +153,6 @@ struct HomeView: View {
         }
     }
     
-    // MARK: - Computed Properties
-    
     private var filteredTransactions: [Transaction] {
         let calendar = Calendar.current
         let startOfStartDate = calendar.startOfDay(for: startDate)
@@ -167,8 +162,6 @@ struct HomeView: View {
             transaction.date >= startOfStartDate && transaction.date < endOfEndDate
         }
     }
-    
-    // MARK: - Transaction Actions
     
     private func deleteTransaction(_ transaction: Transaction) {
         withAnimation(.snappy) {
@@ -185,10 +178,11 @@ struct DaySectionHeader: View {
     let date: Date
     let transactions: [Transaction]
     let userPreferences: UserPreferences
-    let currencies: [Currency]
     
-    private var dayTotal: Decimal {
-        transactions.reduce(Decimal.zero) { $0 + $1.amount }
+    private var dailyExpenses: Decimal {
+        transactions
+            .filter { $0.type == .expense }
+            .reduce(Decimal.zero) { $0 + $1.amount }
     }
     
     private var dateHeaderText: String {
@@ -215,11 +209,13 @@ struct DaySectionHeader: View {
             
             Spacer()
             
-            Text(userPreferences.formatAmount(dayTotal, currencies: currencies))
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .fontDesign(.rounded)
-                .foregroundStyle(dayTotal >= 0 ? Color("IncomeColor") : Color("ExpenseColor"))
+            if dailyExpenses != 0 {
+                Text(userPreferences.formatAmount(dailyExpenses))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.primary)
+            }
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 4)

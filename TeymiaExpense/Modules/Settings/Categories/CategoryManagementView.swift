@@ -75,11 +75,14 @@ struct CategoryManagementView: View {
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
                 }
+                .listRowBackground(Color.secondary.opacity(0.05))
             }
         }
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
         .navigationTitle("categories".localized)
         .navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
+        .background(BackgroundView())
         .toolbar {
             EditDoneToolbarButton(isEditMode: $isEditMode) {
                 selectedCategories = []
@@ -89,7 +92,7 @@ struct CategoryManagementView: View {
                 showingAddCategory = true
             }
         }
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             if isEditMode {
                 HStack {
                     Button {
@@ -101,6 +104,7 @@ struct CategoryManagementView: View {
                     } label: {
                         Text(selectedCategories.count < filteredCategories.count ? "select_all".localized : "deselect_all".localized)
                             .padding(4)
+                            .foregroundStyle(Color.primaryInverse)
                     }
                     .buttonStyle(.borderedProminent)
                     

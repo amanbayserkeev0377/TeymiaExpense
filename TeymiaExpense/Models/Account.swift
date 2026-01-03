@@ -1,11 +1,13 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class Account {
+    var id: UUID = UUID()
     var name: String = ""
     var balance: Decimal = 0
-    var isDefault: Bool = false
+    var currencyCode: String = "USD"
     var createdAt: Date = Date()
     var designIndex: Int = 0
     var customIcon: String = "cash"
@@ -19,7 +21,9 @@ final class Account {
     
     private var designTypeRawValue: String = "image"
     
-    var currency: Currency? = nil
+    var currency: Currency {
+        CurrencyService.getCurrency(for: currencyCode)
+    }
     
     @Relationship(deleteRule: .cascade, inverse: \Transaction.account)
     var transactions: [Transaction]? = []
@@ -30,8 +34,7 @@ final class Account {
     init(
         name: String,
         balance: Decimal,
-        currency: Currency,
-        isDefault: Bool = false,
+        currencyCode: String,
         designIndex: Int = 0,
         customIcon: String = "cash",
         designType: AccountDesignType = .image,
@@ -40,8 +43,7 @@ final class Account {
     ) {
         self.name = name
         self.balance = balance
-        self.currency = currency
-        self.isDefault = isDefault
+        self.currencyCode = currencyCode
         self.designIndex = designIndex
         self.customIcon = customIcon
         self.designTypeRawValue = designType.rawValue
@@ -51,41 +53,35 @@ final class Account {
     }
 }
 
-extension Account {
-    static func createDefault(context: ModelContext) {
-        // Single check: if ANY accounts exist, don't create default
-        let allDescriptor = FetchDescriptor<Account>()
-        let existingAccounts = (try? context.fetch(allDescriptor)) ?? []
-        
-        guard existingAccounts.isEmpty else {
-            return
-        }
-        
-        // Ensure currencies exist first
-        let currencyDescriptor = FetchDescriptor<Currency>()
-        let currencies = (try? context.fetch(currencyDescriptor)) ?? []
-        
-        guard let defaultCurrency = currencies.first(where: { $0.isDefault }) ?? currencies.first else {
-            print("⚠️ Warning: No currencies available to create default account")
-            return
-        }
-        
-        let mainAccount = Account(
-            name: "main_account".localized,
-            balance: 0,
-            currency: defaultCurrency,
-            isDefault: true,
-            designIndex: 0,
-            customIcon: "cash",
-            designType: .image,
-            sortOrder: 0
-        )
-        
-        context.insert(mainAccount)
-    }
-}
-
 enum AccountDesignType: String, CaseIterable, Codable {
     case image = "image"
     case color = "color"
+}
+
+extension Account {
+    
+    var formattedBalance: String {
+        return CurrencyFormatter.format(balance, currency: self.currency)
+    }
+    
+    var cardDarkColor: Color {
+        return AccountColor.by(index: designIndex).colors.dark
+    }
+    
+    var cardLightColor: Color {
+        return AccountColor.by(index: designIndex).colors.light
+    }
+    
+    var cardGradient: LinearGradient {
+        return AccountColor.gradient(at: designIndex)
+    }
+    
+    var cardIcon: String {
+        return customIcon
+    }
+    
+    var customUIImage: UIImage? {
+        guard let imageData = customImageData else { return nil }
+        return UIImage(data: imageData)
+    }
 }

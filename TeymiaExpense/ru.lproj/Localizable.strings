@@ -45,14 +45,12 @@
 "expense" = "Расход";
 "expenses" = "Расходы";
 "income" = "Доход";
+"transfer" = "Перевод";
 "main_account" = "Основной счёт";
 "photo" = "Фото";
 "color" = "Цвет";
 
 /* Transaction Types */
-"transaction_type_expense" = "Расход";
-"transaction_type_income" = "Доход";
-"transaction_type_transfer" = "Перевод";
 "transfer_to" = "Перевод на";
 "transfer_from" = "Перевод с";
 
@@ -75,8 +73,6 @@
 "end" = "Конец";
 
 /* Form Titles & Actions */
-"new_transaction" = "Новая транзакция";
-"edit_transaction" = "Редактировать транзакцию";
 "add_account" = "Добавить счёт";
 "edit_account" = "Редактировать счёт";
 "new_category" = "Новая категория";
@@ -152,13 +148,11 @@
 "language" = "Язык";
 
 /* Appearance Settings */
-"appearance" = "Оформление";
+"theme" = "Тема";
 "appearance_mode" = "Режим оформления";
 "appearance_dark" = "Тёмная";
 "appearance_light" = "Светлая";
 "appearance_system" = "Как в системе";
-"app_color" = "Цвет приложения";
-"app_icon" = "Иконка приложения";
 
 /* Legal & Info */
 "terms_of_service" = "Условия использования";

@@ -9,13 +9,9 @@ class UserPreferences {
         }
     }
     
-    var lastUsedAccountName: String? {
+    var lastUsedAccountID: String? {
         didSet {
-            if let name = lastUsedAccountName {
-                UserDefaults.standard.set(name, forKey: "lastUsedAccountName")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "lastUsedAccountName")
-            }
+            UserDefaults.standard.set(lastUsedAccountID, forKey: "lastUsedAccountID")
         }
     }
     
@@ -23,55 +19,45 @@ class UserPreferences {
         let savedCurrency = UserDefaults.standard.string(forKey: "userBaseCurrencyCode")
         self.baseCurrencyCode = savedCurrency ?? CurrencyService.detectUserCurrency()
         
-        self.lastUsedAccountName = UserDefaults.standard.string(forKey: "lastUsedAccountName")
+        self.lastUsedAccountID = UserDefaults.standard.string(forKey: "lastUsedAccountID")
     }
     
-    func getBaseCurrency(from currencies: [Currency]) -> Currency? {
-        return currencies.first { $0.code == baseCurrencyCode }
+    var baseCurrency: Currency {
+        CurrencyService.getCurrency(for: baseCurrencyCode)
     }
     
     // MARK: - Account Management
     
     func getPreferredAccount(from accounts: [Account]) -> Account? {
-        // Try to find last used account by name
-        if let lastUsedName = lastUsedAccountName,
-           let lastUsedAccount = accounts.first(where: { $0.name == lastUsedName }) {
-            return lastUsedAccount
+            if let lastID = lastUsedAccountID,
+               let lastAccount = accounts.first(where: { $0.id.uuidString == lastID }) {
+                return lastAccount
+            }
+            
+            return accounts.first
         }
-        
-        // Fallback to default account
-        if let defaultAccount = accounts.first(where: { $0.isDefault }) {
-            return defaultAccount
-        }
-        
-        // Ultimate fallback to first account
-        return accounts.first
-    }
     
     func updateLastUsedAccount(_ account: Account) {
-        lastUsedAccountName = account.name
-    }
+            lastUsedAccountID = account.id.uuidString
+        }
     
     // MARK: - Amount Formatting
-    
-    func formatAmount(_ amount: Decimal, currencies: [Currency]) -> String {
-        let currency = currencies.first { $0.code == baseCurrencyCode } ?? currencies.first ?? Currency(
-            code: "USD",
-            symbol: "$",
-            name: "US Dollar",
-            type: .fiat
-        )
-        
-        return CurrencyFormatter.format(amount, currency: currency)
-    }
+    func formatAmount(_ amount: Decimal) -> String {
+            return CurrencyFormatter.format(abs(amount), currency: baseCurrency)
+        }
 
-    func formatAmountWithoutCurrency(_ amount: Decimal, currencies: [Currency]) -> String {
+    func formatAmountWithoutCurrency(_ amount: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.groupingSeparator = " "
-        formatter.maximumFractionDigits = 0
-        formatter.minimumFractionDigits = 0
         
-        return formatter.string(from: amount as NSDecimalNumber) ?? "0"
+        if abs(amount) > 0 && abs(amount) < 1 {
+            formatter.maximumFractionDigits = 8
+        } else {
+            formatter.maximumFractionDigits = 2
+        }
+        
+        formatter.minimumFractionDigits = 0
+        return formatter.string(from: abs(amount) as NSDecimalNumber) ?? "0"
     }
 }

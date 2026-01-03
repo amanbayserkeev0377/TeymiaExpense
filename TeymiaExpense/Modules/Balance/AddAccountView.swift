@@ -5,7 +5,6 @@ struct AddAccountView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
-    @Query private var currencies: [Currency]
     @Query private var accounts: [Account]
     
     // MARK: - Edit Mode Support
@@ -228,11 +227,9 @@ struct AddAccountView: View {
     }
     
     private func setupCreateMode() {
-        // Set defaults for new account
-        guard !currencies.isEmpty else { return }
-        
         if selectedCurrency == nil {
-            selectedCurrency = currencies.first { $0.isDefault } ?? currencies.first
+            let userCode = CurrencyService.detectUserCurrency()
+            selectedCurrency = CurrencyDataProvider.findCurrency(by: userCode)
         }
     }
     
@@ -255,8 +252,7 @@ struct AddAccountView: View {
         let account = Account(
             name: trimmedName,
             balance: balance,
-            currency: currency,
-            isDefault: false,
+            currencyCode: currency.code,
             designIndex: finalDesignIndex,
             customIcon: selectedIcon,
             designType: selectedDesignType,
@@ -294,7 +290,7 @@ struct AddAccountView: View {
         // Update account properties
         account.name = trimmedName
         account.balance = newBalance
-        account.currency = currency
+        account.currencyCode = currency.code
         account.designIndex = finalDesignIndex
         account.customIcon = selectedIcon
         account.designType = selectedDesignType

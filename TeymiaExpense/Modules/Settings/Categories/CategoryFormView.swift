@@ -139,7 +139,6 @@ struct CategoryFormView: View {
                 iconName: selectedIcon,
                 type: categoryType,
                 sortOrder: sortOrder,
-                isDefault: false
             )
             modelContext.insert(newCategory)
         }

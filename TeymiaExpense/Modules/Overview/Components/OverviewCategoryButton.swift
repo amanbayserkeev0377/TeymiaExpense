@@ -6,7 +6,6 @@ struct OverviewCategoryButton: View {
     let totalAmount: Decimal
     let transactionCount: Int
     let color: Color
-    let currencies: [Currency]
     let userPreferences: UserPreferences
     
     var body: some View {
@@ -14,7 +13,7 @@ struct OverviewCategoryButton: View {
             // Circle with icon
             ZStack {
                 Circle()
-                    .fill(Color.secondary.opacity(0.1))
+                    .fill(Color.secondary.opacity(0.07))
                     .frame(width: 50, height: 50)
                 
                 Image(category.iconName)
@@ -27,21 +26,30 @@ struct OverviewCategoryButton: View {
             VStack(spacing: 4) {
                 Text(category.name)
                     .font(.callout)
+                    .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(userPreferences.formatAmountWithoutCurrency(totalAmount, currencies: currencies))
+                Text(userPreferences.formatAmountWithoutCurrency(totalAmount))
                     .font(.callout)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
                     .fontDesign(.rounded)
-                    .foregroundStyle(color)
+                    .foregroundStyle(finalDisplayColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.9)
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }
+    }
+    
+    private var finalDisplayColor: Color {
+        if category.type == .income {
+            return color
+        } else {
+            return .primary
         }
     }
 }

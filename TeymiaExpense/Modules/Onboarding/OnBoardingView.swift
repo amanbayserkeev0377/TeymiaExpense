@@ -74,7 +74,7 @@ struct TeymiaOnBoardingView: View {
                 VStack(spacing: 12) {
                     // Privacy Notice
                     HStack(spacing: 12) {
-                        Image("user.shield")
+                        Image("lock")
                             .resizable()
                             .frame(width: 20, height: 20)
                             .foregroundStyle(Color.primary)

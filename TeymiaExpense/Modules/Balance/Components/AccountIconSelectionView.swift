@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AccountIconSection: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
     
     private let availableIcons = [
@@ -51,13 +50,13 @@ struct AccountIconSection: View {
                 .frame(width: 20, height: 20)
                 .foregroundStyle(
                     selectedIcon == icon
-                    ? (colorScheme == .light ? Color.white : Color.black)
+                    ? Color.primaryInverse
                     : Color.primary
                 )
                 .padding(10)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.07))
                 )
         }
         .buttonStyle(.plain)

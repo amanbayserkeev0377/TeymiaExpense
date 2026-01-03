@@ -8,7 +8,6 @@ final class Category {
     var iconName: String = ""
     private var typeRawValue: String = "expense"
     var sortOrder: Int = 0
-    var isDefault: Bool = false
     var createdAt: Date = Date()
     
     // Computed property for enum
@@ -25,13 +24,11 @@ final class Category {
         iconName: String,
         type: CategoryType,
         sortOrder: Int,
-        isDefault: Bool
     ) {
         self.name = name
         self.iconName = iconName
         self.typeRawValue = type.rawValue
         self.sortOrder = sortOrder
-        self.isDefault = isDefault
         self.createdAt = Date()
     }
 }
@@ -47,83 +44,5 @@ enum CategoryType: String, Codable, CaseIterable {
         case .expense: return "expense".localized
         case .income: return "income".localized
         }
-    }
-}
-
-// MARK: - Create Defaults
-
-extension Category {
-    static func createDefaults(context: ModelContext) {
-        // Check if categories already exist
-        let descriptor = FetchDescriptor<Category>()
-        let existingCategories = (try? context.fetch(descriptor)) ?? []
-        
-        guard existingCategories.isEmpty else {
-            print("✅ Categories already exist, skipping")
-            return
-        }
-        
-        print("📝 Creating default categories...")
-        
-        createExpenseCategories(context: context)
-        createIncomeCategories(context: context)
-        
-        print("✅ Default categories created")
-    }
-    
-    // MARK: - Expense Categories
-    
-    private static func createExpenseCategories(context: ModelContext) {
-        let expenseCategories: [(String, String)] = [
-            ("other".localized, "other"),
-            ("groceries".localized, "groceries"),
-            ("cafe".localized, "fork.knife"),
-            ("transport".localized, "transport"),
-            ("shopping".localized, "shopping"),
-            ("entertainment".localized, "cinema"),
-            ("health".localized, "health"),
-            ("housing".localized, "housing"),
-            ("education".localized, "education"),
-            ("family".localized, "family"),
-        ]
-        
-        for (index, (name, icon)) in expenseCategories.enumerated() {
-            let category = Category(
-                name: name,
-                iconName: icon,
-                type: .expense,
-                sortOrder: index,
-                isDefault: true
-            )
-            context.insert(category)
-        }
-        
-        print("✅ Created \(expenseCategories.count) expense categories")
-    }
-    
-    // MARK: - Income Categories
-    
-    private static func createIncomeCategories(context: ModelContext) {
-        let incomeCategories: [(String, String)] = [
-            ("salary".localized, "salary"),
-            ("gift".localized, "gift"),
-            ("bonuses".localized, "bonuses"),
-            ("business".localized, "business"),
-            ("investment".localized, "investment"),
-            ("other".localized, "other")
-        ]
-        
-        for (index, (name, icon)) in incomeCategories.enumerated() {
-            let category = Category(
-                name: name,
-                iconName: icon,
-                type: .income,
-                sortOrder: index + 100,
-                isDefault: true
-            )
-            context.insert(category)
-        }
-        
-        print("✅ Created \(incomeCategories.count) income categories")
     }
 }

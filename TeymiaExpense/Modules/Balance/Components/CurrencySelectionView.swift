@@ -75,9 +75,12 @@ struct CurrencySelectionView: View {
                             dismiss()
                         }
                     }
+                    .listRowBackground(Color.secondary.opacity(0.05))
                 }
             }
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(BackgroundView())
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

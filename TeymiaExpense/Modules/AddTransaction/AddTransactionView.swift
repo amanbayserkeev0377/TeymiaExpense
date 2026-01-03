@@ -53,14 +53,13 @@ struct AddTransactionView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                Form {
+                List {
                     Section {
                         HStack {
                             TextField(currencySymbol, text: $amount)
                                 .autocorrectionDisabled()
                                 .focused($isAmountFieldFocused)
-                                .font(.system(.largeTitle, design: .rounded))
-                                .fontWeight(.bold)
+                                .font(.system(size: 50, weight: .bold, design: .rounded))
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
                         }
@@ -74,7 +73,7 @@ struct AddTransactionView: View {
                             
                             TextField("note".localized, text: $note)
                                 .fontDesign(.rounded)
-                                
+                            
                             Button(action: {
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
                                     note = ""
@@ -92,6 +91,27 @@ struct AddTransactionView: View {
                         }
                         .contentShape(Rectangle())
                     }
+                    .listRowSpacing(0)
+                    .listSectionSpacing(0)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    
+                    // Catgories Section
+                    if selectedType != .transfer {
+                        Section {
+                            CategoriesSection(
+                                categories: filteredCategories,
+                                selectedCategory: $selectedCategory
+                            )
+                        } header: {
+                            Text("category".localized)
+                                .padding(.leading, 16)
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listSectionSpacing(0)
+                    }
                     
                     // Account/Transfer Section
                     if selectedType == .transfer {
@@ -108,28 +128,39 @@ struct AddTransactionView: View {
                         )
                     }
                     
-                    // Catgories Section
-                    if selectedType != .transfer {
-                        Section("category".localized) {
-                            CategoriesSection(
-                                categories: filteredCategories,
-                                selectedCategory: $selectedCategory,
-                                colorScheme: colorScheme
-                            )
-                        }
-                        .listRowInsets(EdgeInsets())
-                    }
-                    
                     DateNoteSection(date: $date)
                     
                     // Spacer for button
                     Color.clear
                         .frame(height: 80)
                         .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .listStyle(.grouped)
+                .scrollContentBackground(.hidden)
+                .scrollIndicators(.hidden)
+                .background(BackgroundView())
                 .scrollDismissesKeyboard(.immediately)
+            }
+            .toolbar {
+                CloseToolbarButton()
                 
-                // Floating button
+                ToolbarItem(placement: .principal) {
+                    Picker("Type", selection: $selectedType) {
+                        ForEach(TransactionType.allCases, id: \.self) { type in
+                            Text(type.displayName)
+                                .tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 270)
+                }
+            }
+            .safeAreaBar(edge: .bottom) {
                 if isInitialized {
                     FloatingSaveButton(
                         isEnabled: canSave,
@@ -138,23 +169,8 @@ struct AddTransactionView: View {
                         }
                     )
                     .padding(.horizontal, 15)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 6)
                     .transition(.opacity)
-                }
-            }
-            .navigationTitle(isEditMode ? "edit_transaction".localized : "new_transaction".localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                CloseToolbarButton()
-                
-                ToolbarItem(placement: .principal) {
-                    Picker("", selection: $selectedType) {
-                        ForEach(TransactionType.allCases, id: \.self) { type in
-                            Text(type.displayName).tag(type)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 270)
                 }
             }
         }
@@ -171,9 +187,9 @@ struct AddTransactionView: View {
     
     private var currencySymbol: String {
         if selectedType == .transfer {
-            return fromAccount?.currency?.symbol ?? "$"
+            return CurrencyService.getSymbol(for: fromAccount?.currencyCode)
         }
-        return selectedAccount?.currency?.symbol ?? "$"
+        return CurrencyService.getSymbol(for: selectedAccount?.currencyCode)
     }
     
     private var canSave: Bool {
@@ -339,7 +355,7 @@ struct FloatingSaveButton: View {
     let action: () -> Void
     
     private var buttonColor: Color {
-        isEnabled ? .primary : .gray.opacity(0.3)
+        isEnabled ? .primary : .secondary.opacity(0.4)
     }
     
     private var shadowColor: Color {
@@ -347,13 +363,13 @@ struct FloatingSaveButton: View {
     }
     
     private var textColor: Color {
-        isEnabled ? .white : .gray.opacity(0.6)
+        isEnabled ? .primaryInverse : .secondary.opacity(0.4)
     }
     
     var body: some View {
         Button(action: action) {
-            Text("Save")
-                .font(.system(.body, design: .rounded, weight: .semibold))
+            Text("save".localized)
+                .font(.system(.body, design: .rounded, weight: .bold))
                 .foregroundStyle(textColor)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
@@ -361,11 +377,15 @@ struct FloatingSaveButton: View {
                     RoundedRectangle(cornerRadius: 30, style: .continuous)
                         .fill(buttonColor)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .shadow(color: shadowColor, radius: 12, y: 4)
+                .shadow(color: shadowColor, radius: 10, y: 4)
         }
-        .buttonStyle(.plain)
+        .glassEffect(
+            isEnabled
+            ? .regular.tint(.primary).interactive()
+            : .clear,
+            in: Capsule()
+        )
         .disabled(!isEnabled)
-        .animation(.easeInOut(duration: 0.3), value: isEnabled)
+        .animation(.easeInOut(duration: 0.4), value: isEnabled)
     }
 }

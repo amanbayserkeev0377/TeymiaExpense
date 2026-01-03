@@ -6,11 +6,9 @@ struct OverviewView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var categories: [Category]
     @Query private var allTransactions: [Transaction]
-    @Query private var currencies: [Currency]
     
     @State private var selectedCategory: Category?
     
-    // Date filtering state
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
     
@@ -31,13 +29,13 @@ struct OverviewView: View {
     private var expenseCategoriesWithTransactions: [Category] {
         categories
             .filter { $0.type == .expense && hasTransactions(for: $0) }
-            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) } // Sort by amount
+            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) }
     }
     
     private var incomeCategoriesWithTransactions: [Category] {
         categories
             .filter { $0.type == .income && hasTransactions(for: $0) }
-            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) } // Sort by amount
+            .sorted { getTotalAmount(for: $0) > getTotalAmount(for: $1) }
     }
     
     private var totalExpenses: Decimal {
@@ -70,7 +68,7 @@ struct OverviewView: View {
                 .padding(.vertical, 20)
             }
             .background {
-                LivelyFloatingBlobsBackground()
+                BackgroundView()
             }
         }
         .sheet(item: $selectedCategory) { category in
@@ -91,13 +89,13 @@ struct OverviewView: View {
         HStack {
             Text(dateRangeText)
                 .font(.title3)
-                .fontWeight(.semibold)
+                .fontWeight(.bold)
                 .fontDesign(.rounded)
                 .foregroundStyle(.primary)
             
             Spacer()
             
-            CustomMenuView(style: .glass) {
+            CustomMenuView() {
                 Image("calendar")
                     .resizable()
                     .frame(width: 20, height: 20)
@@ -121,7 +119,6 @@ struct OverviewView: View {
                 color: Color("ExpenseColor"),
                 categories: expenseCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
-                currencies: currencies,
                 userPreferences: userPreferences,
                 onCategorySelected: { selectedCategory = $0 }
             )
@@ -137,7 +134,6 @@ struct OverviewView: View {
                 color: Color("IncomeColor"),
                 categories: incomeCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
-                currencies: currencies,
                 userPreferences: userPreferences,
                 onCategorySelected: { selectedCategory = $0 }
             )
@@ -158,6 +154,7 @@ struct OverviewView: View {
     
     private func hasTransactions(for category: Category) -> Bool {
         filteredTransactions.contains { transaction in
+            // ИСПРАВЛЕНО: category больше не опциональна внутри SwiftData связи, если настроена правильно
             transaction.category?.id == category.id
         }
     }

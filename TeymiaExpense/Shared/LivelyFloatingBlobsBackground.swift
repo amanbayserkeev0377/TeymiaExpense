@@ -15,7 +15,7 @@ struct LivelyFloatingBlobsBackground: View {
                     index: 0,
                     color: colorScheme == .dark
                     ?  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.25)
-                    :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.2),
+                    :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.4),
                         
                     size: 210,
                     positions: [
@@ -33,7 +33,7 @@ struct LivelyFloatingBlobsBackground: View {
                     index: 1,
                     color: colorScheme == .dark
                     ? Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.35)
-                    : Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.25),
+                    : Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)).opacity(0.45),
                     size: 190,
                     positions: [
                         CGPoint(x: geo.size.width * 0.75, y: geo.size.height * 0.25),
@@ -50,7 +50,7 @@ struct LivelyFloatingBlobsBackground: View {
                     index: 2,
                     color: colorScheme == .dark
                     ? Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.4)
-                    : Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.3),
+                    : Color(#colorLiteral(red: 0.4925274849, green: 0.5225450397, blue: 0.9995061755, alpha: 1)).opacity(0.5),
                     size: 170,
                     positions: [
                         CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.3),

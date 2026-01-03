@@ -77,7 +77,7 @@ struct AccountTransactionsView: View {
                 
                 Spacer()
                 
-                CustomMenuView(style: .glass) {
+                CustomMenuView() {
                     Image("calendar")
                         .resizable()
                         .frame(width: 20, height: 20)

@@ -3,7 +3,6 @@ import SwiftUI
 struct CategoriesSection: View {
     let categories: [Category]
     @Binding var selectedCategory: Category?
-    let colorScheme: ColorScheme
     
     private let itemsPerPage = 8
     private let columnsCount = 4
@@ -61,8 +60,7 @@ struct CategoriesSection: View {
                     let category = pageCategories[index]
                     CategoryCircleButton(
                         category: category,
-                        isSelected: selectedCategory?.id == category.id,
-                        colorScheme: colorScheme
+                        isSelected: selectedCategory?.id == category.id
                     ) {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             selectedCategory = category
@@ -82,7 +80,6 @@ struct CategoriesSection: View {
 struct CategoryCircleButton: View {
     let category: Category
     let isSelected: Bool
-    let colorScheme: ColorScheme
     let action: () -> Void
     
     var body: some View {
@@ -94,13 +91,13 @@ struct CategoryCircleButton: View {
                         .frame(width: 24, height: 24)
                         .foregroundStyle(
                             isSelected
-                            ? (colorScheme == .light ? Color.white : Color.black)
+                            ? Color.primaryInverse
                             : Color.primary
                         )
                         .padding(10)
                         .background(
                             Circle()
-                                .fill(isSelected ? Color.primary : Color.secondary.opacity(0.1))
+                                .fill(isSelected ? Color.primary : Color.secondary.opacity(0.07))
                         )
                     
                     Spacer().frame(height: 8)
@@ -110,6 +107,7 @@ struct CategoryCircleButton: View {
                 VStack(spacing: 0) {
                     Text(category.name)
                         .font(.caption)
+                        .fontWeight(.medium)
                         .fontDesign(.rounded)
                         .foregroundStyle(.primary)
                         .lineLimit(2)

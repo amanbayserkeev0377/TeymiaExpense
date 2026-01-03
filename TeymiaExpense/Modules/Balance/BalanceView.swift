@@ -5,7 +5,6 @@ struct BalanceView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var userPreferences
-    @Query private var allCurrencies: [Currency]
     @Query(sort: \Account.sortOrder) private var accounts: [Account]
     
     @State private var showingAddAccount = false
@@ -16,23 +15,14 @@ struct BalanceView: View {
     @State private var isEditMode = false
     
     var baseCurrency: Currency {
-        let baseCode = userPreferences.baseCurrencyCode
-        
-        return allCurrencies.first(where: { $0.code == baseCode }) ?? Currency(
-            code: "USD",
-            symbol: "$",
-            name: "US Dollar",
-            type: .fiat
-        )
-    }
-    
-    var totalBalanceInBaseCurrency: Decimal {
-        let accountsInBaseCurrency = accounts.filter { $0.currency?.code == baseCurrency.code }
-        
-        return accountsInBaseCurrency.reduce(0) { total, account in
-            total + account.balance
+            userPreferences.baseCurrency
         }
-    }
+        
+        var totalBalanceInBaseCurrency: Decimal {
+            accounts
+                .filter { $0.currencyCode == baseCurrency.code }
+                .reduce(0) { $0 + $1.balance }
+        }
     
     var body: some View {
         NavigationStack {
@@ -76,7 +66,7 @@ struct BalanceView: View {
                             
                             Spacer()
                             
-                            Text(totalBalanceInBaseCurrency.formatted(currency: baseCurrency))
+                            Text(CurrencyFormatter.format(totalBalanceInBaseCurrency, currency: baseCurrency))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .fontDesign(.rounded)
@@ -91,7 +81,7 @@ struct BalanceView: View {
             .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
             .scrollContentBackground(.hidden)
             .background {
-                LivelyFloatingBlobsBackground()
+                BackgroundView()
             }
             .navigationTitle("balance".localized)
             .navigationBarTitleDisplayMode(.inline)

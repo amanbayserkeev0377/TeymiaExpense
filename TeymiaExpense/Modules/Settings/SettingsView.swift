@@ -4,31 +4,31 @@ import SwiftData
 struct SettingsView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @State private var changeTheme = false
     @Environment(\.openURL) var openURL
     
     var body: some View {
         List {
+            // MARK: - Support Section
             Section {
                 TipsSection()
             }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
             
+            // MARK: - General Settings
             Section {
+                LanguageSection()
+                
                 NavigationLink {
                     CategoryManagementView()
                 } label: {
                     Label {
                         Text("categories".localized)
                     } icon: {
-                        Image(systemName: "square.grid.2x2.fill")
-                            .settingsIcon(color: .orange)
+                        Image("categories")
+                            .settingsIcon()
                     }
                 }
-            }
-            
-            
-            Section {
-                LanguageSection()
                 
                 NavigationLink {
                     CurrencySettingsView()
@@ -36,139 +36,87 @@ struct SettingsView: View {
                     Label {
                         Text("currency".localized)
                     } icon: {
-                        Image(systemName: "coloncurrencysign.circle.fill")
-                            .settingsIcon(color: .green)
+                        Image("dollar").settingsIcon()
                     }
                 }
                 
-                NavigationLink {
-                    AppearanceSection()
+                // Theme Picker
+                Picker(selection: $themeMode) {
+                    ForEach(ThemeMode.allCases, id: \.self) { mode in
+                        Text(mode.title).tag(mode)
+                    }
                 } label: {
                     Label {
-                        Text("appearance".localized)
+                        Text("theme".localized)
                     } icon: {
-                        Image(systemName: "paintbrush.fill")
-                            .settingsIcon(color: .blue)
+                        Image(themeMode.iconName).settingsIcon()
                     }
                 }
-                
-                NavigationLink {
-                    CloudKitSyncView()
-                } label: {
-                    Label {
-                        Text("icloud".localized)
-                    } icon: {
-                        Image(systemName: "icloud.fill")
-                            .settingsIcon(color: .cyan)
-                    }
-                }
+                .pickerStyle(.menu)
+                .tint(.secondary)
             }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
             
+            // MARK: - Legal Section
             Section {
-                Button {
-                    if let url = URL(string: "https://www.notion.so/Privacy-Policy-28cd5178e65a80e297b2e94f9046ae1d") {
-                        UIApplication.shared.open(url)
-                    }
-                } label: {
-                    Label(
-                        title: { Text("privacy_policy".localized) },
-                        icon: {
-                            Image(systemName: "hand.raised.fill")
-                                .settingsIcon(color: .blue)
-                        }
+                LegalButton(
+                        title: "privacy_policy",
+                        icon: "lock",
+                        urlString: "https://www.notion.so/Privacy-Policy-28cd5178e65a80e297b2e94f9046ae1d"
                     )
-                }
-                .tint(.primary)
                 
-                Button {
-                    if let url = URL(string: "https://www.notion.so/Terms-of-Service-28cd5178e65a804f94cff1e109dbb9d5") {
-                        UIApplication.shared.open(url)
-                    }
-                } label: {
-                    Label(
-                        title: { Text("terms_of_service".localized) },
-                        icon: {
-                            Image(systemName: "doc.text.fill")
-                                .settingsIcon(color: .gray)
-                        }
+                LegalButton(
+                        title: "terms_of_service",
+                        icon: "document",
+                        urlString: "https://www.notion.so/Terms-of-Service-28cd5178e65a804f94cff1e109dbb9d5"
                     )
-                }
-                .tint(.primary)
-                
-                NavigationLink {
-                    AttributionsView()
-                } label: {
-                    Label {
-                        Text("attributions".localized)
-                    } icon: {
-                        Image(systemName: "quote.bubble.fill")
-                            .settingsIcon(color: .indigo)
-                    }
-                }
             }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
             
+            // MARK: - Footer
             Section {
-                // Social & Version Section
                 VStack(spacing: 16) {
                     HStack(spacing: 20) {
-                        Button {
-                            if let url = URL(string: "https://github.com/amanbayserkeev0377/TeymiaExpense") {
-                                UIApplication.shared.open(url)
-                            }
-                        } label: {
-                            Image("soc_github")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.secondary)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        let website = URL(string: "https://instagram.com/teymiapps")!
-                        Button {
-                            openURL(website, prefersInApp: true)
-                        } label: {
-                            Image("instagram")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.secondary)
-                            
-                        }
-                        .buttonStyle(.plain)
+                        SocialButton(icon: "soc_github", url: "https://github.com/amanbayserkeev0377/TeymiaExpense")
+                        SocialButton(icon: "instagram", url: "https://instagram.com/teymiapps")
                     }
-                    
-                    VStack(spacing: 4) {
-                        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.4"
-                        
-                        Text("Teymia Expense – \("version".localized) \(version)")
-                            .font(.footnote)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        HStack(spacing: 4) {
-                            Text("made_with".localized)
-                            Image(systemName: "heart.fill")
-                            Text("in_kyrgyzstan")
-                            Text("🇰🇬")
-                        }
-                        .font(.footnote)
-                        .fontDesign(.rounded)
-                        .foregroundStyle(.secondary)
-                    }
+                    AppVersionView()
                 }
                 .frame(maxWidth: .infinity)
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
         }
-        .listStyle(.insetGrouped)
+        .listStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(BackgroundView())
         .navigationTitle("settings".localized)
         .navigationBarTitleDisplayMode(.large)
-        
     }
 }
 
-// MARK: - Tips Section
+// MARK: - Support Extension
+extension ThemeMode {
+    var title: String {
+        switch self {
+        case .system: return "appearance_system".localized
+        case .light: return "appearance_light".localized
+        case .dark: return "appearance_dark".localized
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .system: return "sun"
+        case .light: return "sun"
+        case .dark: return "moon"
+        }
+    }
+}
+
+// MARK: - Subviews
 
 struct TipsSection: View {
     @State private var showingTips = false
@@ -192,11 +140,12 @@ struct TipsSection: View {
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
-                            ) },
+                            )
+                    },
                     icon: {
                         Image("gift.fill")
                             .resizable()
-                            .frame(width: 18, height: 18)
+                            .frame(width: 20, height: 20)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [
@@ -218,13 +167,76 @@ struct TipsSection: View {
     }
 }
 
-extension View {
-    func settingsIcon(color: Color) -> some View {
+struct LegalButton: View {
+    @Environment(\.openURL) private var openURL
+    
+    let title: String
+    let icon: String
+    let urlString: String
+    
+    var body: some View {
+        Button {
+            if let url = URL(string: urlString) {
+                openURL(url, prefersInApp: true)
+            }
+        } label: {
+            Label {
+                Text(title.localized)
+            } icon: {
+                Image(icon)
+                    .settingsIcon()
+            }
+        }
+        .tint(.primary)
+    }
+}
+
+struct SocialButton: View {
+    let icon: String
+    let url: String
+    @Environment(\.openURL) var openURL
+    
+    var body: some View {
+        Button {
+            if let link = URL(string: url) { openURL(link) }
+        } label: {
+            Image(icon)
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct AppVersionView: View {
+    var body: some View {
+        VStack(spacing: 4) {
+            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.4"
+            Text("Teymia Expense – \("version".localized) \(version)")
+                .font(.footnote)
+                .fontDesign(.rounded)
+                .foregroundStyle(.secondary)
+            
+            HStack(spacing: 4) {
+                Text("made_with".localized)
+                Image(systemName: "heart.fill")
+                Text("in_kyrgyzstan")
+                Text("🇰🇬")
+            }
+            .font(.footnote)
+            .fontDesign(.rounded)
+            .foregroundStyle(.secondary)
+        }
+    }
+}
+
+extension Image {
+    func settingsIcon() -> some View {
         self
-            .font(.system(size: 14, weight: .medium))
-            .foregroundStyle(.white)
-            .frame(width: 29, height: 29)
-            .background(color.gradient)
-            .clipShape(.rect(cornerRadius: 8))
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 20, height: 20)
+            .foregroundStyle(Color.primary)
     }
 }

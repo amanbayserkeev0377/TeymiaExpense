@@ -50,6 +50,7 @@ struct TransactionRowView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .fontDesign(.rounded)
+                            .fontWeight(.medium)
                     }
                 }
             }
@@ -63,6 +64,5 @@ struct TransactionRowView: View {
                 .foregroundStyle(transaction.typeColor)
         }
         .contentShape(Rectangle())
-        .padding(.vertical, 2)
     }
 }

@@ -93,7 +93,6 @@ struct DateFilterView: View {
 
 // MARK: - Custom Menu View
 struct CustomMenuView<Label: View, Content: View>: View {
-    var style: CustomMenuStyle = .glass
     var isHapticsEnabled: Bool = true
     @ViewBuilder var label: Label
     @ViewBuilder var content: Content
@@ -113,7 +112,7 @@ struct CustomMenuView<Label: View, Content: View>: View {
             label
                 .matchedTransitionSource(id: "MENUCONTENT", in: namespace)
         }
-        .applyStyle(style)
+        .buttonStyle(.glass)
         .popover(isPresented: $isExpanded) {
             PopOverHelper {
                 content
@@ -138,39 +137,5 @@ fileprivate struct PopOverHelper<Content: View>: View {
                 }
             }
             .presentationCompactAdaptation(.popover)
-    }
-}
-
-enum CustomMenuStyle: String, CaseIterable {
-    case glass = "Glass"
-    case glassProminent = "Glass Prominent"
-}
-
-// MARK: - Style Extension with iOS 26 Fallback
-
-fileprivate extension View {
-    @ViewBuilder
-    func applyStyle(_ style: CustomMenuStyle) -> some View {
-        if #available(iOS 26, *) {
-            // iOS 26: Native glass styles
-            switch style {
-            case .glass:
-                self.buttonStyle(.glass)
-            case .glassProminent:
-                self.buttonStyle(.glassProminent)
-            }
-        } else {
-            self
-                .buttonStyle(.borderless)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    TransparentBlurView(removeAllFilters: true)
-                        .blur(radius: 2, opaque: true)
-                        .background(Color.mainRowBackground.opacity(0.2))
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .shadow(color: .black.opacity(0.08), radius: 8)
-        }
     }
 }

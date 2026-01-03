@@ -11,7 +11,6 @@ struct TeymiaExpenseApp: App {
             Transaction.self,
             Category.self,
             Account.self,
-            Currency.self
         ])
         
         do {
@@ -24,7 +23,6 @@ struct TeymiaExpenseApp: App {
             let container = try ModelContainer(for: schema, configurations: [cloudKitConfig])
             print("✅ CloudKit ModelContainer created successfully")
             
-            createDefaultDataIfNeeded(context: container.mainContext)
             return container
             
         } catch {
@@ -38,7 +36,6 @@ struct TeymiaExpenseApp: App {
                 let container = try ModelContainer(for: schema, configurations: [localConfig])
                 print("✅ Local ModelContainer created successfully")
                 
-                createDefaultDataIfNeeded(context: container.mainContext)
                 return container
                 
             } catch {
@@ -58,29 +55,5 @@ struct TeymiaExpenseApp: App {
                 }
         }
         .modelContainer(sharedModelContainer)
-    }
-}
-
-// MARK: - Default Data Creation
-private func createDefaultDataIfNeeded(context: ModelContext) {
-    let hasCreatedDefaults = UserDefaults.standard.bool(forKey: "hasCreatedDefaultData_v1_1")
-    
-    guard !hasCreatedDefaults else {
-        print("✅ Default data already exists")
-        return
-    }
-    
-    print("📝 Creating default data...")
-    
-    Currency.createDefaults(context: context)
-    Category.createDefaults(context: context)
-    Account.createDefault(context: context)
-
-    do {
-        try context.save()
-        UserDefaults.standard.set(true, forKey: "hasCreatedDefaultData_v1_1")
-        print("✅ Default data created successfully")
-    } catch {
-        print("⚠️ Error saving default data: \(error)")
     }
 }

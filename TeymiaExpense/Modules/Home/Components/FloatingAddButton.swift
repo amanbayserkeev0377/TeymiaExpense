@@ -28,11 +28,10 @@ struct FloatingPlusButton: View {
             buttonContent
         }
         .frame(width: 60, height: 60)
-        .applyGlassEffect()
+        .glassEffect(.regular.tint(Color.primary).interactive(), in: .circle)
         .clipShape(Circle())
         .contentShape(Circle())
         .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
-        .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
         
         buttonView
     }
@@ -40,31 +39,7 @@ struct FloatingPlusButton: View {
     private var buttonContent: some View {
         Image(systemName: "plus")
             .font(.system(size: 24, weight: .bold))
-            .foregroundStyle(.white)
+            .foregroundStyle(.primaryInverse)
             .frame(width: 44, height: 44)
-    }
-}
-
-// MARK: - Glass Effect Extension
-
-extension View {
-    @ViewBuilder
-    func applyGlassEffect() -> some View {
-        if #available(iOS 26.0, *) {
-            self.glassEffect(.regular.tint(Color.primary).interactive(), in: .circle)
-        } else {
-            self.background {
-                ZStack {
-                    // Blur background
-                    TransparentBlurView(removeAllFilters: true)
-                        .blur(radius: 2, opaque: true)
-                    
-                    // Color overlay
-                    Circle()
-                        .fill(Color.primary.opacity(0.7))
-                }
-                .clipShape(Circle())
-            }
-        }
     }
 }

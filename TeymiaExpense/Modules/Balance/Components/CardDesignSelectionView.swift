@@ -118,7 +118,7 @@ struct CardDesignSelectionSection: View {
                         )
                 } else {
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.secondary.opacity(0.1))
+                        .fill(Color.secondary.opacity(0.07))
                         .frame(width: frameWidth, height: frameHeight)
                         .overlay {
                             Image(systemName: "plus")

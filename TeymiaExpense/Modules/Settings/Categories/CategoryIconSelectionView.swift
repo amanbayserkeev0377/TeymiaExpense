@@ -126,7 +126,7 @@ struct CategoryIconSelectionView: View {
                 .padding(10)
                 .background(
                     Circle()
-                        .fill(selectedIcon == icon ? Color.primary : Color.secondary.opacity(0.1))
+                        .fill(selectedIcon == icon ? Color.primary : Color.secondary.opacity(0.07))
                 )
         }
         .buttonStyle(.plain)

@@ -5,7 +5,6 @@ struct CategoryTransactionsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var userPreferences
-    @Query private var currencies: [Currency]
     
     let category: Category
     let startDate: Date
@@ -50,7 +49,7 @@ struct CategoryTransactionsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
-                        Text(userPreferences.formatAmount(totalAmount, currencies: currencies))
+                        Text(userPreferences.formatAmount(totalAmount))
                             .font(.title2)
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
