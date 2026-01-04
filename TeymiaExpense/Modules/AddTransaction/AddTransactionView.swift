@@ -103,8 +103,19 @@ struct AddTransactionView: View {
                                 selectedCategory: $selectedCategory
                             )
                         } header: {
-                            Text("category".localized)
-                                .padding(.leading, 16)
+                            HStack {
+                                Text("category".localized)
+                                Spacer()
+                                NavigationLink {
+                                    CategoryManagementView(initialType: currentCategoryType)
+                                } label: {
+                                    Image(systemName: "ellipsis.circle.fill")
+                                        .font(.system(size: 20))
+                                        .foregroundStyle(Color.secondary.opacity(0.5))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .padding(.horizontal, 20)
                         }
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
@@ -207,6 +218,15 @@ struct AddTransactionView: View {
             return selectedAccount != nil && selectedCategory != nil
         case .transfer:
             return fromAccount != nil && toAccount != nil && fromAccount != toAccount
+        }
+    }
+    
+    private var currentCategoryType: CategoryType {
+        switch selectedType {
+        case .income:
+            return .income
+        case .expense, .transfer:
+            return .expense
         }
     }
     

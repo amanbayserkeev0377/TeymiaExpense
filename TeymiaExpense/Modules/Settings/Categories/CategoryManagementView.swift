@@ -6,7 +6,7 @@ struct CategoryManagementView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @State private var selectedType: CategoryType = .expense
+    @State private var selectedType: CategoryType
     @State private var isEditMode = false
     
     // Sheet state
@@ -30,6 +30,10 @@ struct CategoryManagementView: View {
         categories
             .filter { $0.type == selectedType }
             .sorted { $0.sortOrder < $1.sortOrder }
+    }
+    
+    init(initialType: CategoryType = .expense) {
+        _selectedType = State(initialValue: initialType)
     }
     
     var body: some View {
@@ -81,6 +85,7 @@ struct CategoryManagementView: View {
                 .listRowSeparatorTint(Color.secondary.opacity(0.07))
             }
         }
+        .tint(.secondary)
         .listStyle(.plain)
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
         .navigationTitle("categories".localized)
@@ -110,7 +115,7 @@ struct CategoryManagementView: View {
                             .padding(4)
                             .foregroundStyle(Color.primaryInverse)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                     
                     Button(role: .destructive) {
                         confirmDeleteSelectedCategories()
@@ -119,15 +124,11 @@ struct CategoryManagementView: View {
                             .padding(4)
                     }
                     .tint(.red)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                     .disabled(selectedCategories.isEmpty)
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background {
-                    TransparentBlurView(removeAllFilters: true)
-                        .blur(radius: 2, opaque: false)
-                }
             }
         }
         .sheet(isPresented: $showingAddCategory) {

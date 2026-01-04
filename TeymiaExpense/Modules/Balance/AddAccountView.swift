@@ -47,14 +47,12 @@ struct AddAccountView: View {
                         currencyCode: selectedCurrency?.code ?? "USD",
                         customImage: customImage
                     )
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                    .animation(.smooth(duration: 0.4), value: selectedDesignType)
-                    .animation(.smooth(duration: 0.4), value: selectedDesignIndex)
+                    .padding(.horizontal, 16)
                 }
                 .listRowSpacing(0)
-                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowSeparator(.hidden)
                 
                 // Account Details
                 Section {

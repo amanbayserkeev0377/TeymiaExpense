@@ -24,7 +24,7 @@ struct AccountCardPreview: View {
                         .padding(12)
                         .background(
                             Circle()
-                                .fill(.black.opacity(0.1))
+                                .fill(.primaryInverse.opacity(0.05))
                         )
                     
                     Spacer()
@@ -66,31 +66,34 @@ struct AccountCardPreview: View {
                 .padding(.horizontal, 20)
             }
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 220)
+        .background(Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
     
     @ViewBuilder
     private var backgroundView: some View {
-        // Check for custom image first (designIndex == -1)
-        if designIndex == -1, let image = customImage {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 220)
-                .clipShape(.rect(cornerRadius: 20))
-        } else {
-            switch designType {
-            case .image:
-                Image(AccountImageData.image(at: designIndex).imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 220)
-                    .clipShape(.rect(cornerRadius: 20))
-            case .color:
-                Rectangle()
-                    .fill(AccountColor.gradient(at: designIndex))
-                    .frame(height: 220)
-                    .clipShape(.rect(cornerRadius: 20))
+        GeometryReader { geometry in
+            Group {
+                if designIndex == -1, let image = customImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    switch designType {
+                    case .image:
+                        Image(AccountImageData.image(at: designIndex).imageName)
+                            .resizable()
+                            .scaledToFill()
+                    case .color:
+                        Rectangle()
+                            .fill(AccountColor.gradient(at: designIndex))
+                    }
+                }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
         }
     }
 }

@@ -44,7 +44,7 @@ struct AccountCardView: View {
                         .padding(12)
                         .background(
                             Circle()
-                                .fill(.black.opacity(0.1))
+                                .fill(.primaryInverse.opacity(0.05))
                         )
                     
                     Spacer()

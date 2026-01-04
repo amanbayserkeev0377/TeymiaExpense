@@ -11,6 +11,7 @@ struct HomeView: View {
     @Query(sort: \Transaction.date, order: .reverse)
     private var allTransactions: [Transaction]
     
+    @State private var showingAddAccount = false
     @State private var showingAddTransaction = false
     @State private var editingTransaction: Transaction?
     @State private var startDate = Date.startOfCurrentMonth
@@ -47,7 +48,8 @@ struct HomeView: View {
                                 accounts: accounts,
                                 scrollProgressX: $scrollProgressX,
                                 topInset: topInset,
-                                scrollOffsetY: scrollOffsetY
+                                scrollOffsetY: scrollOffsetY,
+                                onAddAccount: { showingAddAccount = true }
                             )
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
@@ -148,6 +150,9 @@ struct HomeView: View {
                 .padding(.top, safeArea.top)
             }
             .ignoresSafeArea(.container, edges: .top)
+        }
+        .sheet(isPresented: $showingAddAccount) {
+            AddAccountView()
         }
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)

@@ -101,6 +101,14 @@
 "finance" = "Finance";
 "brands" = "Brands";
 "miscellaneous" = "Miscellaneous";
+"other" = "Other";
+"groceries" = "Groceries";
+"cafe" = "Cafe";
+"salary" = "Salary";
+"gift" = "Gift";
+"bonuses" = "Bonuses";
+"business" = "Business";
+"investment" = "Investment";
 
 /* ========================================================================= */
 /* 6. ACTIONS & ALERTS                        */
@@ -112,6 +120,7 @@
 "select_all" = "Select All";
 "deselect_all" = "Deselect All";
 "unhide" = "Unhide";
+"create_first_account" = "Create First Account";
 "create_second_account" = "Create second account";
 
 /* Delete Buttons & Counters */
@@ -119,8 +128,7 @@
 "alert_delete_category" = "Delete category?";
 
 /* Account Deletion Alerts */
-"account_delete_alert" = "Are you sure you want to delete this account?";
-"account_delete_alert_txn" = "This account has %lld transactions. Deleting it will also delete all associated transactions.";
+"account_delete_alert" = "Are you sure? Deleting this account will permanently erase all related transactions.";
 
 /* Transaction Deletion Alerts */
 "transaction_delete_alert_single" = "Are you sure you want to delete this transaction?";

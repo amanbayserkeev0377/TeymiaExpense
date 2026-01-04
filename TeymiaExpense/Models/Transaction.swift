@@ -24,7 +24,7 @@ final class Transaction {
         type: TransactionType,
         category: Category? = nil,
         account: Account? = nil,
-        toAccount: Account? = nil,
+        toAccount: Account? = nil
     ) {
         self.amount = amount
         self.note = note

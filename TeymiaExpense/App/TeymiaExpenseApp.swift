@@ -49,7 +49,7 @@ struct TeymiaExpenseApp: App {
             Group {
                 if firstLaunchManager.shouldShowOnboarding {
                     TeymiaOnBoardingView {
-                        // Используем withAnimation, чтобы переход к MainTabView был плавным
+                        Category.createDefaults(context: sharedModelContainer.mainContext)
                         withAnimation(.easeInOut(duration: 0.5)) {
                             firstLaunchManager.completeOnboarding()
                         }

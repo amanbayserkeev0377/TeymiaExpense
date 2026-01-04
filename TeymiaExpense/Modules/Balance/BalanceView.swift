@@ -139,13 +139,7 @@ struct BalanceView: View {
     }
     
     private func confirmDeleteAccount(_ account: Account) {
-        let transactionCount = account.transactions?.count ?? 0
-        
-        if transactionCount > 0 {
-            deleteAlertMessage = "account_delete_alert_txn".localized
-        } else {
-            deleteAlertMessage = "account_delete_alert".localized
-        }
+        deleteAlertMessage = "account_delete_alert".localized
         
         pendingDeleteAction = {
             withAnimation {

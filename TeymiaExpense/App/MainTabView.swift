@@ -5,29 +5,23 @@ struct MainTabView: View {
     
     var body: some View {
         TabView {
-            NavigationStack {
-                HomeView()
-            }
-            .tabItem {
-                Image("home.fill")
-                Text("home".localized)
-            }
+            HomeView()
+                .tabItem {
+                    Image("home.fill")
+                    Text("home".localized)
+                }
             
-            NavigationStack {
-                BalanceView()
-            }
-            .tabItem {
-                Image("balance.fill")
-                Text("balance".localized)
-            }
+            BalanceView()
+                .tabItem {
+                    Image("balance.fill")
+                    Text("balance".localized)
+                }
             
-            NavigationStack {
-                OverviewView()
-            }
-            .tabItem {
-                Image("overview.fill")
-                Text("overview".localized)
-            }
+            OverviewView()
+                .tabItem {
+                    Image("overview.fill")
+                    Text("overview".localized)
+                }
             
             NavigationStack {
                 SettingsView()

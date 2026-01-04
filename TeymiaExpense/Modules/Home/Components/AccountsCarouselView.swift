@@ -5,6 +5,7 @@ struct AccountsCarouselView: View {
     @Binding var scrollProgressX: CGFloat
     let topInset: CGFloat
     let scrollOffsetY: CGFloat
+    var onAddAccount: () -> Void
     
     private let spacing: CGFloat = 6
     @State private var selectedAccount: Account?
@@ -13,10 +14,7 @@ struct AccountsCarouselView: View {
     var body: some View {
         VStack(spacing: 0) {
             if accounts.isEmpty {
-                ContentUnavailableView(
-                    "no_accounts".localized,
-                    systemImage: "magnifyingglass",
-                    )
+                AccountEmptyStateView(onAdd: onAddAccount)
             } else {
                 // Accounts carousel
                 ScrollView(.horizontal) {
@@ -138,5 +136,57 @@ struct CarouselBackdropView: View {
         .padding(.bottom, -60)
         .padding(.top, -topInset)
         .offset(y: scrollOffsetY < 0 ? scrollOffsetY : 0)
+    }
+}
+
+// MARK: - Empty View
+
+struct AccountEmptyStateView: View {
+    var onAdd: () -> Void
+    
+    var body: some View {
+        Button(action: onAdd) {
+            ZStack {
+                AccountCardPreview(
+                    name: "account_name".localized,
+                    balance: "557231",
+                    designType: .color,
+                    designIndex: 23,
+                    icon: "credit.card",
+                    currencyCode: "USD",
+                    customImage: nil
+                )
+                .blur(radius: 4)
+                .opacity(0.8)
+                
+                HStack(spacing: 10) {
+                    Text("create_first_account".localized)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    
+                    Image("credit.card")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                }
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .glassEffect()
+            }
+        }
+        .buttonStyle(EmptyStateButtonStyle())
+        .frame(height: 220)
+        .padding(.horizontal, 15)
+    }
+}
+
+struct EmptyStateButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }

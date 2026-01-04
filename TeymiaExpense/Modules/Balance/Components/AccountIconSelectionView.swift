@@ -69,6 +69,5 @@ struct AccountIconSection: View {
                 .scaleEffect(isSelected ? 1.1 : 1.0)
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.selection, trigger: selectedIcon)
     }
 }

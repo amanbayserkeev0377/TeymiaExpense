@@ -8,7 +8,6 @@ struct CategorySection: Identifiable {
 
 struct CategoryIconSelectionView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
     @Binding var selectedIcon: String
     @State private var searchText: String = ""
     @FocusState private var isSearchFocused: Bool
@@ -84,9 +83,6 @@ struct CategoryIconSelectionView: View {
             .searchable(text: $searchText, placement: .automatic)
             .focused($isSearchFocused)
             .autocorrectionDisabled()
-            .toolbar {
-                CloseToolbarButton()
-            }
         }
     }
     
@@ -120,7 +116,7 @@ struct CategoryIconSelectionView: View {
                 .frame(width: 24, height: 24)
                 .foregroundStyle(
                     selectedIcon == icon
-                    ? (colorScheme == .light ? Color.white : Color.black)
+                    ? Color.primaryInverse
                     : Color.primary
                 )
                 .padding(10)

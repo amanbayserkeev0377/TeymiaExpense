@@ -11,13 +11,10 @@ struct CategoryFormView: View {
     
     @State private var categoryName: String
     @State private var selectedIcon: String
-    @State private var showingIconSelection = false
-    
     @FocusState private var isCategoryNameFocused: Bool
-
+    
     // MARK: - Initializers
     
-    /// Create form for adding new category
     init(categoryType: CategoryType) {
         self.editingCategory = nil
         self.categoryType = categoryType
@@ -25,7 +22,6 @@ struct CategoryFormView: View {
         self._selectedIcon = State(initialValue: "general")
     }
     
-    /// Create form for editing existing category
     init(editingCategory: Category) {
         self.editingCategory = editingCategory
         self.categoryType = editingCategory.type
@@ -33,13 +29,7 @@ struct CategoryFormView: View {
         self._selectedIcon = State(initialValue: editingCategory.iconName)
     }
     
-    private var isEditing: Bool {
-        editingCategory != nil
-    }
-    
-    private var navigationTitle: String {
-        isEditing ? "edit_category".localized : "new_category".localized
-    }
+    private var isEditing: Bool { editingCategory != nil }
     
     private var canSave: Bool {
         !categoryName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -54,47 +44,35 @@ struct CategoryFormView: View {
                             .autocorrectionDisabled()
                             .focused($isCategoryNameFocused)
                             .fontDesign(.rounded)
-                            
-                        Button(action: {
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
-                                categoryName = ""
+                        
+                        if !categoryName.isEmpty {
+                            Button {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                                    categoryName = ""
+                                }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.secondary.opacity(0.5))
+                                    .font(.system(size: 18))
                             }
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(Color.secondary.opacity(0.5))
-                                .font(.system(size: 18))
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
-                        .opacity(categoryName.isEmpty ? 0 : 1)
-                        .scaleEffect(categoryName.isEmpty ? 0.001 : 1)
-                        .animation(.spring(response: 0.4, dampingFraction: 0.5), value: categoryName.isEmpty)
-                        .disabled(categoryName.isEmpty)
                     }
-                    .contentShape(Rectangle())
                     
-                    // Icon Selection
-                    Button {
-                        showingIconSelection = true
+                    NavigationLink {
+                        CategoryIconSelectionView(selectedIcon: $selectedIcon)
                     } label: {
-                        HStack {
-                            Image(selectedIcon)
-                                .resizable()
-                                .frame(width: 18, height: 18)
-                                .foregroundStyle(.primary)
-                            
+                        Label {
                             Text("icon".localized)
                                 .foregroundColor(.primary)
-                            
-                            Spacer()
-                            
-                            Image("chevron.right")
+                        } icon: {
+                            Image(selectedIcon)
                                 .resizable()
+                                .aspectRatio(contentMode: .fit)
                                 .frame(width: 20, height: 20)
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(.primary)
                         }
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
                 } header: {
                     Text(categoryType == .expense ? "expense".localized : "income".localized)
                 }
@@ -103,11 +81,9 @@ struct CategoryFormView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background {
-                BackgroundView()
-            }
-            .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.large)
+            .background(BackgroundView())
+            .navigationTitle(isEditing ? "edit_category".localized : "new_category".localized)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbarButton()
                 
@@ -124,40 +100,31 @@ struct CategoryFormView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingIconSelection) {
-            CategoryIconSelectionView(selectedIcon: $selectedIcon)
-        }
     }
     
     // MARK: - Actions
     
     private func save() {
         isCategoryNameFocused = false
-        
         let trimmedName = categoryName.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if let existingCategory = editingCategory {
-            // Update existing category
-            existingCategory.name = trimmedName
-            existingCategory.iconName = selectedIcon
-        } else {
-            // Create new category
-            let sortOrder = categories.filter { $0.type == categoryType }.count
-            let newCategory = Category(
-                name: trimmedName,
-                iconName: selectedIcon,
-                type: categoryType,
-                sortOrder: sortOrder,
-            )
-            modelContext.insert(newCategory)
-        }
-        
-        do {
-            try modelContext.save()
+        withAnimation(.spring()) {
+            if let existingCategory = editingCategory {
+                existingCategory.name = trimmedName
+                existingCategory.iconName = selectedIcon
+            } else {
+                let sortOrder = categories.filter { $0.type == categoryType }.count
+                let newCategory = Category(
+                    name: trimmedName,
+                    iconName: selectedIcon,
+                    type: categoryType,
+                    sortOrder: sortOrder
+                )
+                modelContext.insert(newCategory)
+            }
+            
+            try? modelContext.save()
             dismiss()
-        } catch {
-            print("Error saving category: \(error)")
-            isCategoryNameFocused = true
         }
     }
 }

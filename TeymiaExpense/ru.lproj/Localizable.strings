@@ -101,7 +101,14 @@
 "finance" = "Финансы";
 "brands" = "Брэнды";
 "miscellaneous" = "Разное";
-
+"other" = "Разное";
+"groceries" = "Продукты";
+"cafe" = "Кафе";
+"salary" = "Зарплата";
+"gift" = "Подарок";
+"bonuses" = "Бонусы";
+"business" = "Бизнес";
+"investment" = "Инвестиции";
 
 /* ========================================================================= */
 /* 6. ACTIONS & ALERTS                        */
@@ -113,6 +120,7 @@
 "select_all" = "Выбрать все";
 "deselect_all" = "Снять выделение";
 "unhide" = "Показать";
+"create_first_account" = "Создать первый счёт";
 "create_second_account" = "Создать второй счёт";
 
 /* Delete Buttons & Counters */
@@ -120,8 +128,7 @@
 "alert_delete_category" = "Удалить категорию?";
 
 /* Account Deletion Alerts */
-"account_delete_alert" = "Вы уверены что хотите удалить счёт?";
-"account_delete_alert_txn" = "На этом счёте %lld транзакций. При удалении счёта все связанные транзакции тоже будут удалены.";
+"account_delete_alert" = "Вы уверены? При удалении счёта все связанные с ним транзакции будут удалены безвозвратно.";
 
 /* Transaction Deletion Alerts */
 "transaction_delete_alert_single" = "Вы уверены, что хотите удалить эту транзакцию?";
