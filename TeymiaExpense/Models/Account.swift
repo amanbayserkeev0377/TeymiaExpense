@@ -61,7 +61,7 @@ enum AccountDesignType: String, CaseIterable, Codable {
 extension Account {
     
     var formattedBalance: String {
-        return CurrencyFormatter.format(balance, currency: self.currency)
+        return CurrencyFormatter.format(balance, currency: currency)
     }
     
     var cardDarkColor: Color {

@@ -13,16 +13,17 @@ struct BalanceView: View {
     @State private var deleteAlertMessage = ""
     @State private var pendingDeleteAction: (() -> Void)?
     @State private var isEditMode = false
+    @State private var lastRatesUpdate: Date = Date()
     
     var baseCurrency: Currency {
             userPreferences.baseCurrency
         }
         
-        var totalBalanceInBaseCurrency: Decimal {
-            accounts
-                .filter { $0.currencyCode == baseCurrency.code }
-                .reduce(0) { $0 + $1.balance }
+    private var totalBalanceInBaseCurrency: Decimal {
+        accounts.reduce(0) { total, account in
+            total + CurrencyService.shared.convert(account.balance, from: account.currencyCode, to: baseCurrency.code)
         }
+    }
     
     var body: some View {
         NavigationStack {
@@ -76,6 +77,12 @@ struct BalanceView: View {
                     .listRowBackground(Color.clear)
                 }
             }
+            .refreshable {
+                await CurrencyService.shared.refreshRates(for: accounts, baseCurrencyCode: "USD")
+                withAnimation {
+                    lastRatesUpdate = Date()
+                }
+            }
             .listStyle(.plain)
             .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
             .scrollContentBackground(.hidden)
@@ -90,6 +97,12 @@ struct BalanceView: View {
                 AddToolbarButton {
                     showingAddAccount = true
                 }
+            }
+        }
+        .task {
+            await CurrencyService.shared.refreshRatesIfNeeded(for: accounts, baseCurrencyCode: "USD")
+            withAnimation {
+                lastRatesUpdate = Date()
             }
         }
         .sheet(isPresented: $showingAddAccount) {
@@ -129,7 +142,7 @@ struct BalanceView: View {
         let transactionCount = account.transactions?.count ?? 0
         
         if transactionCount > 0 {
-            deleteAlertMessage = "account_delete_alert_txn"
+            deleteAlertMessage = "account_delete_alert_txn".localized
         } else {
             deleteAlertMessage = "account_delete_alert".localized
         }
@@ -187,7 +200,6 @@ struct AccountRowView: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)
         }
-        .padding(.vertical, 4)
         .contentShape(Rectangle())
     }
 }

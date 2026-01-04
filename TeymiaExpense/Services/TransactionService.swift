@@ -4,20 +4,23 @@ import SwiftData
 // MARK: - Core Logic (Service)
 struct TransactionService {
     static func revertBalanceChanges(for transaction: Transaction) {
-            transaction.account?.balance -= transaction.amount
-            
-            if transaction.type == .transfer {
-                transaction.toAccount?.balance -= transaction.amount
-            }
+        // Если отменяем расход: возвращаем деньги на счет (сумма расхода у тебя отрицательная, поэтому -= вернет плюс)
+        transaction.account?.balance -= transaction.amount
+        
+        if transaction.type == .transfer {
+            // Если отменяем перевод: забираем деньги с целевого счета
+            transaction.toAccount?.balance -= transaction.amount
         }
+    }
 
-        static func applyBalanceChanges(for transaction: Transaction) {
-            transaction.account?.balance += transaction.amount
-            
-            if transaction.type == .transfer {
-                transaction.toAccount?.balance += transaction.amount
-            }
+    static func applyBalanceChanges(for transaction: Transaction) {
+        transaction.account?.balance += transaction.amount
+        
+        if transaction.type == .transfer {
+            // Если это перевод: добавляем деньги на целевой счет
+            transaction.toAccount?.balance += transaction.amount
         }
+    }
     
     static func saveExpense(amount: Decimal, account: Account, category: Category, note: String?, date: Date, context: ModelContext, userPreferences: UserPreferences) throws {
         let transaction = Transaction(amount: -abs(amount), note: note?.isEmpty == true ? nil : note, date: date, type: .expense, category: category, account: account)
@@ -45,12 +48,24 @@ struct TransactionService {
     }
 
     static func updateTransaction(_ transaction: Transaction, newAmount: Decimal, newAccount: Account?, newToAccount: Account?, newCategory: Category?, newNote: String?, newDate: Date, newType: TransactionType, context: ModelContext) throws {
-        // Откат старого баланса
-        transaction.account?.balance -= transaction.amount
-        if transaction.type == .transfer { transaction.toAccount?.balance -= transaction.amount }
         
-        // Обновление данных (сохраняем знак в зависимости от типа)
+        // --- ШАГ 1: ОТКАТ СТАРОГО БАЛАНСА ---
+        // Мы делаем ровно обратное тому, что делали при сохранении
+        if let oldAcc = transaction.account {
+            if transaction.type == .transfer {
+                oldAcc.balance += transaction.amount // Возвращаем то, что ушло
+            } else {
+                oldAcc.balance -= transaction.amount // Вычитаем доход или прибавляем расход
+            }
+        }
+        
+        if transaction.type == .transfer, let oldToAcc = transaction.toAccount {
+            oldToAcc.balance -= transaction.amount // Забираем то, что пришло
+        }
+        
+        // --- ШАГ 2: ОБНОВЛЕНИЕ ДАННЫХ ---
         transaction.type = newType
+        // Сохраняем расход как минус, остальное как плюс
         transaction.amount = (newType == .expense) ? -abs(newAmount) : abs(newAmount)
         transaction.account = newAccount
         transaction.toAccount = newToAccount
@@ -58,9 +73,18 @@ struct TransactionService {
         transaction.note = newNote?.isEmpty == true ? nil : newNote
         transaction.date = newDate
         
-        // Применение нового баланса
-        transaction.account?.balance += transaction.amount
-        if transaction.type == .transfer { transaction.toAccount?.balance += transaction.amount }
+        // --- ШАГ 3: ПРИМЕНЕНИЕ НОВОГО БАЛАНСА ---
+        if let newAcc = transaction.account {
+            if newType == .transfer {
+                newAcc.balance -= transaction.amount // Уходит со счета
+            } else {
+                newAcc.balance += transaction.amount // Добавляется (доход) или вычитается (расход)
+            }
+        }
+        
+        if newType == .transfer, let newToAcc = transaction.toAccount {
+            newToAcc.balance += transaction.amount // Приходит на счет
+        }
         
         try context.save()
     }
@@ -114,21 +138,29 @@ struct CurrencyFormatter {
         formatter.numberStyle = .decimal
         formatter.groupingSeparator = " "
         
-        // Настройка дробной части
-        if amount == 0 {
+        // 1. Определяем количество знаков в зависимости от типа валюты
+        if currency.type == .crypto {
+            // Для крипты всегда разрешаем до 8 знаков
             formatter.minimumFractionDigits = 0
-            formatter.maximumFractionDigits = 0
-        } else if abs(amount) < 1 {
-            // Для маленьких значений (крипта) показываем до 8 знаков
-            formatter.minimumFractionDigits = 2
             formatter.maximumFractionDigits = 8
         } else {
-            // Для обычных денег: если целое — 0 знаков, если есть копейки — 2 знака
-            formatter.minimumFractionDigits = 0
-            formatter.maximumFractionDigits = 2
+            // Для фиата (USD, KGS, RUB)
+            if amount == 0 {
+                formatter.minimumFractionDigits = 0
+                formatter.maximumFractionDigits = 0
+            } else {
+                // Проверяем, есть ли дробная часть у Decimal напрямую (без Double)
+                let isInteger = amount == Decimal(Int64(NSDecimalNumber(decimal: amount).doubleValue))
+                formatter.minimumFractionDigits = isInteger ? 0 : 2
+                formatter.maximumFractionDigits = 2
+            }
         }
         
         let numberString = formatter.string(from: abs(amount) as NSDecimalNumber) ?? "0"
-        return "\(numberString) \(currency.symbol)"
+        
+        // Знак минус если число отрицательное
+        let prefix = amount < 0 ? "-" : ""
+        
+        return "\(prefix)\(numberString) \(currency.symbol)"
     }
 }

@@ -14,7 +14,6 @@ struct TransactionRowView: View {
             
             if transaction.type == .transfer {
                 Text(transaction.displayTitle(relativeTo: nil))
-                    .font(.body)
                     .fontWeight(.medium)
                     .fontDesign(.rounded)
                     .foregroundStyle(.primary)
@@ -25,9 +24,7 @@ struct TransactionRowView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
                         Text(transaction.displayTitle(relativeTo: nil))
-                            .font(.body)
                             .fontWeight(.medium)
-                            .fontDesign(.rounded)
                             .foregroundStyle(.primary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.9)
@@ -37,7 +34,6 @@ struct TransactionRowView: View {
                             Text("(\(note))")
                                 .font(.body)
                                 .fontWeight(.medium)
-                                .fontDesign(.rounded)
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
@@ -60,7 +56,6 @@ struct TransactionRowView: View {
             Text(transaction.formattedAmount(for: transaction.account))
                 .font(.body)
                 .fontWeight(.semibold)
-                .fontDesign(.rounded)
                 .foregroundStyle(transaction.typeColor)
         }
         .contentShape(Rectangle())

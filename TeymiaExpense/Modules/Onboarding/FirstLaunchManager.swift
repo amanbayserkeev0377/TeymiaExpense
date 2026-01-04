@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - First Launch Manager
 class FirstLaunchManager: ObservableObject {
-    @Published var shouldShowOnboarding: Bool
+    @Published var shouldShowOnboarding: Bool = true
     
     private let userDefaults = UserDefaults.standard
     private let firstLaunchKey = "hasSeenOnboarding"
@@ -13,6 +13,6 @@ class FirstLaunchManager: ObservableObject {
     
     func completeOnboarding() {
         userDefaults.set(true, forKey: firstLaunchKey)
-        shouldShowOnboarding = false
+        shouldShowOnboarding = true
     }
 }

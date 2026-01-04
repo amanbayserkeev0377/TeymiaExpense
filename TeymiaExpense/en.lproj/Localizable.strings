@@ -35,7 +35,6 @@
 "no_accounts" = "No Accounts";
 "no_categories" = "No categories";
 "no_categories_description" = "Tap + to add a category";
-"no_hidden_transactions" = "No Hidden Transactions";
 
 
 /* ========================================================================= */
@@ -46,7 +45,7 @@
 "expenses" = "Expenses";
 "income" = "Income";
 "transfer" = "Transfer";
-"main_account" = "Main Account";
+"transactions" = "Transactions";
 "photo" = "Photo";
 "color" = "Color";
 
@@ -89,22 +88,19 @@
 /* 5. CATEGORIES & GROUPS                     */
 /* ========================================================================= */
 
-"other" = "Other";
-"groceries" = "Groceries";
-"cafe" = "Cafe";
+"food_drinks" = "Food & Drinks";
 "transport" = "Transport";
-"shopping" = "Shopping";
 "entertainment" = "Entertainment";
+"sports" = "Sports";
+"shopping" = "Shopping";
 "health" = "Health";
 "housing" = "Housing";
-"education" = "Education";
 "family" = "Family";
-"salary" = "Salary";
-"gift" = "Gift";
-"bonuses" = "Bonuses";
-"business" = "Business";
-"investment" = "Investment";
-
+"travel" = "Travel";
+"education" = "Education";
+"finance" = "Finance";
+"brands" = "Brands";
+"miscellaneous" = "Miscellaneous";
 
 /* ========================================================================= */
 /* 6. ACTIONS & ALERTS                        */
@@ -142,14 +138,12 @@
 /* ========================================================================= */
 
 /* Main Settings Menu */
-"categories" = "Categories"; /* NOTE: Conflict with category list, consider renaming to SETTINGS_CATEGORIES */
+"categories" = "Categories";
 "icloud" = "iCloud";
-"hidden_transactions" = "Hidden Transactions";
 "language" = "Language";
 
 /* Appearance Settings */
 "theme" = "Theme";
-"appearance_mode" = "Appearance mode";
 "appearance_dark" = "Dark";
 "appearance_light" = "Light";
 "appearance_system" = "System";

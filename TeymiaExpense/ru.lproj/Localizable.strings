@@ -35,7 +35,6 @@
 "no_accounts" = "Нет счетов";
 "no_categories" = "Нет категорий";
 "no_categories_description" = "Нажмите + чтобы добавить категорию";
-"no_hidden_transactions" = "Нет скрытых транзакций";
 
 
 /* ========================================================================= */
@@ -46,7 +45,7 @@
 "expenses" = "Расходы";
 "income" = "Доход";
 "transfer" = "Перевод";
-"main_account" = "Основной счёт";
+"transactions" = "Транзакции";
 "photo" = "Фото";
 "color" = "Цвет";
 
@@ -89,21 +88,19 @@
 /* 5. CATEGORIES & GROUPS                     */
 /* ========================================================================= */
 
-"other" = "Прочее";
-"groceries" = "Продукты";
-"cafe" = "Кафе";
+"food_drinks" = "Еда & Напитки";
 "transport" = "Транспорт";
-"shopping" = "Покупки";
 "entertainment" = "Развлечения";
+"sports" = "Спорт";
+"shopping" = "Покупки";
 "health" = "Здоровье";
 "housing" = "Жильё";
-"education" = "Образование";
 "family" = "Семья";
-"salary" = "Зарплата";
-"gift" = "Подарок";
-"bonuses" = "Бонусы";
-"business" = "Бизнес";
-"investment" = "Инвестиции";
+"travel" = "Путешествие";
+"education" = "Образование";
+"finance" = "Финансы";
+"brands" = "Брэнды";
+"miscellaneous" = "Разное";
 
 
 /* ========================================================================= */
@@ -144,12 +141,10 @@
 /* Main Settings Menu */
 "categories" = "Категории";
 "icloud" = "iCloud";
-"hidden_transactions" = "Скрытые транзакции";
 "language" = "Язык";
 
 /* Appearance Settings */
 "theme" = "Тема";
-"appearance_mode" = "Режим оформления";
 "appearance_dark" = "Тёмная";
 "appearance_light" = "Светлая";
 "appearance_system" = "Как в системе";

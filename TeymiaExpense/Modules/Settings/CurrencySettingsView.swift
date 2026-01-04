@@ -25,7 +25,7 @@ struct CurrencySettingsView: View {
                     }
                 }
                 .listRowBackground(Color.clear)
-                .listRowSeparatorTint(Color.secondary.opacity(0.1))
+                .listRowSeparatorTint(Color.secondary.opacity(0.07))
             }
         }
         .listStyle(.plain)

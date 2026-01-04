@@ -130,6 +130,10 @@ struct HomeView: View {
                         Color.mainBackground
                             .ignoresSafeArea()
                     }
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear
+                            .frame(height: 80)
+                    }
                     .onScrollGeometryChange(for: ScrollGeometry.self) {
                         $0
                     } action: { oldValue, newValue in
@@ -204,7 +208,6 @@ struct DaySectionHeader: View {
             Text(dateHeaderText)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .fontDesign(.rounded)
                 .foregroundStyle(.primary)
             
             Spacer()

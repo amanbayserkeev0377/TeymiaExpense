@@ -53,6 +53,18 @@ extension Transaction {
         }
         return category?.name ?? "unrecognized".localized
     }
+    
+    func amountForAccount(_ currentAccount: Account) -> Decimal {
+            if type == .transfer {
+                if account?.id == currentAccount.id {
+                    return -amount
+                }
+                else if toAccount?.id == currentAccount.id {
+                    return amount
+                }
+            }
+            return amount
+        }
 }
 
 extension TransactionType {

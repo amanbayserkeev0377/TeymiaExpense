@@ -41,38 +41,48 @@ struct CategoryTransactionsView: View {
     
     var body: some View {
         List {
-            // Summary Section
+            Section {
+                HStack {
+                    Text(DateFormatter.formatDateRange(startDate: startDate, endDate: endDate))
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
+                }
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            
             Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Total \(category.type == .income ? "Income" : "Expense")")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        Text(category.type == .income ? "income".localized : "expense".localized)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
                         
                         Text(userPreferences.formatAmount(totalAmount))
-                            .font(.title2)
+                            .font(.title3)
                             .fontWeight(.bold)
-                            .fontDesign(.rounded)
                             .foregroundStyle(category.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
                     }
                     
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("Transactions")
-                            .font(.caption)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.secondary)
+                        Text("transactions".localized)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
                         
                         Text("\(filteredTransactions.count)")
-                            .font(.title2)
-                            .fontDesign(.rounded)
+                            .font(.title3)
                             .fontWeight(.bold)
                             .foregroundStyle(.primary)
                     }
                 }
-                .padding(.vertical, 8)
             }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
             
             // Transactions List
             if filteredTransactions.isEmpty {
@@ -86,8 +96,11 @@ struct CategoryTransactionsView: View {
                 .listRowBackground(Color.clear)
             } else {
                 ForEach(sortedDates, id: \.self) { date in
+                    let transactionsForDate = groupedTransactions[date] ?? []
+                    let dailyTotal = transactionsForDate.reduce(Decimal.zero) { $0 + $1.amount }
+                    
                     Section {
-                        ForEach(groupedTransactions[date] ?? []) { transaction in
+                        ForEach(transactionsForDate) { transaction in
                             TransactionRowView(transaction: transaction)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -100,27 +113,39 @@ struct CategoryTransactionsView: View {
                                         Image("trash.swipe")
                                     }
                                     .tint(.red)
-                                    
-                                    Button {
-                                        editingTransaction = transaction
-                                    } label: {
-                                        Image("edit")
-                                    }
-                                    .tint(.gray)
                                 }
                         }
                     } header: {
-                        Text(dateHeaderText(for: date))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                            .textCase(nil)
+                        HStack {
+                            Text(dateHeaderText(for: date))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.primary)
+                            
+                            Spacer()
+                            
+                            Text(userPreferences.formatAmount(dailyTotal))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+                        }
+                        .padding(.vertical, 4)
+                        .textCase(nil)
                     }
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
                 }
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(BackgroundView())
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            CloseToolbarButton()
+        }
         .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
         }

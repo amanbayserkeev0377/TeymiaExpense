@@ -46,13 +46,22 @@ struct TeymiaExpenseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(userPreferences)
-                .sheet(isPresented: $firstLaunchManager.shouldShowOnboarding) {
-                    TeymiaOnBoardingView() {
-                        firstLaunchManager.completeOnboarding()
+            Group {
+                if firstLaunchManager.shouldShowOnboarding {
+                    TeymiaOnBoardingView {
+                        // Используем withAnimation, чтобы переход к MainTabView был плавным
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            firstLaunchManager.completeOnboarding()
+                        }
                     }
+                    .transition(.asymmetric(insertion: .identity, removal: .opacity))
+                } else {
+                    MainTabView()
+                        .environment(userPreferences)
+                        .transition(.opacity)
                 }
+            }
+            .animation(.easeInOut, value: firstLaunchManager.shouldShowOnboarding)
         }
         .modelContainer(sharedModelContainer)
     }

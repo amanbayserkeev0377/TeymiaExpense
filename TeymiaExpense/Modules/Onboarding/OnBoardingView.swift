@@ -1,143 +1,181 @@
 import SwiftUI
 
-// MARK: - OnBoarding Feature Model
-struct OnBoardingFeature: Identifiable {
-    let id = UUID()
-    let icon: String
-    let title: String
-    let description: String
-}
-
-// MARK: - Teymia OnBoarding View
 struct TeymiaOnBoardingView: View {
     let onComplete: () -> Void
+    @State private var hapticTrigger: Bool = false
     
-    private let features: [OnBoardingFeature] = [
-        OnBoardingFeature(
-            icon: "categories",
+    @State private var data: [DrawOnSymbolEffectExample.SymbolData] = [
+        .init(
+            name: "chart.bar.xaxis.ascending",
             title: "onboarding_feature_1_title".localized,
-            description: "onboarding_feature_1_description".localized
+            subtitle: "onboarding_feature_1_description".localized,
+            preDelay: 0.3
         ),
-        OnBoardingFeature(
-            icon: "cards.blank",
+        .init(
+            name: "creditcard.arrow.trianglehead.2.clockwise.rotate.90",
             title: "onboarding_feature_2_title".localized,
-            description: "onboarding_feature_2_description".localized
+            subtitle: "onboarding_feature_2_description".localized,
+            preDelay: 1.6
         ),
-        OnBoardingFeature(
-            icon: "bitcoin.symbol",
+        .init(
+            name: "chineseyuanrenminbisign.circle",
             title: "onboarding_feature_3_title".localized,
-            description: "onboarding_feature_3_description".localized
+            subtitle: "onboarding_feature_3_description".localized,
+            preDelay: 1.2
         )
     ]
     
     var body: some View {
         ZStack {
-            ScrollView {
-                VStack(spacing: 30) {
-                    // App Icon Card
-                    VStack(spacing: 16) {
-                        Image("app_icon_main")
-                            .resizable()
-                            .frame(width: 80, height: 80)
-                        
-                        VStack {
-                            Text("welcome_to".localized)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .fontDesign(.rounded)
-                                .multilineTextAlignment(.center)
-                            Text("Teymia Expense")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.primary)
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .padding(.top, 40)
-                    .padding(.bottom, 8)
+            LivelyFloatingBlobsBackground()
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                VStack(spacing: 16) {
+                    Image("app_icon_main")
+                        .resizable()
+                        .frame(width: 80, height: 80)
                     
-                    // Features Card
-                    VStack(spacing: 24) {
-                        ForEach(Array(features.enumerated()), id: \.element.id) { index, feature in
-                            FeatureRow(feature: feature)
-                                .padding(.horizontal, 30)
-                        }
+                    VStack(spacing: 4) {
+                        Text("welcome_to".localized)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Text("Teymia Expense")
+                            .font(.title)
+                            .fontWeight(.bold)
                     }
+                    .foregroundStyle(Color.primary.gradient)
+                    .fontDesign(.rounded)
+                    .multilineTextAlignment(.center)
                 }
-            }
-            .background {
-                LivelyFloatingBlobsBackground()
-            }
-            .scrollIndicators(.hidden)
-            .overlay(alignment: .bottom) {
-                VStack(spacing: 12) {
-                    // Privacy Notice
-                    HStack(spacing: 12) {
-                        Image("lock")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(Color.primary)
-                        
-                        Text("onboarding_privacy_disclaimer".localized)
-                            .font(.caption)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(.horizontal, 24)
-                    
-                    Button(action: onComplete) {
+                .padding(.top, 40)
+                
+                Spacer(minLength: 20)
+                
+                DrawOnSymbolEffectExample(data: data)
+                
+                Spacer(minLength: 40)
+                
+                VStack(spacing: 24) {
+                    Button(action: {
+                        hapticTrigger.toggle()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            onComplete()
+                        }
+                    }) {
                         Text("continue".localized)
                             .fontWeight(.semibold)
-                            .fontDesign(.rounded)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
+                            .frame(height: 54)
+                            .shimmer(.init(
+                                tint: .primaryInverse,
+                                highlight: .yellow,
+                                blur: 5,
+                                speed: 1,
+                                delay: 2
+                            ))
+                            .background {
+                                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                                    .fill(Color.primary)
+                            }
                     }
-                    .tint(Color.primary)
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                    .sensoryFeedback(.impact(weight: .medium, intensity: 1), trigger: hapticTrigger)
+                    .glassEffect(.regular.tint(Color.primary).interactive(), in: Capsule())
+                    .shadow(color: Color.primary.opacity(0.1), radius: 10, y: 4)
+                    
+                    HStack(spacing: 8) {
+                        Image("lock")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                        Text("onboarding_privacy_disclaimer".localized)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .padding(.horizontal, 30)
             }
+            .padding(.bottom, 40)
         }
-        .interactiveDismissDisabled()
     }
 }
 
-// MARK: - Feature Row Component
-struct FeatureRow: View {
-    let feature: OnBoardingFeature
+// MARK: - DrawOn Component
+struct DrawOnSymbolEffectExample: View {
+    @State var data: [SymbolData]
+    @State private var currentIndex: Int = 0
+    @State private var isDisappeared: Bool = false
+    var loopDelay: CGFloat = 1
     
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            // Icon
-            Image(feature.icon)
-                .resizable()
-                .frame(width: 24, height: 24)
-                .foregroundStyle(Color.primary)
-            
-            // Text Content
-            VStack(alignment: .leading, spacing: 4) {
-                Text(feature.title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                
-                Text(feature.description)
-                    .font(.subheadline)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+        VStack(spacing: 30) {
+            ZStack {
+                ForEach(data) { symbolData in
+                    if symbolData.drawOn {
+                        Image(systemName: symbolData.name)
+                            .font(.system(size: symbolData.symbolSize, weight: .regular))
+                            .foregroundStyle(Color.primary.gradient)
+                            .transition(.symbolEffect(.drawOn.individually))
+                    }
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(width: 120, height: 120)
+            
+            VStack(spacing: 12) {
+                Text(data[currentIndex].title)
+                    .font(.title2)
+                    .foregroundStyle(Color.primary.gradient)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+                
+                Text(data[currentIndex].subtitle)
+                    .fontWeight(.medium)
+                    .foregroundStyle(Color.secondary.gradient)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .frame(height: 60, alignment: .top)
+            }
+            .contentTransition(.numericText())
+            .animation(.snappy(duration: 1, extraBounce: 0), value: currentIndex)
+            .fontDesign(.rounded)
+        }
+        .task {
+            await loopSymbols()
+        }
+        .onDisappear {
+            isDisappeared = true
         }
     }
-}
-
-#Preview {
-    TeymiaOnBoardingView {
-        print("Onboarding completed")
+    
+    private func loopSymbols() async {
+        for index in data.indices {
+            if isDisappeared { return }
+            await loopSymbol(index)
+        }
+        guard !isDisappeared else { return }
+        try? await Task.sleep(for: .seconds(loopDelay))
+        await loopSymbols()
+    }
+    
+    private func loopSymbol(_ index: Int) async {
+        let symbolData = data[index]
+        try? await Task.sleep(for: .seconds(symbolData.preDelay))
+        if isDisappeared { return }
+        data[index].drawOn = true
+        currentIndex = index
+        try? await Task.sleep(for: .seconds(symbolData.postDelay))
+        if isDisappeared { return }
+        data[index].drawOn = false
+    }
+    
+    struct SymbolData: Identifiable {
+        var id: UUID = UUID()
+        var name: String
+        var title: String
+        var subtitle: String
+        var symbolSize: CGFloat = 100
+        var preDelay: CGFloat = 1
+        var postDelay: CGFloat = 2
+        fileprivate var drawOn: Bool = false
     }
 }

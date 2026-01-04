@@ -88,9 +88,8 @@ struct OverviewView: View {
     private var dateFilterHeader: some View {
         HStack {
             Text(dateRangeText)
-                .font(.title3)
+                .font(.title2)
                 .fontWeight(.bold)
-                .fontDesign(.rounded)
                 .foregroundStyle(.primary)
             
             Spacer()

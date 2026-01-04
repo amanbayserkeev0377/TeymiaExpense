@@ -47,8 +47,8 @@ struct CategoryFormView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section(categoryType == .expense ? "expense".localized : "income".localized) {
+            List {
+                Section {
                     HStack {
                         TextField("category_name".localized, text: $categoryName)
                             .autocorrectionDisabled()
@@ -95,10 +95,19 @@ struct CategoryFormView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                } header: {
+                    Text(categoryType == .expense ? "expense".localized : "income".localized)
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparatorTint(Color.secondary.opacity(0.07))
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background {
+                BackgroundView()
             }
             .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 CloseToolbarButton()
                 

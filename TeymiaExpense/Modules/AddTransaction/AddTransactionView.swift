@@ -5,9 +5,8 @@ struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var userPreferences
-    @Environment(\.colorScheme) private var colorScheme
     
-    @Query private var accounts: [Account]
+    @Query(sort: \Account.sortOrder) private var accounts: [Account]
     @Query private var categories: [Category]
     
     // MARK: - Edit Mode Support
@@ -141,6 +140,7 @@ struct AddTransactionView: View {
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
                 .listStyle(.grouped)
+                .padding(.top, -35)
                 .scrollContentBackground(.hidden)
                 .scrollIndicators(.hidden)
                 .background(BackgroundView())
@@ -168,7 +168,7 @@ struct AddTransactionView: View {
                             isEditMode ? updateTransaction() : saveTransaction()
                         }
                     )
-                    .padding(.horizontal, 15)
+                    .padding(.horizontal, 16)
                     .padding(.bottom, 6)
                     .transition(.opacity)
                 }
@@ -193,9 +193,14 @@ struct AddTransactionView: View {
     }
     
     private var canSave: Bool {
-        guard !amount.isEmpty,
-              let amountValue = Double(amount),
-              amountValue > 0 else { return false }
+        let sanitizedAmount = amount.replacingOccurrences(of: " ", with: "")
+                                    .replacingOccurrences(of: "\u{00A0}", with: "")
+        
+        guard !sanitizedAmount.isEmpty,
+              let decimalValue = Decimal(string: sanitizedAmount, locale: .current),
+              decimalValue > 0 else {
+            return false
+        }
         
         switch selectedType {
         case .expense, .income:
@@ -274,8 +279,8 @@ struct AddTransactionView: View {
     // MARK: - Save/Update Methods
     
     private func saveTransaction() {
-        guard let amountValue = Double(amount) else { return }
-        let decimalAmount = Decimal(amountValue)
+        let sanitized = amount.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\u{00A0}", with: "")
+            guard let decimalAmount = Decimal(string: sanitized, locale: .current) else { return }
         
         do {
             switch selectedType {

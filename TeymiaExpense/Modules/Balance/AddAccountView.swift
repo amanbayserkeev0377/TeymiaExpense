@@ -241,7 +241,8 @@ struct AddAccountView: View {
         guard let currency = selectedCurrency else { return }
         
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let balance = Decimal(string: initialBalance) ?? 0
+        let cleanedBalance = initialBalance.replacingOccurrences(of: ",", with: ".")
+        let balance = Decimal(string: cleanedBalance) ?? 0
         
         // Convert UIImage to Data if custom image exists
         var imageData: Data?
@@ -279,7 +280,8 @@ struct AddAccountView: View {
               let currency = selectedCurrency else { return }
         
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let newBalance = Decimal(string: initialBalance) ?? 0
+        let cleanedBalance = initialBalance.replacingOccurrences(of: ",", with: ".")
+        let newBalance = Decimal(string: cleanedBalance) ?? 0
         
         // Convert UIImage to Data if custom image exists
         var imageData: Data?

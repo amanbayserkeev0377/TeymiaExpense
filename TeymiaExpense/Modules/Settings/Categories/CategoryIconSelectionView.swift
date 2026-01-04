@@ -14,7 +14,7 @@ struct CategoryIconSelectionView: View {
     @FocusState private var isSearchFocused: Bool
     
     private let categories: [CategorySection] = [
-        CategorySection(name: "Food & Drinks", icons: ["fork.knife", "delivery", "groceries", "restaurant", "coffee", "fast.food", "lunches", "apple", "bananas", "chopsticks.noodles", "bowl.rice", "carrot", "croissant", "fish", "grocery.basket", "hamburger", "pizza", "alcohol", "champagne", "cocktail"]),
+        CategorySection(name: "food_drinks".localized, icons: ["fork.knife", "delivery", "groceries", "restaurant", "coffee", "fast.food", "lunches", "apple", "bananas", "chopsticks.noodles", "bowl.rice", "carrot", "croissant", "fish", "grocery.basket", "hamburger", "pizza", "alcohol", "champagne", "cocktail"]),
         CategorySection(name: "Transport", icons: ["transport", "taxi", "public.transport", "car.bus", "bike", "motorcycle", "subway", "train", "fuel", "parking", "repair", "washing"]),
         CategorySection(name: "Entertainment", icons: ["entertainment", "cinema", "events", "subscriptions", "hobbies", "gaming", "chess.piece", "clapper.open", "film", "game.board", "guitar", "music", "piano", "play.alt", "cards", "puzzle"]),
         CategorySection(name: "Sports", icons: ["sports", "basketball", "football", "tennis", "rugby", "golf", "ping.pong", "chess.knight", "gym", "swimming", "yoga", "skiing", "equipment", "sport.uniform", "archery", "laurel.first", "medal", "trophy"]),

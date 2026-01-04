@@ -6,7 +6,7 @@ struct AccountTransactionsView: View {
     
     @Query private var allTransactions: [Transaction]
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @Environment(UserPreferences.self) private var userPreferences
     
     @State private var showingAddTransaction = false
     @State private var editingTransaction: Transaction?
@@ -46,8 +46,11 @@ struct AccountTransactionsView: View {
                 dateFilterHeader
                 transactionsSection
             }
+            .listStyle(.plain)
             .navigationTitle(account.name)
             .navigationBarTitleDisplayMode(.large)
+            .scrollContentBackground(.hidden)
+            .background(BackgroundView())
             .toolbar {
                 CloseToolbarButton()
                 
@@ -72,7 +75,7 @@ struct AccountTransactionsView: View {
             HStack {
                 Text(dateRangeText)
                     .font(.title3)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
                     .foregroundStyle(.primary)
                 
                 Spacer()
@@ -91,7 +94,7 @@ struct AccountTransactionsView: View {
                 .padding(10)
             }
         }
-        .listRowInsets(EdgeInsets())
+        .listSectionSeparator(.hidden)
         .listRowBackground(Color.clear)
     }
     
@@ -108,8 +111,12 @@ struct AccountTransactionsView: View {
             .listRowBackground(Color.clear)
         } else {
             ForEach(sortedDates, id: \.self) { date in
+                let transactionsForDate = groupedTransactions[date] ?? []
+                let dayTotal = transactionsForDate.reduce(Decimal.zero) { sum, transaction in
+                        sum + transaction.amountForAccount(account)
+                    }
                 Section {
-                    ForEach(groupedTransactions[date] ?? [], id: \.id) { transaction in
+                    ForEach(transactionsForDate) { transaction in
                         TransactionRow(transaction: transaction, currentAccount: account)
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -125,11 +132,24 @@ struct AccountTransactionsView: View {
                             }
                     }
                 } header: {
-                    Text(formatDate(date))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
+                    HStack {
+                        Text(formatDate(date))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        
+                        Spacer()
+                        
+                        Text(userPreferences.formatAmount(dayTotal))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
+                            .foregroundStyle(.primary)
+                    }
+                    .padding(.vertical, 4)
+                    .textCase(nil)
                 }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             }
         }
     }
@@ -168,19 +188,24 @@ struct TransactionRow: View {
         HStack(spacing: 12) {
             Image(transaction.displayIcon)
                 .resizable()
-                .frame(width: 24, height: 24)
-                .foregroundStyle(.secondary)
+                .frame(width: 22, height: 22)
+                .foregroundStyle(.primary)
             
-            VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
                 Text(transaction.displayTitle(relativeTo: currentAccount))
-                    .font(.body)
+                    .fontWeight(.medium)
                     .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 if let note = transaction.note, !note.isEmpty {
                     Text(note)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             
@@ -191,6 +216,6 @@ struct TransactionRow: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(transaction.typeColor)
         }
-        .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }

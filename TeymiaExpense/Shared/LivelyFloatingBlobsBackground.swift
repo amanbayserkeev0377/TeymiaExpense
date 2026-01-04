@@ -25,7 +25,7 @@ struct LivelyFloatingBlobsBackground: View {
                             CGPoint(x: geo.size.width * 0.3, y: geo.size.height * 0.55),
                             CGPoint(x: geo.size.width * 0.18, y: geo.size.height * 0.35)
                     ],
-                    duration: 4,
+                    duration: 3,
                     blur: 60
                 )
                 
@@ -42,7 +42,7 @@ struct LivelyFloatingBlobsBackground: View {
                             CGPoint(x: geo.size.width * 0.7, y: geo.size.height * 0.6),
                             CGPoint(x: geo.size.width * 0.82, y: geo.size.height * 0.4)
                     ],
-                    duration: 5,
+                    duration: 4,
                     blur: 60
                 )
                 
@@ -58,7 +58,7 @@ struct LivelyFloatingBlobsBackground: View {
                             CGPoint(x: geo.size.width * 0.5, y: geo.size.height * 0.7),
                         CGPoint(x: geo.size.width * 0.45, y: geo.size.height * 0.5)
                     ],
-                    duration: 3,
+                    duration: 2,
                     blur: 60
                 )
             }
