@@ -22,9 +22,6 @@ struct TipsView: View {
                 .padding(.vertical, 40)
             }
             .scrollIndicators(.hidden)
-            .background {
-                LivelyFloatingBlobsBackground()
-            }
             .overlay {
                 if tipsManager.showThankYou {
                     ThankYouOverlay(
@@ -123,7 +120,7 @@ struct TipCard: View {
                 
                 // Price
                 if isPurchasing {
-                    LoadingView(tint: .white, lineWidth: 4)
+                    LoadingView(tint: .primary, lineWidth: 4)
                         .frame(width: 30, height: 30)
                 } else {
                     Text(product.displayPrice)
@@ -228,13 +225,8 @@ struct ThankYouOverlay: View {
             }
             .padding(30)
             .background {
-                TransparentBlurView(removeAllFilters: true)
-                    .blur(radius: 5, opaque: true)
-                    .clipShape(RoundedRectangle(cornerRadius: 25))
-            }
-            .background {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.secondary.opacity(0.07))
+                    .fill(Color.secondary.opacity(0.1))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)

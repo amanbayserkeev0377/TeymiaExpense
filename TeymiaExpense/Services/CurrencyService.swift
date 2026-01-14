@@ -104,8 +104,8 @@ class CurrencyService {
     }
     
     static func getSymbol(for code: String?) -> String {
-        guard let code = code else { return "$" }
-        return getCurrency(for: code).symbol
+        let activeCode = code ?? detectUserCurrency()
+        return getCurrency(for: activeCode).symbol
     }
     
     static func getCurrency(for code: String) -> Currency {

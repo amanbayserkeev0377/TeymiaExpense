@@ -86,19 +86,17 @@ struct CategoryCircleButton: View {
         Button(action: action) {
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    Image(category.iconName)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(
-                            isSelected
-                            ? Color.primaryInverse
-                            : Color.primary
-                        )
-                        .padding(10)
-                        .background(
+                    CategoryIconView(
+                        iconName: category.iconName,
+                        color: category.actualColor
+                    )
+                    .overlay {
+                        if isSelected {
                             Circle()
-                                .fill(isSelected ? Color.primary : Color.secondary.opacity(0.07))
-                        )
+                                .stroke(Color.secondary, lineWidth: 2)
+                        }
+                    }
+                    .scaleEffect(isSelected ? 1.1 : 1.0)
                     
                     Spacer().frame(height: 8)
                 }

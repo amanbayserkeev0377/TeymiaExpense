@@ -58,9 +58,22 @@ struct AddTransactionView: View {
                             TextField(currencySymbol, text: $amount)
                                 .autocorrectionDisabled()
                                 .focused($isAmountFieldFocused)
-                                .font(.system(size: 50, weight: .bold, design: .rounded))
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
+                                .onChange(of: amount) { oldValue, newValue in
+                                    let separator = Locale.current.decimalSeparator ?? "."
+                                    let altSeparator = (separator == "." ? "," : ".")
+                                    var filtered = newValue.replacingOccurrences(of: altSeparator, with: separator)
+                                    let allowedCharacters = "0123456789" + separator
+                                    filtered = filtered.filter { allowedCharacters.contains($0) }
+                                    if filtered.components(separatedBy: separator).count > 2 {
+                                        amount = oldValue
+                                    } else {
+                                        amount = filtered
+                                    }
+                                }
                         }
                         .contentShape(Rectangle())
                         
@@ -90,10 +103,6 @@ struct AddTransactionView: View {
                         }
                         .contentShape(Rectangle())
                     }
-                    .listRowSpacing(0)
-                    .listSectionSpacing(0)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
                     
                     // Catgories Section
                     if selectedType != .transfer {
@@ -115,12 +124,9 @@ struct AddTransactionView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, 16)
                         }
                         .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listSectionSpacing(0)
                     }
                     
                     // Account/Transfer Section
@@ -147,18 +153,11 @@ struct AddTransactionView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-                .listStyle(.grouped)
-                .padding(.top, -35)
-                .scrollContentBackground(.hidden)
                 .scrollIndicators(.hidden)
-                .background(BackgroundView())
                 .scrollDismissesKeyboard(.immediately)
             }
             .toolbar {
-                CloseToolbarButton()
+                BackToolbarButton()
                 
                 ToolbarItem(placement: .principal) {
                     Picker("Type", selection: $selectedType) {
@@ -171,7 +170,7 @@ struct AddTransactionView: View {
                     .frame(width: 270)
                 }
             }
-            .safeAreaBar(edge: .bottom) {
+            .safeAreaInset(edge: .bottom) {
                 if isInitialized {
                     FloatingSaveButton(
                         isEnabled: canSave,
@@ -185,7 +184,16 @@ struct AddTransactionView: View {
                 }
             }
         }
-        .onAppear { setupInitialValues() }
+        .task {
+            // Setup immediately without delay
+            setupInitialValues()
+            
+            // Focus keyboard immediately
+            isAmountFieldFocused = true
+            
+            // Show button after minimal delay
+            isInitialized = true
+        }
         .onChange(of: selectedType) { oldValue, newValue in
             handleTypeChange(from: oldValue, to: newValue)
         }
@@ -204,12 +212,7 @@ struct AddTransactionView: View {
     }
     
     private var canSave: Bool {
-        let sanitizedAmount = amount.replacingOccurrences(of: " ", with: "")
-                                    .replacingOccurrences(of: "\u{00A0}", with: "")
-        
-        guard !sanitizedAmount.isEmpty,
-              let decimalValue = Decimal(string: sanitizedAmount, locale: .current),
-              decimalValue > 0 else {
+        guard let decimalValue = getDecimalAmount(), decimalValue > 0 else {
             return false
         }
         
@@ -230,6 +233,17 @@ struct AddTransactionView: View {
         }
     }
     
+    private func getDecimalAmount() -> Decimal? {
+        var sanitized = amount
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\u{00A0}", with: "")
+        let separator = Locale.current.decimalSeparator ?? "."
+        let altSeparator = (separator == "." ? "," : ".")
+        sanitized = sanitized.replacingOccurrences(of: altSeparator, with: separator)
+        
+        return Decimal(string: sanitized, locale: .current)
+    }
+    
     // MARK: - Setup Methods
     
     private func setupInitialValues() {
@@ -238,18 +252,11 @@ struct AddTransactionView: View {
         } else {
             setupForCreating()
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation(.easeOut(duration: 0.2)) {
-                isInitialized = true
-            }
-            isAmountFieldFocused = true
-        }
     }
     
     private func setupForEditing(_ transaction: Transaction) {
         selectedType = transaction.type
-        amount = String(describing: abs(transaction.amount))
+        amount = CurrencyFormatter.formatForEditing(transaction.amount)
         selectedAccount = transaction.account
         selectedCategory = transaction.category
         note = transaction.note ?? ""
@@ -271,6 +278,7 @@ struct AddTransactionView: View {
             fromAccount = selectedAccount
         }
         
+        // Setup toAccount for transfers
         if accounts.count > 1 {
             toAccount = accounts.first { $0.id != selectedAccount?.id }
         }
@@ -299,8 +307,7 @@ struct AddTransactionView: View {
     // MARK: - Save/Update Methods
     
     private func saveTransaction() {
-        let sanitized = amount.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\u{00A0}", with: "")
-            guard let decimalAmount = Decimal(string: sanitized, locale: .current) else { return }
+        guard let decimalAmount = getDecimalAmount() else { return }
         
         do {
             switch selectedType {
@@ -349,9 +356,7 @@ struct AddTransactionView: View {
     
     private func updateTransaction() {
         guard let transaction = editingTransaction,
-              let amountValue = Double(amount) else { return }
-        
-        let decimalAmount = Decimal(amountValue)
+              let decimalAmount = getDecimalAmount() else { return }
         
         do {
             try TransactionService.updateTransaction(
@@ -379,38 +384,26 @@ struct FloatingSaveButton: View {
     let isEnabled: Bool
     let action: () -> Void
     
-    private var buttonColor: Color {
-        isEnabled ? .primary : .secondary.opacity(0.4)
-    }
-    
-    private var shadowColor: Color {
-        isEnabled ? .primary.opacity(0.3) : .clear
-    }
-    
-    private var textColor: Color {
-        isEnabled ? .primaryInverse : .secondary.opacity(0.4)
-    }
-    
     var body: some View {
         Button(action: action) {
-            Text("save".localized)
-                .font(.system(.body, design: .rounded, weight: .bold))
-                .foregroundStyle(textColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background {
-                    RoundedRectangle(cornerRadius: 30, style: .continuous)
-                        .fill(buttonColor)
-                }
-                .shadow(color: shadowColor, radius: 10, y: 4)
+            content
         }
-        .glassEffect(
-            isEnabled
-            ? .regular.tint(.primary).interactive()
-            : .clear,
-            in: Capsule()
-        )
         .disabled(!isEnabled)
-        .animation(.easeInOut(duration: 0.4), value: isEnabled)
+        .animation(.snappy(duration: 0.4), value: isEnabled)
+        .adaptiveGlassEffect(isEnabled: isEnabled)
+    }
+    
+    private var content: some View {
+        Text("save".localized)
+            .font(.system(.body, design: .rounded, weight: .bold))
+            .foregroundStyle(isEnabled ? .primaryInverse : .secondary.opacity(0.4))
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background {
+                Capsule(style: .continuous)
+                    .fill(isEnabled ? Color.primary : Color.secondary.opacity(0.4))
+            }
+            .shadow(color: isEnabled ? .primary.opacity(0.3) : .clear, radius: 10, y: 4)
     }
 }
+

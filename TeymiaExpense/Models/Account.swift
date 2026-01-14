@@ -9,17 +9,24 @@ final class Account {
     var balance: Decimal = 0
     var currencyCode: String = "USD"
     var createdAt: Date = Date()
-    var designIndex: Int = 0
     var customIcon: String = "cash"
-    var customImageData: Data? = nil
     var sortOrder: Int = 0
+    var hexColor: String?
     
-    var designType: AccountDesignType {
-        get { AccountDesignType(rawValue: designTypeRawValue) ?? .image }
-        set { designTypeRawValue = newValue.rawValue }
+    private var iconColorRawValue: String = "gray"
+    
+    var iconColor: IconColor {
+        get { IconColor(rawValue: iconColorRawValue) ?? .color1}
+        set { iconColorRawValue = newValue.rawValue }
     }
     
-    private var designTypeRawValue: String = "image"
+    @Transient
+    var actualColor: Color {
+        if let hex = hexColor {
+            return Color(hex: hex)
+        }
+        return iconColor.color
+    }
     
     var currency: Currency {
         CurrencyService.getCurrency(for: currencyCode)
@@ -32,56 +39,57 @@ final class Account {
     var incomingTransfers: [Transaction]? = []
     
     init(
+        id: UUID = UUID(),
         name: String,
         balance: Decimal,
         currencyCode: String,
-        designIndex: Int = 0,
         customIcon: String = "cash",
-        designType: AccountDesignType = .image,
-        customImageData: Data? = nil,
+        iconColor: IconColor = .color1,
+        hexColor: String? = nil,
         sortOrder: Int = 0
     ) {
+        self.id = id
         self.name = name
         self.balance = balance
         self.currencyCode = currencyCode
-        self.designIndex = designIndex
         self.customIcon = customIcon
-        self.designTypeRawValue = designType.rawValue
-        self.customImageData = customImageData
+        self.iconColorRawValue = iconColor.rawValue
+        self.hexColor = hexColor
         self.createdAt = Date()
         self.sortOrder = sortOrder
     }
 }
 
-enum AccountDesignType: String, CaseIterable, Codable {
-    case image = "image"
-    case color = "color"
-}
-
 extension Account {
+    @MainActor
+    static func createDefaults(context: ModelContext, userCurrency: String) {
+        let descriptor = FetchDescriptor<Account>()
+        let existingAccounts = (try? context.fetch(descriptor)) ?? []
+        
+        // Deterministic ID for the primary account
+        guard let mainAccountUUID = UUID(uuidString: "DEFA11ED-ACCC-4000-8000-000000000001") else { return }
+        
+        // Prevent dublicate creation
+        if !existingAccounts.contains(where: { $0.id == mainAccountUUID }) {
+            let mainAccount = Account(
+                id: mainAccountUUID,
+                name: "cash".localized,
+                balance: 0,
+                currencyCode: userCurrency,
+                customIcon: "cash",
+                iconColor: .color1,
+                sortOrder: 0
+            )
+            context.insert(mainAccount)
+            try? context.save()
+        }
+    }
     
     var formattedBalance: String {
         return CurrencyFormatter.format(balance, currency: currency)
     }
     
-    var cardDarkColor: Color {
-        return AccountColor.by(index: designIndex).colors.dark
-    }
-    
-    var cardLightColor: Color {
-        return AccountColor.by(index: designIndex).colors.light
-    }
-    
-    var cardGradient: LinearGradient {
-        return AccountColor.gradient(at: designIndex)
-    }
-    
     var cardIcon: String {
         return customIcon
-    }
-    
-    var customUIImage: UIImage? {
-        guard let imageData = customImageData else { return nil }
-        return UIImage(data: imageData)
     }
 }

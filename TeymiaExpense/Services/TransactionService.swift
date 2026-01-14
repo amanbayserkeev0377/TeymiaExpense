@@ -188,6 +188,15 @@ struct CurrencyFormatter {
         return "\(prefix)\(numberString) \(currency.symbol)"
     }
     
+    static func formatForEditing(_ amount: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .none
+        formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 8
+        return formatter.string(from: abs(amount) as NSDecimalNumber) ?? ""
+    }
+    
     private static func configureFractionDigits(
         for formatter: NumberFormatter,
         amount: Decimal,

@@ -5,30 +5,25 @@ struct MainTabView: View {
     
     var body: some View {
         TabView {
-            HomeView()
-                .tabItem {
-                    Image("home.fill")
-                    Text("home".localized)
+            Tab.init("transactions".localized, image: "transactions.fill") {
+                NavigationStack {
+                    TransactionsView()
                 }
-            
-            BalanceView()
-                .tabItem {
-                    Image("balance.fill")
-                    Text("balance".localized)
-                }
-            
-            OverviewView()
-                .tabItem {
-                    Image("overview.fill")
-                    Text("overview".localized)
-                }
-            
-            NavigationStack {
-                SettingsView()
             }
-            .tabItem {
-                Image("settings.fill")
-                Text("settings".localized)
+            Tab.init("balance".localized, image: "balance.fill") {
+                NavigationStack {
+                    BalanceView()
+                }
+            }
+            Tab.init("overview".localized, image: "overview.fill") {
+                NavigationStack {
+                    OverviewView()
+                }
+            }
+            Tab.init("settings".localized, image: "settings.fill") {
+                NavigationStack {
+                    SettingsView()
+                }
             }
         }
         .fontDesign(.rounded)

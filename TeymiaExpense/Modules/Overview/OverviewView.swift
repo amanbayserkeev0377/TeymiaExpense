@@ -6,11 +6,10 @@ struct OverviewView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @Query private var categories: [Category]
     @Query private var allTransactions: [Transaction]
-    
     @State private var selectedCategory: Category?
-    
     @State private var startDate = Date.startOfCurrentMonth
     @State private var endDate = Date.endOfCurrentMonth
+    @Namespace private var zoomNamespace
     
     // MARK: - Computed Properties
     
@@ -57,21 +56,17 @@ struct OverviewView: View {
     // MARK: - Body
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 24) {
-                    dateFilterHeader
-                    expensesSection
-                    incomeSection
-                    emptyStateSection
-                }
-                .padding(.vertical, 20)
+        ScrollView {
+            LazyVStack(spacing: 24) {
+                DateRangeHeader(startDate: $startDate, endDate: $endDate)
+                expensesSection
+                incomeSection
+                emptyStateSection
             }
-            .background {
-                BackgroundView()
-            }
+            .padding(.vertical, 20)
         }
-        .sheet(item: $selectedCategory) { category in
+        .background(Color(.systemGroupedBackground))
+        .adaptiveSheet(item: $selectedCategory) { category in
             NavigationStack {
                 CategoryTransactionsView(
                     category: category,
@@ -79,35 +74,11 @@ struct OverviewView: View {
                     endDate: endDate
                 )
             }
+            .navigationTransition(.zoom(sourceID: category.id, in: zoomNamespace))
         }
     }
     
     // MARK: - View Components
-    
-    @ViewBuilder
-    private var dateFilterHeader: some View {
-        HStack {
-            Text(dateRangeText)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundStyle(.primary)
-            
-            Spacer()
-            
-            CustomMenuView() {
-                Image("calendar")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .frame(width: 40, height: 30)
-            } content: {
-                DateFilterView(
-                    startDate: $startDate,
-                    endDate: $endDate
-                )
-            }
-        }
-        .padding(.horizontal, 16)
-    }
     
     @ViewBuilder
     private var expensesSection: some View {
@@ -119,7 +90,8 @@ struct OverviewView: View {
                 categories: expenseCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
                 userPreferences: userPreferences,
-                onCategorySelected: { selectedCategory = $0 }
+                onCategorySelected: { selectedCategory = $0 },
+                zoomNamespace: zoomNamespace
             )
         }
     }
@@ -134,7 +106,8 @@ struct OverviewView: View {
                 categories: incomeCategoriesWithTransactions,
                 filteredTransactions: filteredTransactions,
                 userPreferences: userPreferences,
-                onCategorySelected: { selectedCategory = $0 }
+                onCategorySelected: { selectedCategory = $0 },
+                zoomNamespace: zoomNamespace
             )
         }
     }
@@ -153,7 +126,6 @@ struct OverviewView: View {
     
     private func hasTransactions(for category: Category) -> Bool {
         filteredTransactions.contains { transaction in
-            // ИСПРАВЛЕНО: category больше не опциональна внутри SwiftData связи, если настроена правильно
             transaction.category?.id == category.id
         }
     }

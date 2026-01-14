@@ -2,19 +2,21 @@
 /* 1. MAIN NAVIGATION                         */
 /* ========================================================================= */
 
-"home" = "Home";
+"transactions" = "Transactions";
 "balance" = "Balance";
 "overview" = "Overview";
 "settings" = "Settings";
 "today" = "Today";
 "yesterday" = "Yesterday";
 
+/// Buttons:
+"edit" = "Edit";
+"done" = "Done";
 
 /* ========================================================================= */
 /* 2. ONBOARDING & FEATURES                   */
 /* ========================================================================= */
 
-"welcome_to" = "Welcome to";
 "continue" = "Continue";
 "onboarding_privacy_disclaimer" = "Your financial data stays on your device and is never shared";
 
@@ -45,25 +47,21 @@
 "expenses" = "Expenses";
 "income" = "Income";
 "transfer" = "Transfer";
-"transactions" = "Transactions";
-"photo" = "Photo";
-"color" = "Color";
 
 /* Transaction Types */
 "transfer_to" = "Transfer to";
 "transfer_from" = "Transfer from";
 
 /* Data Fields & Labels */
+"cash" = "Cash";
 "icon" = "Icon";
 "category" = "Category";
 "account" = "Account";
 "date" = "Date";
 "note" = "Note";
-"design" = "Design";
 "currency" = "Currency";
 "fiat" = "Fiat";
 "crypto" = "Crypto";
-"select_currency" = "Select currency";
 "total" = "Total";
 "week" = "Week";
 "month" = "Month";
@@ -120,7 +118,6 @@
 "select_all" = "Select All";
 "deselect_all" = "Deselect All";
 "unhide" = "Unhide";
-"create_first_account" = "Create First Account";
 "create_second_account" = "Create second account";
 
 /* Delete Buttons & Counters */
@@ -144,6 +141,8 @@
 /* ========================================================================= */
 /* 7. SETTINGS & SUPPORT                      */
 /* ========================================================================= */
+
+"hold_shift" = "Hold Shift ⇧ or Command ⌘ Key to select multiple items";
 
 /* Main Settings Menu */
 "categories" = "Categories";

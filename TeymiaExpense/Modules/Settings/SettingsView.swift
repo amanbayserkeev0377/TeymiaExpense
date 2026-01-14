@@ -4,7 +4,6 @@ import SwiftData
 struct SettingsView: View {
     @Environment(UserPreferences.self) private var userPreferences
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @Environment(\.openURL) var openURL
     
     var body: some View {
         List {
@@ -12,13 +11,9 @@ struct SettingsView: View {
             Section {
                 TipsSection()
             }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
             
             // MARK: - General Settings
             Section {
-                LanguageSection()
-                
                 NavigationLink {
                     CategoryManagementView()
                 } label: {
@@ -31,7 +26,8 @@ struct SettingsView: View {
                 }
                 
                 NavigationLink {
-                    CurrencySettingsView()
+                    CurrencySelectionView(selectedCurrencyCode: userPreferences.baseCurrencyCode) { currency in
+                        userPreferences.baseCurrencyCode = currency.code }
                 } label: {
                     Label {
                         Text("currency".localized)
@@ -39,6 +35,8 @@ struct SettingsView: View {
                         Image("dollar").settingsIcon()
                     }
                 }
+                
+                LanguageSection()
                 
                 // Theme Picker
                 Picker(selection: $themeMode) {
@@ -55,25 +53,21 @@ struct SettingsView: View {
                 .pickerStyle(.menu)
                 .tint(.secondary)
             }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
             
             // MARK: - Legal Section
             Section {
                 LegalButton(
-                        title: "privacy_policy",
-                        icon: "lock",
-                        urlString: "https://www.notion.so/Privacy-Policy-28cd5178e65a80e297b2e94f9046ae1d"
-                    )
+                    title: "privacy_policy",
+                    icon: "lock",
+                    urlString: "https://www.notion.so/Privacy-Policy-28cd5178e65a80e297b2e94f9046ae1d"
+                )
                 
                 LegalButton(
-                        title: "terms_of_service",
-                        icon: "document",
-                        urlString: "https://www.notion.so/Terms-of-Service-28cd5178e65a804f94cff1e109dbb9d5"
-                    )
+                    title: "terms_of_service",
+                    icon: "document",
+                    urlString: "https://www.notion.so/Terms-of-Service-28cd5178e65a804f94cff1e109dbb9d5"
+                )
             }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
             
             // MARK: - Footer
             Section {
@@ -89,11 +83,7 @@ struct SettingsView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
         }
-        .listStyle(.grouped)
-        .scrollContentBackground(.hidden)
-        .background(BackgroundView())
         .navigationTitle("settings".localized)
-        .navigationBarTitleDisplayMode(.large)
     }
 }
 
@@ -129,7 +119,6 @@ struct TipsSection: View {
                 Label(
                     title: {
                         Text("buy_me_a_matcha".localized)
-                            .font(.body)
                             .fontWeight(.medium)
                             .foregroundStyle(
                                 LinearGradient(
@@ -145,7 +134,7 @@ struct TipsSection: View {
                     icon: {
                         Image("gift.fill")
                             .resizable()
-                            .frame(width: 20, height: 20)
+                            .frame(width: 18, height: 18)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [
@@ -177,13 +166,13 @@ struct LegalButton: View {
     var body: some View {
         Button {
             if let url = URL(string: urlString) {
-                openURL(url, prefersInApp: true)
+                openURL(url)
             }
         } label: {
             Label {
                 Text(title.localized)
             } icon: {
-                Image(icon)
+                Image(systemName: icon)
                     .settingsIcon()
             }
         }
@@ -236,7 +225,7 @@ extension Image {
         self
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 20, height: 20)
+            .frame(width: 18, height: 18)
             .foregroundStyle(Color.primary)
     }
 }

@@ -7,20 +7,25 @@ struct OverviewCategoryButton: View {
     let transactionCount: Int
     let color: Color
     let userPreferences: UserPreferences
+    let zoomNamespace: Namespace.ID
     
     var body: some View {
         VStack(spacing: 4) {
             // Circle with icon
-            ZStack {
-                Circle()
-                    .fill(Color.secondary.opacity(0.07))
-                    .frame(width: 50, height: 50)
-                
-                Image(category.iconName)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.primary)
-            }
+                ZStack {
+                    Circle()
+                        .fill(Color(.secondarySystemGroupedBackground))
+                        .frame(width: 50, height: 50)
+                    
+                    Image(category.iconName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(category.actualColor.gradient)
+                }
+                .adaptiveGlassEffect()
+                .matchedTransitionSource(id: category.id, in: zoomNamespace)
+            
             
             // Category info
             VStack(spacing: 4) {

@@ -45,12 +45,13 @@ enum TransactionType: String, CaseIterable, Codable, Hashable {
 
 extension Transaction {
     
-    func displayTitle(relativeTo account: Account? = nil) -> String {
+    func displayTitle(relativeTo currentAccount: Account? = nil) -> String {
         if type == .transfer {
             let fromName = self.account?.name ?? "..."
             let toName = self.toAccount?.name ?? "..."
             return "\(fromName) → \(toName)"
         }
+        
         return category?.name ?? "unrecognized".localized
     }
     

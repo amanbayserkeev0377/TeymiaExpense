@@ -14,60 +14,37 @@ struct AccountIconSection: View {
         "visa", "stripe", "apple.pay", "amazon.pay"
     ]
     
-    private var iconColumns: [[String]] {
-        stride(from: 0, to: availableIcons.count, by: 3).map {
-            Array(availableIcons[$0..<min($0 + 3, availableIcons.count)])
-        }
-    }
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 7)
     
     var body: some View {
         Section {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
-                    ForEach(iconColumns.indices, id: \.self) { columnIndex in
-                        VStack(spacing: 16) {
-                            ForEach(iconColumns[columnIndex], id: \.self) { icon in
-                                iconButton(icon: icon)
-                            }
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(availableIcons, id: \.self) { icon in
+                    Button {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            selectedIcon = icon
                         }
+                    } label: {
+                        Image(icon)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.primary)
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(.secondary.opacity(0.1))
+                            )
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.secondary.opacity(0.6), lineWidth: 2.5)
+                                    .frame(width: 45, height: 45)
+                                    .opacity(selectedIcon == icon ? 1 : 0)
+                            )
                     }
+                    .buttonStyle(.plain)
                 }
-                .padding(.vertical, 16)
-                .padding(.horizontal, 16)
             }
-        } header: {
-            Text("icon".localized)
-                .padding(.leading, 16)
         }
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
-    }
-    
-    private func iconButton(icon: String) -> some View {
-        let isSelected = selectedIcon == icon
-        
-        return Button {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                selectedIcon = icon
-            }
-        } label: {
-            Image(icon)
-                .resizable()
-                .frame(width: 20, height: 20)
-                .contentTransition(.symbolEffect(.replace))
-                .foregroundStyle(
-                    selectedIcon == icon
-                    ? Color.primaryInverse
-                    : Color.primary
-                )
-                .padding(10)
-                .background(
-                    Circle()
-                        .fill(selectedIcon == icon ? Color.primary.opacity(0.9) : Color.secondary.opacity(0.07))
-                )
-                .scaleEffect(isSelected ? 1.1 : 1.0)
-        }
-        .buttonStyle(.plain)
     }
 }

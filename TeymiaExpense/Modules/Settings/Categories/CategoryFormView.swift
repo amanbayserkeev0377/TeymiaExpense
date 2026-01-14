@@ -11,6 +11,9 @@ struct CategoryFormView: View {
     
     @State private var categoryName: String
     @State private var selectedIcon: String
+    @State private var selectedColor: IconColor
+    @State private var selectedHexColor: String?
+    
     @FocusState private var isCategoryNameFocused: Bool
     
     // MARK: - Initializers
@@ -20,6 +23,8 @@ struct CategoryFormView: View {
         self.categoryType = categoryType
         self._categoryName = State(initialValue: "")
         self._selectedIcon = State(initialValue: "general")
+        self._selectedColor = State(initialValue: .color1)
+        self._selectedHexColor = State(initialValue: nil)
     }
     
     init(editingCategory: Category) {
@@ -27,6 +32,15 @@ struct CategoryFormView: View {
         self.categoryType = editingCategory.type
         self._categoryName = State(initialValue: editingCategory.name)
         self._selectedIcon = State(initialValue: editingCategory.iconName)
+        self._selectedColor = State(initialValue: editingCategory.iconColor)
+        self._selectedHexColor = State(initialValue: editingCategory.hexColor)
+    }
+    
+    private var previewColor: Color {
+        if let hex = selectedHexColor {
+            return Color(hex: hex)
+        }
+        return selectedColor.color
     }
     
     private var isEditing: Bool { editingCategory != nil }
@@ -38,6 +52,11 @@ struct CategoryFormView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    CategoryIconPreviewView(iconName: selectedIcon, color: previewColor)
+                }
+                .listRowBackground(Color.clear)
+                
                 Section {
                     HStack {
                         TextField("category_name".localized, text: $categoryName)
@@ -69,19 +88,18 @@ struct CategoryFormView: View {
                             Image(selectedIcon)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
+                                .frame(width: 18, height: 18)
                                 .foregroundStyle(.primary)
                         }
                     }
                 } header: {
                     Text(categoryType == .expense ? "expense".localized : "income".localized)
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparatorTint(Color.secondary.opacity(0.07))
+                
+                Section {
+                    ColorSelectionView(selectedColor: $selectedColor, hexColor: $selectedHexColor)
+                }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(BackgroundView())
             .navigationTitle(isEditing ? "edit_category".localized : "new_category".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -112,19 +130,29 @@ struct CategoryFormView: View {
             if let existingCategory = editingCategory {
                 existingCategory.name = trimmedName
                 existingCategory.iconName = selectedIcon
+                existingCategory.iconColor = selectedColor
+                existingCategory.hexColor = selectedHexColor
             } else {
                 let sortOrder = categories.filter { $0.type == categoryType }.count
                 let newCategory = Category(
                     name: trimmedName,
                     iconName: selectedIcon,
                     type: categoryType,
-                    sortOrder: sortOrder
+                    iconColor: selectedColor,
+                    hexColor: selectedHexColor,
+                    sortOrder: sortOrder,
+                    isDefault: false
                 )
                 modelContext.insert(newCategory)
             }
             
-            try? modelContext.save()
-            dismiss()
+            do {
+                try modelContext.save()
+                dismiss()
+            } catch {
+                print("Error saving category: \(error)")
+                isCategoryNameFocused = true
+            }
         }
     }
 }

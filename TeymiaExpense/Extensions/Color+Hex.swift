@@ -26,23 +26,17 @@ extension Color {
     }
     
     func toHex() -> String {
-        let uic = UIColor(self)
-        guard let components = uic.cgColor.components, components.count >= 3 else {
-            return "#000000"
-        }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        var a = Float(1.0)
+        let resolved = self.resolve(in: .init())
         
-        if components.count >= 4 {
-            a = Float(components[3])
-        }
+        let r = Int(resolved.red * 255)
+        let g = Int(resolved.green * 255)
+        let b = Int(resolved.blue * 255)
+        let a = Int(resolved.opacity * 255)
         
-        if a != Float(1.0) {
-            return String(format: "#%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255), lroundf(a * 255))
+        if resolved.opacity < 1.0 {
+            return String(format: "#%02X%02X%02X%02X", r, g, b, a)
         } else {
-            return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+            return String(format: "#%02X%02X%02X", r, g, b)
         }
     }
 }

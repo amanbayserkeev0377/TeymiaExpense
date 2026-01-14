@@ -1,8 +1,15 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 @Observable
 class UserPreferences {
+    @MainActor
+    func setupInitialData(modelContext: ModelContext) {
+        Category.createDefaults(context: modelContext)
+        Account.createDefaults(context: modelContext, userCurrency: baseCurrencyCode)
+    }
+    
     var baseCurrencyCode: String {
         didSet {
             UserDefaults.standard.set(baseCurrencyCode, forKey: "userBaseCurrencyCode")
@@ -29,17 +36,16 @@ class UserPreferences {
     // MARK: - Account Management
     
     func getPreferredAccount(from accounts: [Account]) -> Account? {
-            if let lastID = lastUsedAccountID,
-               let lastAccount = accounts.first(where: { $0.id.uuidString == lastID }) {
-                return lastAccount
-            }
-            
+        guard let lastIDString = lastUsedAccountID else {
             return accounts.first
         }
+        
+        return accounts.first(where: { $0.id.uuidString == lastIDString })
+    }
     
     func updateLastUsedAccount(_ account: Account) {
-            lastUsedAccountID = account.id.uuidString
-        }
+        lastUsedAccountID = account.id.uuidString
+    }
     
     // MARK: - Amount Formatting
 
@@ -58,7 +64,7 @@ class UserPreferences {
             formatter.minimumFractionDigits = 0
             formatter.maximumFractionDigits = 8
         } else {
-            let isInteger = amount == Decimal(Int64(NSDecimalNumber(decimal: amount).doubleValue))
+            let isInteger = amount == NSDecimalNumber(decimal: amount).rounding(accordingToBehavior: nil).decimalValue
             formatter.minimumFractionDigits = isInteger ? 0 : 2
             formatter.maximumFractionDigits = 2
         }

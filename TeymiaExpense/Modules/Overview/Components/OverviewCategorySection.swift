@@ -9,6 +9,7 @@ struct OverviewCategorySection: View {
     let filteredTransactions: [Transaction]
     let userPreferences: UserPreferences
     let onCategorySelected: (Category) -> Void
+    let zoomNamespace: Namespace.ID
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -26,7 +27,7 @@ struct OverviewCategorySection: View {
                     .font(.title3)
                     .fontWeight(.bold)
                     .fontDesign(.rounded)
-                    .foregroundStyle(color)
+                    .foregroundStyle(color.gradient)
             }
             .padding(.horizontal, 16)
             
@@ -46,7 +47,8 @@ struct OverviewCategorySection: View {
                             totalAmount: getTotalAmount(for: category),
                             transactionCount: getTransactionCount(for: category),
                             color: color,
-                            userPreferences: userPreferences
+                            userPreferences: userPreferences,
+                            zoomNamespace: zoomNamespace
                         )
                     }
                     .buttonStyle(.plain)

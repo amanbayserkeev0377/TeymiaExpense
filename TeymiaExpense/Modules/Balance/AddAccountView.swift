@@ -4,7 +4,6 @@ import SwiftData
 struct AddAccountView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
     @Query private var accounts: [Account]
     
     // MARK: - Edit Mode Support
@@ -14,16 +13,9 @@ struct AddAccountView: View {
     @State private var accountName: String = ""
     @State private var initialBalance: String = ""
     @State private var selectedCurrency: Currency?
-    @State private var selectedDesignType: AccountDesignType = .image
-    @State private var selectedDesignIndex: Int = 0
-    @State private var customImage: UIImage?
     @State private var selectedIcon: String = "cash"
-    @State private var showingCurrencySelection = false
-    @State private var showingIconSelection = false
-    @State private var showingImageCropper = false
-    @State private var showingPhotoPicker = false
-    @State private var imageForCropping: UIImage?
-
+    @State private var selectedColor: IconColor = .color1
+    @State private var selectedHexColor: String? = nil
     
     @FocusState private var isAccountNameFocused: Bool
     @FocusState private var isInitialBalanceFocused: Bool
@@ -38,21 +30,9 @@ struct AddAccountView: View {
             List {
                 // Card Preview Section
                 Section {
-                    AccountCardPreview(
-                        name: accountName.isEmpty ? (isEditMode ? editingAccount?.name ?? "account_name".localized : "account_name".localized) : accountName,
-                        balance: initialBalance.isEmpty ? (isEditMode ? String(describing: editingAccount?.balance ?? 0) : "0") : initialBalance,
-                        designType: selectedDesignType,
-                        designIndex: selectedDesignIndex,
-                        icon: selectedIcon,
-                        currencyCode: selectedCurrency?.code ?? "USD",
-                        customImage: customImage
-                    )
-                    .padding(.horizontal, 16)
+                    AccountIconPreviewView(iconName: selectedIcon, color: previewColor)
                 }
-                .listRowSpacing(0)
-                .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
                 
                 // Account Details
                 Section {
@@ -92,20 +72,19 @@ struct AddAccountView: View {
                             .onSubmit {
                                 isInitialBalanceFocused = false
                             }
-                            .fontDesign(.rounded)
                     }
                     .contentShape(Rectangle())
                     .buttonStyle(.plain)
                     
-                    Button {
-                        showingCurrencySelection = true
+                    NavigationLink {
+                        CurrencySelectionView(selectedCurrencyCode: selectedCurrency?.code) { currency in
+                            self.selectedCurrency = currency
+                        }
                     } label: {
                         HStack {
                             Image(selectedCurrency != nil ? CurrencyService.getCurrencyIcon(for: selectedCurrency!) : "questionmark.circle")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
                                 .frame(width: 24, height: 24)
-                                .foregroundStyle(.primary)
                             
                             Text("currency".localized)
                                 .foregroundStyle(.primary)
@@ -114,34 +93,17 @@ struct AddAccountView: View {
                             
                             Text(selectedCurrency?.code ?? "Select")
                                 .foregroundStyle(.secondary)
-                            
-                            Image("chevron.right")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.tertiary)
                         }
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
                 }
-                .listRowSpacing(0)
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
                 
-                CardDesignSelectionSection(
-                    selectedDesignType: $selectedDesignType,
-                    selectedDesignIndex: $selectedDesignIndex,
-                    customImage: $customImage,
-                    imageForCropping: $imageForCropping,
-                    showingPhotoPicker: $showingPhotoPicker
-                )
+                Section {
+                    ColorSelectionView(selectedColor: $selectedColor, hexColor: $selectedHexColor)
+                }
                 
                 AccountIconSection(selectedIcon: $selectedIcon)
             }
-            .listStyle(.grouped)
-            .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
-            .background(BackgroundView())
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle(isEditMode ? "edit_account" : "add_account")
             .navigationBarTitleDisplayMode(.inline)
@@ -173,30 +135,13 @@ struct AddAccountView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingCurrencySelection) {
-            CurrencySelectionView(selectedCurrency: $selectedCurrency)
+    }
+    
+    private var previewColor: Color {
+        if let hex = selectedHexColor {
+            return Color(hex: hex)
         }
-        .sheet(isPresented: $showingPhotoPicker) {
-            PhotoPicker { image in
-                imageForCropping = image
-                showingPhotoPicker = false
-            }
-        }
-        .fullScreenCover(isPresented: $showingImageCropper) {
-            if let image = imageForCropping {
-                ImageCropperView(originalImage: image) { croppedImage in
-                    customImage = croppedImage
-                    selectedDesignIndex = -1
-                    imageForCropping = nil
-                    showingImageCropper = false
-                }
-            }
-        }
-        .onChange(of: imageForCropping) { oldValue, newValue in
-            if newValue != nil {
-                showingImageCropper = true
-            }
-        }
+        return selectedColor.color
     }
     
     // MARK: - Computed Properties
@@ -217,14 +162,9 @@ struct AddAccountView: View {
         accountName = account.name
         initialBalance = String(describing: account.balance)
         selectedCurrency = account.currency
-        selectedDesignType = account.designType
-        selectedDesignIndex = account.designIndex
         selectedIcon = account.customIcon
-        
-        // Load custom image if exists
-        if let imageData = account.customImageData {
-            customImage = UIImage(data: imageData)
-        }
+        selectedColor = account.iconColor
+        selectedHexColor = account.hexColor
     }
     
     private func setupCreateMode() {
@@ -241,24 +181,13 @@ struct AddAccountView: View {
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let cleanedBalance = initialBalance.replacingOccurrences(of: ",", with: ".")
         let balance = Decimal(string: cleanedBalance) ?? 0
-        
-        // Convert UIImage to Data if custom image exists
-        var imageData: Data?
-        var finalDesignIndex = selectedDesignIndex
-        
-        if let image = customImage {
-            imageData = image.jpegData(compressionQuality: 0.8)
-            finalDesignIndex = -1 // Special index for custom image
-        }
-        
         let account = Account(
             name: trimmedName,
             balance: balance,
             currencyCode: currency.code,
-            designIndex: finalDesignIndex,
             customIcon: selectedIcon,
-            designType: selectedDesignType,
-            customImageData: imageData,
+            iconColor: selectedColor,
+            hexColor: selectedHexColor,
             sortOrder: accounts.count
         )
         
@@ -280,24 +209,14 @@ struct AddAccountView: View {
         let trimmedName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         let cleanedBalance = initialBalance.replacingOccurrences(of: ",", with: ".")
         let newBalance = Decimal(string: cleanedBalance) ?? 0
-        
-        // Convert UIImage to Data if custom image exists
-        var imageData: Data?
-        var finalDesignIndex = selectedDesignIndex
-        
-        if let image = customImage {
-            imageData = image.jpegData(compressionQuality: 0.8)
-            finalDesignIndex = -1 // Special index for custom image
-        }
-        
+                
         // Update account properties
         account.name = trimmedName
         account.balance = newBalance
         account.currencyCode = currency.code
-        account.designIndex = finalDesignIndex
         account.customIcon = selectedIcon
-        account.designType = selectedDesignType
-        account.customImageData = imageData
+        account.iconColor = selectedColor
+        account.hexColor = selectedHexColor
         
         do {
             try modelContext.save()

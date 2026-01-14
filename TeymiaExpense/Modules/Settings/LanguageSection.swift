@@ -6,9 +6,7 @@ struct LanguageSection: View {
         guard let languageCode = locale.language.languageCode?.identifier else {
             return "Unknown"
         }
-        
         let languageName = locale.localizedString(forLanguageCode: languageCode) ?? languageCode
-        
         return languageName.prefix(1).uppercased() + languageName.dropFirst()
     }
     
@@ -34,6 +32,5 @@ struct LanguageSection: View {
                     .fontDesign(.rounded)
             }
         }
-        .tint(.primary)
     }
 }

@@ -13,8 +13,5 @@ struct DateNoteSection: View {
                 DatePicker("date".localized, selection: $date, displayedComponents: [.date])
             }
         }
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
-        .listSectionSpacing(0)
     }
 }

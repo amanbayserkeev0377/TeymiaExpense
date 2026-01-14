@@ -12,6 +12,9 @@ struct CategoryTransactionsView: View {
     
     @State private var editingTransaction: Transaction?
     
+    @Namespace private var animation
+    @Namespace private var transactionAnimation
+    
     // Filter transactions for this category and date range
     private var filteredTransactions: [Transaction] {
         let calendar = Calendar.current
@@ -46,7 +49,6 @@ struct CategoryTransactionsView: View {
                     Text(DateFormatter.formatDateRange(startDate: startDate, endDate: endDate))
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(.primary)
                 }
             }
             .listRowSeparator(.hidden)
@@ -63,7 +65,7 @@ struct CategoryTransactionsView: View {
                         Text(userPreferences.formatAmount(totalAmount))
                             .font(.title3)
                             .fontWeight(.bold)
-                            .foregroundStyle(category.type == .income ? Color("IncomeColor") : Color("ExpenseColor"))
+                            .foregroundStyle(category.type == .income ? Color("IncomeColor").gradient : Color("ExpenseColor").gradient)
                     }
                     
                     Spacer()
@@ -102,6 +104,10 @@ struct CategoryTransactionsView: View {
                     Section {
                         ForEach(transactionsForDate) { transaction in
                             TransactionRowView(transaction: transaction)
+                                .matchedTransitionSource(
+                                    id: transaction.id,
+                                    in: transactionAnimation
+                                )
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     editingTransaction = transaction
@@ -130,24 +136,23 @@ struct CategoryTransactionsView: View {
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.primary)
                         }
-                        .padding(.vertical, 4)
+                        .padding(4)
                         .textCase(nil)
                     }
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
                 }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(BackgroundView())
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            CloseToolbarButton()
+            BackToolbarButton()
         }
-        .sheet(item: $editingTransaction) { transaction in
+        .adaptiveSheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
+                .navigationTransition(.zoom(
+                    sourceID: transaction.id,
+                    in: transactionAnimation
+                ))
         }
     }
     

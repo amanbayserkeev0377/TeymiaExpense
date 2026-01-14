@@ -13,9 +13,12 @@ struct AccountSelectionSection: View {
                 )
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 16) {
+                    LazyHStack(spacing: 20) {
                         ForEach(accounts) { account in
-                            accountButton(account: account)
+                            accountButton(
+                                account: account,
+                                isSelected: selectedAccount?.id == account.id
+                            )
                         }
                     }
                     .padding(.vertical, 16)
@@ -27,35 +30,26 @@ struct AccountSelectionSection: View {
                 .padding(.leading, 16)
         }
         .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
-        .listSectionSpacing(0)
     }
     
-    private func accountButton(account: Account) -> some View {
+    private func accountButton(account: Account, isSelected: Bool) -> some View {
         Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedAccount = account
             }
         } label: {
             VStack(spacing: 6) {
-                Image(account.cardIcon)
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(
-                        selectedAccount == account
-                        ? Color.primaryInverse
-                        : Color.primary
-                    )
-                    .padding(10)
-                    .background(
-                        Circle()
-                            .fill(
-                                selectedAccount == account
-                                ? Color.primary
-                                : Color.secondary.opacity(0.07)
-                            )
-                    )
+                AccountIconView(
+                    iconName: account.customIcon,
+                    color: account.actualColor
+                )
+                .overlay {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.secondary, lineWidth: 2)
+                    }
+                }
+                .scaleEffect(isSelected ? 1.1 : 1.0)
                 
                 Text(account.name)
                     .font(.footnote)
@@ -66,7 +60,6 @@ struct AccountSelectionSection: View {
                     .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
                 
-                // Баланс
                 Text(account.formattedBalance)
                     .font(.footnote)
                     .fontWeight(.semibold)

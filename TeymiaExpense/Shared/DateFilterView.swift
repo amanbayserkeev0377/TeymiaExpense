@@ -1,5 +1,50 @@
 import SwiftUI
 
+// MARK: - Date Range Header Component
+struct DateRangeHeader: View {
+    @Binding var startDate: Date
+    @Binding var endDate: Date
+    
+    enum PeriodType {
+        case week, month, year, custom
+    }
+    
+    private var dateRangeText: String {
+        DateFormatter.formatDateRange(startDate: startDate, endDate: endDate)
+    }
+    
+    var body: some View {
+        Section {
+            HStack {
+                CustomMenuView {
+                    HStack(spacing: 8) {
+                        Text(dateRangeText)
+                            .font(.headline)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        
+                        Image("calendar")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 32)
+                } content: {
+                    DateFilterView(
+                        startDate: $startDate,
+                        endDate: $endDate
+                    )
+                }
+            }
+            .padding(.horizontal, 32)
+        }
+        .listRowInsets(EdgeInsets())
+        .listSectionSeparator(.hidden)
+        .listRowBackground(Color.clear)
+    }
+}
+
 // MARK: - Shared Date Filter View
 struct DateFilterView: View {
     @Environment(\.dismiss) private var dismiss
@@ -70,7 +115,6 @@ struct DateFilterView: View {
             }
         }
         .padding(15)
-        .frame(width: 250, height: 250)
     }
     
     // MARK: - Period Setting Methods
@@ -106,20 +150,48 @@ struct CustomMenuView<Label: View, Content: View>: View {
             if isHapticsEnabled {
                 haptics.toggle()
             }
-            
             isExpanded.toggle()
         } label: {
             label
                 .matchedTransitionSource(id: "MENUCONTENT", in: namespace)
         }
-        .buttonStyle(.glass)
+        .applyGlassButtonStyle()
         .popover(isPresented: $isExpanded) {
             PopOverHelper {
                 content
             }
+            #if !targetEnvironment(macCatalyst)
             .navigationTransition(.zoom(sourceID: "MENUCONTENT", in: namespace))
+            #endif
         }
         .sensoryFeedback(.selection, trigger: haptics)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func applyGlassButtonStyle() -> some View {
+        if #available(iOS 26.0, *) {
+            self.buttonStyle(.glass)
+        } else {
+            self.buttonStyle(GlassLikeButtonStyle())
+        }
+    }
+}
+
+// MARK: - Glass-like Button Style (Fallback)
+struct GlassLikeButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .fill(Color(.secondarySystemGroupedBackground))
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -132,7 +204,7 @@ fileprivate struct PopOverHelper<Content: View>: View {
             .opacity(isVisible ? 1 : 0)
             .task {
                 try? await Task.sleep(for: .seconds(0.1))
-                withAnimation(.snappy(duration: 0.3, extraBounce: 0)) {
+                withAnimation(.snappy(duration: 0.4, extraBounce: 0)) {
                     isVisible = true
                 }
             }

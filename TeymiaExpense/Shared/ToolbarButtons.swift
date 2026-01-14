@@ -5,11 +5,47 @@ struct CloseToolbarButton: ToolbarContent {
     
     var body: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
-            Button(role: .close) {
+            if #available(iOS 26.0, *) {
+                Button(role: .close) {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .fontWeight(.bold)
+                }
+            } else {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                        .fontWeight(.heavy)
+                        .foregroundStyle(.secondary)
+                        .padding(8)
+                        .background(
+                            Circle()
+                                .fill(.secondary.opacity(0.13))
+                        )
+                }
+            }
+        }
+    }
+}
+
+struct BackToolbarButton: ToolbarContent {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
-                    .fontWeight(.semibold)
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    Image(systemName: "chevron.left")
+                        .fontWeight(.semibold)
+                } else {
+                    Image(systemName: "xmark")
+                        .fontWeight(.bold)
+                }
             }
         }
     }
@@ -21,12 +57,21 @@ struct ConfirmationToolbarButton: ToolbarContent {
     
     var body: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
-            
-            Button("save".localized, systemImage: "checkmark", role: .confirm) {
-                action()
+            if #available(iOS 26.0, *) {
+                Button(action: action) {
+                    Image(systemName: "checkmark")
+                        .fontWeight(.bold)
+                }
+                .disabled(isDisabled)
+                .opacity(isDisabled ? 0.5 : 1.0)
+            } else {
+                Button(action: action) {
+                    Text("done".localized)
+                        .fontWeight(.bold)
+                }
+                .disabled(isDisabled)
+                .opacity(isDisabled ? 0.5 : 1.0)
             }
-            .disabled(isDisabled)
-            .opacity(isDisabled ? 0.5 : 1.0)
         }
     }
 }
@@ -37,14 +82,26 @@ struct EditDoneToolbarButton: ToolbarContent {
     
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                action?()
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isEditMode.toggle()
+            if #available(iOS 26.0, *) {
+                Button {
+                    action?()
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isEditMode.toggle()
+                    }
+                } label: {
+                    Image(systemName: isEditMode ? "checkmark" : "pencil")
+                        .fontWeight(.bold)
                 }
-            } label: {
-                Image(systemName: isEditMode ? "checkmark" : "pencil")
-                    .fontWeight(.semibold)
+            } else {
+                Button {
+                    action?()
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isEditMode.toggle()
+                    }
+                } label: {
+                    Text(isEditMode ? "done".localized : "edit".localized)
+                        .fontWeight(isEditMode ? .bold : .medium)
+                }
             }
         }
     }
@@ -56,9 +113,23 @@ struct AddToolbarButton: ToolbarContent {
     
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button(action: action) {
-                Image(systemName: "plus")
-                    .fontWeight(.semibold)
+            if #available(iOS 26.0, *) {
+                Button(action: action) {
+                    Image(systemName: "plus")
+                        .fontWeight(.bold)
+                }
+            } else {
+                Button(action: action) {
+                    Image(systemName: "plus")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
+                        .padding(8)
+                        .background(
+                            Circle()
+                                .fill(.secondary.opacity(0.15))
+                        )
+                }
             }
         }
     }

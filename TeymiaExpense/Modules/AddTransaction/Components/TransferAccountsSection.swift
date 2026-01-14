@@ -39,8 +39,6 @@ struct TransferAccountsSection: View {
                 .padding(.leading, 16)
         }
         .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
         
         Section {
             let availableToAccounts = accounts.filter { $0 != fromAccount }
@@ -73,8 +71,6 @@ struct TransferAccountsSection: View {
                 .padding(.leading, 16)
         }
         .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
     }
     
     private func accountButton(
@@ -84,23 +80,17 @@ struct TransferAccountsSection: View {
     ) -> some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                Image(account.cardIcon)
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(
-                        isSelected
-                        ? Color.primaryInverse
-                        : Color.primary
-                    )
-                    .padding(10)
-                    .background(
-                        Circle()
-                            .fill(
-                                isSelected
-                                ? Color.primary
-                                : Color.secondary.opacity(0.07)
-                            )
-                    )
+                AccountIconView(
+                    iconName: account.customIcon,
+                    color: account.actualColor
+                )
+                .overlay {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.secondary, lineWidth: 2)
+                    }
+                }
+                .scaleEffect(isSelected ? 1.1 : 1.0)
                 
                 Text(account.name)
                     .font(.footnote)

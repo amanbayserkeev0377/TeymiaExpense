@@ -80,18 +80,19 @@ struct CategoryManagementView: View {
                             }
                     }
                     .onMove(perform: isEditMode ? moveCategories : nil)
+                } footer: {
+                    #if targetEnvironment(macCatalyst)
+                    if isEditMode {
+                        Text("hold_shift".localized)
+                    }
+                    #endif
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparatorTint(Color.secondary.opacity(0.07))
             }
         }
         .tint(.secondary)
-        .listStyle(.plain)
         .environment(\.editMode, .constant(isEditMode ? .active : .inactive))
         .navigationTitle("categories".localized)
         .navigationBarTitleDisplayMode(.inline)
-        .scrollContentBackground(.hidden)
-        .background(BackgroundView())
         .toolbar {
             EditDoneToolbarButton(isEditMode: $isEditMode) {
                 selectedCategories = []
@@ -101,7 +102,7 @@ struct CategoryManagementView: View {
                 showingAddCategory = true
             }
         }
-        .safeAreaBar(edge: .bottom) {
+        .safeAreaInset(edge: .bottom) {
             if isEditMode {
                 HStack {
                     Button {
@@ -115,7 +116,7 @@ struct CategoryManagementView: View {
                             .padding(4)
                             .foregroundStyle(Color.primaryInverse)
                     }
-                    .buttonStyle(.glassProminent)
+                    .adaptiveButtonStyle()
                     
                     Button(role: .destructive) {
                         confirmDeleteSelectedCategories()
@@ -124,7 +125,7 @@ struct CategoryManagementView: View {
                             .padding(4)
                     }
                     .tint(.red)
-                    .buttonStyle(.glassProminent)
+                    .adaptiveButtonStyle()
                     .disabled(selectedCategories.isEmpty)
                 }
                 .padding()
