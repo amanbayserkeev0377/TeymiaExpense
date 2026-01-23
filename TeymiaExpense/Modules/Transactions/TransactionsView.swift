@@ -69,13 +69,17 @@ struct TransactionsView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                Color.clear
+                    .frame(height: 70)
+            }
             .navigationTitle("transactions".localized)
             FloatingAddButton(action: { showingAddTransaction = true }, namespace: animation)
-            .adaptiveSheet(item: $editingTransaction) { transaction in
+            .sheet(item: $editingTransaction) { transaction in
                 AddTransactionView(editingTransaction: transaction)
                     .navigationTransition(.zoom(sourceID: transaction.id, in: transactionAnimation))
             }
-            .adaptiveSheet(isPresented: $showingAddTransaction) {
+            .sheet(isPresented: $showingAddTransaction) {
                 AddTransactionView()
                     .navigationTransition(.zoom(sourceID: "ADDTRANSACTION", in: animation))
             }
@@ -107,25 +111,33 @@ struct DaySectionHeader: View {
     let date: Date
     let transactions: [Transaction]
     let userPreferences: UserPreferences
+    var currentAccount: Account? = nil
     
-    private var dailyExpenses: Decimal {
-        transactions
-            .filter { $0.type == .expense }
-            .reduce(Decimal.zero) { $0 + $1.amount }
+    private var dailyTotal: Decimal {
+        transactions.reduce(Decimal.zero) { sum, transaction in
+            if let account = currentAccount {
+                return sum + transaction.amountForAccount(account)
+            } else {
+                guard transaction.type != .transfer else { return sum }
+                
+                let converted = CurrencyService.shared.convert(
+                    abs(transaction.amount),
+                    from: transaction.account?.currencyCode ?? "USD",
+                    to: userPreferences.baseCurrencyCode
+                )
+                
+                return transaction.type == .income ? sum + converted : sum - converted
+            }
+        }
     }
     
     private var dateHeaderText: String {
         let calendar = Calendar.current
-        
-        if calendar.isDateInToday(date) {
-            return "today".localized
-        } else if calendar.isDateInYesterday(date) {
-            return "yesterday".localized
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            return formatter.string(from: date)
-        }
+        if calendar.isDateInToday(date) { return "today".localized }
+        if calendar.isDateInYesterday(date) { return "yesterday".localized }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
     
     var body: some View {
@@ -137,8 +149,8 @@ struct DaySectionHeader: View {
             
             Spacer()
             
-            if dailyExpenses != 0 {
-                Text(userPreferences.formatAmount(dailyExpenses))
+            if dailyTotal != 0 {
+                Text(formatDisplayAmount(dailyTotal))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
@@ -147,5 +159,13 @@ struct DaySectionHeader: View {
         }
         .padding(4)
         .textCase(nil)
+    }
+    
+    private func formatDisplayAmount(_ amount: Decimal) -> String {
+        if let account = currentAccount {
+            return CurrencyFormatter.format(amount, currency: account.currency)
+        } else {
+            return userPreferences.formatAmount(amount)
+        }
     }
 }

@@ -21,6 +21,9 @@ struct TipsView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 40)
             }
+            .toolbar {
+                CloseToolbarButton()
+            }
             .scrollIndicators(.hidden)
             .overlay {
                 if tipsManager.showThankYou {

@@ -52,17 +52,17 @@ struct AccountTransactionsView: View {
             .navigationTitle(account.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                BackToolbarButton()
+                CloseToolbarButton()
                 
                 AddToolbarButton {
                     showingAddTransaction = true
                 }
             }
-            .adaptiveSheet(isPresented: $showingAddTransaction) {
+            .sheet(isPresented: $showingAddTransaction) {
                 AddTransactionView(preselectedAccount: account)
                     .navigationTransition(.zoom(sourceID: "ADDTRANSACTION", in: animation))
             }
-            .adaptiveSheet(item: $editingTransaction) { transaction in
+            .sheet(item: $editingTransaction) { transaction in
                 AddTransactionView(editingTransaction: transaction)
                     .navigationTransition(.zoom(
                         sourceID: transaction.id,
@@ -88,9 +88,7 @@ struct AccountTransactionsView: View {
         } else {
             ForEach(sortedDates, id: \.self) { date in
                 let transactionsForDate = groupedTransactions[date] ?? []
-                let dayTotal = transactionsForDate.reduce(Decimal.zero) { sum, transaction in
-                        sum + transaction.amountForAccount(account)
-                    }
+                
                 Section {
                     ForEach(transactionsForDate) { transaction in
                         TransactionRowView(transaction: transaction, currentAccount: account)
@@ -112,21 +110,12 @@ struct AccountTransactionsView: View {
                             }
                     }
                 } header: {
-                    HStack {
-                        Text(formatDate(date))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                        
-                        Spacer()
-                        
-                        Text(userPreferences.formatAmount(dayTotal))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.primary)
-                    }
-                    .padding(4)
-                    .textCase(nil)
+                    DaySectionHeader(
+                            date: date,
+                            transactions: transactionsForDate,
+                            userPreferences: userPreferences,
+                            currentAccount: account
+                        )
                 }
             }
         }

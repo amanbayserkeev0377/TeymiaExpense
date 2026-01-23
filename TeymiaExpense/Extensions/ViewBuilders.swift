@@ -39,31 +39,3 @@ extension View {
         }
     }
 }
-
-extension View {
-    @ViewBuilder
-    func adaptiveSheet<Item: Identifiable, Content: View>(
-        item: Binding<Item?>,
-        @ViewBuilder content: @escaping (Item) -> Content
-    ) -> some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.fullScreenCover(item: item, content: content)
-        } else {
-            self.sheet(item: item, content: content)
-        }
-    }
-}
-
-extension View {
-    @ViewBuilder
-    func adaptiveSheet(
-        isPresented: Binding<Bool>,
-        @ViewBuilder content: @escaping () -> some View
-    ) -> some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.fullScreenCover(isPresented: isPresented, content: content)
-        } else {
-            self.sheet(isPresented: isPresented, content: content)
-        }
-    }
-}

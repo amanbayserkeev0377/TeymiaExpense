@@ -24,7 +24,7 @@ struct TransactionRowView: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
-                    Text(transaction.displayTitle(relativeTo: currentAccount))
+                    Text(transaction.displayTitle())
                         .fontWeight(.medium)
                         .foregroundStyle(.primary)
                         .lineLimit(1)
@@ -48,8 +48,13 @@ struct TransactionRowView: View {
             
             Spacer()
             
-            Text(transaction.formattedAmount(for: currentAccount ?? transaction.account))
+            let displayAmount = currentAccount != nil ?
+            transaction.amountForAccount(currentAccount!) :
+            transaction.amount
+            
+            Text(CurrencyFormatter.format(abs(displayAmount), currency: currentAccount?.currency ?? transaction.account?.currency ?? .defaultUSD))
                 .fontWeight(.semibold)
+                .fontDesign(.rounded)
                 .foregroundStyle(transaction.typeColor)
         }
         .contentShape(Rectangle())

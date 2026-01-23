@@ -150,8 +150,10 @@ struct TipsSection: View {
             }
         }
         .sheet(isPresented: $showingTips) {
-            TipsView()
-                .presentationDragIndicator(.visible)
+            NavigationStack {
+                TipsView()
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 }

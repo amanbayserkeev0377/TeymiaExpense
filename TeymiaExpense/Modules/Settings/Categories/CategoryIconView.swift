@@ -12,7 +12,7 @@ struct CategoryIconView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(isDark ? Color.black.gradient.opacity(0.9) : color.gradient.opacity(0.1))
+                .fill(isDark ? Color.black.gradient.opacity(0.2) : color.gradient.opacity(0.1))
             
             Image(iconName)
                 .resizable()

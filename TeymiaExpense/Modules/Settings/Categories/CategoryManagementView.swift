@@ -224,10 +224,11 @@ struct CategoryRow: View {
     
     var body: some View {
         HStack {
-            Image(category.iconName)
-                .resizable()
-                .frame(width: 18, height: 18)
-                .foregroundStyle(.primary)
+            CategoryIconView(
+                iconName: category.iconName,
+                color: category.actualColor,
+                size: 18
+            )
             
             Text(category.name)
                 .foregroundStyle(.primary)

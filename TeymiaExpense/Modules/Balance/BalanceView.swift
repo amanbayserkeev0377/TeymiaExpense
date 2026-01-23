@@ -102,7 +102,7 @@ struct BalanceView: View {
                 lastRatesUpdate = Date()
             }
         }
-        .adaptiveSheet(item: $selectedAccountTransactions) { account in
+        .sheet(item: $selectedAccountTransactions) { account in
             AccountTransactionsView(account: account)
                 .navigationTransition(.zoom(sourceID: account.id, in: balanceNamespace))
         }

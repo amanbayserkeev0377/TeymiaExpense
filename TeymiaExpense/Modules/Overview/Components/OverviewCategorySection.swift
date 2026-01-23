@@ -63,7 +63,13 @@ struct OverviewCategorySection: View {
     private func getTotalAmount(for category: Category) -> Decimal {
         filteredTransactions
             .filter { $0.category?.id == category.id }
-            .reduce(Decimal.zero) { $0 + abs($1.amount) }
+            .reduce(Decimal.zero) { sum, transaction in
+                sum + CurrencyService.shared.convert(
+                    abs(transaction.amount),
+                    from: transaction.account?.currencyCode ?? "USD",
+                    to: userPreferences.baseCurrencyCode
+                )
+            }
     }
     
     private func getTransactionCount(for category: Category) -> Int {

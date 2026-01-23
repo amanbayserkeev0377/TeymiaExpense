@@ -27,6 +27,8 @@ struct AddTransactionView: View {
     @State private var showingAddAccount = false
     @FocusState private var isAmountFieldFocused: Bool
     @State private var isInitialized = false
+    @State private var targetAmount: String = ""
+    @State private var isFirstLoad = true
     
     // Filtered categories based on transaction type
     private var filteredCategories: [Category] {
@@ -54,54 +56,17 @@ struct AddTransactionView: View {
             ZStack(alignment: .bottom) {
                 List {
                     Section {
-                        HStack {
-                            TextField(currencySymbol, text: $amount)
-                                .autocorrectionDisabled()
-                                .focused($isAmountFieldFocused)
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.center)
-                                .onChange(of: amount) { oldValue, newValue in
-                                    let separator = Locale.current.decimalSeparator ?? "."
-                                    let altSeparator = (separator == "." ? "," : ".")
-                                    var filtered = newValue.replacingOccurrences(of: altSeparator, with: separator)
-                                    let allowedCharacters = "0123456789" + separator
-                                    filtered = filtered.filter { allowedCharacters.contains($0) }
-                                    if filtered.components(separatedBy: separator).count > 2 {
-                                        amount = oldValue
-                                    } else {
-                                        amount = filtered
-                                    }
-                                }
-                        }
-                        .contentShape(Rectangle())
-                        
-                        HStack {
-                            Image("note")
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                                .foregroundStyle(.primary)
-                            
-                            TextField("note".localized, text: $note)
-                                .fontDesign(.rounded)
-                            
-                            Button(action: {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
-                                    note = ""
-                                }
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(Color.secondary.opacity(0.5))
-                                    .font(.system(size: 18))
-                            }
-                            .buttonStyle(.plain)
-                            .opacity(note.isEmpty ? 0 : 1)
-                            .scaleEffect(note.isEmpty ? 0.001 : 1)
-                            .animation(.spring(response: 0.4, dampingFraction: 0.5), value: note.isEmpty)
-                            .disabled(note.isEmpty)
-                        }
-                        .contentShape(Rectangle())
+                        AmountInputSection(
+                            type: selectedType,
+                            currencySymbol: currencySymbol,
+                            toCurrencySymbol: CurrencyService.getSymbol(for: toAccount?.currencyCode),
+                            fromCurrencyCode: fromAccount?.currencyCode ?? "USD",
+                            toCurrencyCode: toAccount?.currencyCode,             
+                            amount: $amount,
+                            targetAmount: $targetAmount,
+                            note: $note,
+                            isAmountFocused: $isAmountFieldFocused
+                        )
                     }
                     
                     // Catgories Section
@@ -157,7 +122,7 @@ struct AddTransactionView: View {
                 .scrollDismissesKeyboard(.immediately)
             }
             .toolbar {
-                BackToolbarButton()
+                CloseToolbarButton()
                 
                 ToolbarItem(placement: .principal) {
                     Picker("Type", selection: $selectedType) {
@@ -187,6 +152,10 @@ struct AddTransactionView: View {
         .task {
             // Setup immediately without delay
             setupInitialValues()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isFirstLoad = false
+            }
             
             // Focus keyboard immediately
             isAmountFieldFocused = true
@@ -244,6 +213,17 @@ struct AddTransactionView: View {
         return Decimal(string: sanitized, locale: .current)
     }
     
+    private func getDecimalTargetAmount() -> Decimal? {
+        var sanitized = targetAmount
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\u{00A0}", with: "")
+        let separator = Locale.current.decimalSeparator ?? "."
+        let altSeparator = (separator == "." ? "," : ".")
+        sanitized = sanitized.replacingOccurrences(of: altSeparator, with: separator)
+        
+        return Decimal(string: sanitized, locale: .current)
+    }
+    
     // MARK: - Setup Methods
     
     private func setupInitialValues() {
@@ -265,6 +245,13 @@ struct AddTransactionView: View {
         if transaction.type == .transfer {
             fromAccount = transaction.account
             toAccount = transaction.toAccount
+            
+            // Загружаем именно сохраненную сумму зачисления!
+            if let savedTarget = transaction.transferTargetAmount {
+                targetAmount = CurrencyFormatter.formatForEditing(savedTarget)
+            } else {
+                targetAmount = CurrencyFormatter.formatForEditing(transaction.amount)
+            }
         }
     }
     
@@ -337,8 +324,11 @@ struct AddTransactionView: View {
                 
             case .transfer:
                 guard let from = fromAccount, let to = toAccount else { return }
+                let secondAmount = getDecimalTargetAmount() ?? decimalAmount
+                
                 try TransactionService.saveTransfer(
                     amount: decimalAmount,
+                    targetAmount: secondAmount,
                     fromAccount: from,
                     toAccount: to,
                     note: note,
@@ -358,10 +348,13 @@ struct AddTransactionView: View {
         guard let transaction = editingTransaction,
               let decimalAmount = getDecimalAmount() else { return }
         
+        let secondAmount = getDecimalTargetAmount()
+        
         do {
             try TransactionService.updateTransaction(
                 transaction,
                 newAmount: decimalAmount,
+                newTargetAmount: secondAmount,
                 newAccount: selectedType == .transfer ? fromAccount : selectedAccount,
                 newToAccount: selectedType == .transfer ? toAccount : nil,
                 newCategory: selectedType == .transfer ? nil : selectedCategory,
@@ -370,10 +363,9 @@ struct AddTransactionView: View {
                 newType: selectedType,
                 context: modelContext
             )
-            
             dismiss()
         } catch {
-            print("Error updating transaction: \(error)")
+            print("Error updating: \(error)")
         }
     }
 }

@@ -4,7 +4,7 @@ struct AccountIconView: View {
     let iconName: String
     let color: Color
     var size: CGFloat = 20
-    var cornerRadius: CGFloat = 10
+    var cornerRadius: CGFloat = 8
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -21,7 +21,7 @@ struct AccountIconView: View {
         .frame(width: size * 1.8, height: size * 1.8)
         .background {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(isDark ? Color.black.gradient : color.gradient)
+                .fill(isDark ? Color.black.gradient.opacity(0.2) : color.gradient.opacity(0.9))
         }
         .overlay {
             if isDark {

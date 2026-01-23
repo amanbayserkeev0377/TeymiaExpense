@@ -7,18 +7,26 @@ struct TransactionService {
     // MARK: - Balance Operations
     
     static func revertBalanceChanges(for transaction: Transaction) {
-        transaction.account?.balance -= transaction.amount
-        
         if transaction.type == .transfer {
-            transaction.toAccount?.balance -= transaction.amount
+            transaction.account?.balance += abs(transaction.amount)
+            let targetAmt = transaction.transferTargetAmount ?? transaction.amount
+            transaction.toAccount?.balance -= abs(targetAmt)
+        } else if transaction.type == .expense {
+            transaction.account?.balance += abs(transaction.amount)
+        } else if transaction.type == .income {
+            transaction.account?.balance -= abs(transaction.amount)
         }
     }
 
     static func applyBalanceChanges(for transaction: Transaction) {
-        transaction.account?.balance += transaction.amount
-        
         if transaction.type == .transfer {
-            transaction.toAccount?.balance += transaction.amount
+            transaction.account?.balance -= abs(transaction.amount)
+            let targetAmt = transaction.transferTargetAmount ?? transaction.amount
+            transaction.toAccount?.balance += abs(targetAmt)
+        } else if transaction.type == .expense {
+            transaction.account?.balance -= abs(transaction.amount)
+        } else if transaction.type == .income {
+            transaction.account?.balance += abs(transaction.amount)
         }
     }
     
@@ -76,6 +84,7 @@ struct TransactionService {
 
     static func saveTransfer(
         amount: Decimal,
+        targetAmount: Decimal,
         fromAccount: Account,
         toAccount: Account,
         note: String?,
@@ -84,8 +93,10 @@ struct TransactionService {
         userPreferences: UserPreferences
     ) throws {
         let cleanNote = note?.isEmpty == true ? nil : note
+        
         let transaction = Transaction(
             amount: abs(amount),
+            transferTargetAmount: abs(targetAmount),
             note: cleanNote,
             date: date,
             type: .transfer,
@@ -94,7 +105,8 @@ struct TransactionService {
         )
         
         fromAccount.balance -= abs(amount)
-        toAccount.balance += abs(amount)
+        toAccount.balance += abs(targetAmount)
+        
         userPreferences.updateLastUsedAccount(fromAccount)
         context.insert(transaction)
         try context.save()
@@ -105,6 +117,7 @@ struct TransactionService {
     static func updateTransaction(
         _ transaction: Transaction,
         newAmount: Decimal,
+        newTargetAmount: Decimal? = nil,
         newAccount: Account?,
         newToAccount: Account?,
         newCategory: Category?,
@@ -114,9 +127,14 @@ struct TransactionService {
         context: ModelContext
     ) throws {
         revertBalanceChanges(for: transaction)
-        
         transaction.type = newType
         transaction.amount = newType == .expense ? -abs(newAmount) : abs(newAmount)
+        if newType == .transfer {
+            transaction.transferTargetAmount = abs(newTargetAmount ?? newAmount)
+        } else {
+            transaction.transferTargetAmount = nil
+        }
+        
         transaction.account = newAccount
         transaction.toAccount = newToAccount
         transaction.category = newCategory
@@ -144,34 +162,6 @@ struct TransactionService {
     }
 }
 
-// MARK: - Transaction Display Extensions
-
-extension Transaction {
-    var typeColor: Color {
-        switch type {
-        case .income:   return Color("IncomeColor")
-        case .expense:  return .primary
-        case .transfer: return Color("TransferColor")
-        }
-    }
-    
-    var displayIcon: String {
-        type == .transfer ? "transfer" : (category?.iconName ?? "questionmark.circle")
-    }
-    
-    func formattedAmount(for account: Account? = nil) -> String {
-        let currency = account?.currency ?? self.account?.currency ?? .defaultUSD
-        return CurrencyFormatter.format(abs(amount), currency: currency)
-    }
-    
-    func displayTitle() -> String {
-        if type == .transfer {
-            return "\(account?.name ?? "...") → \(toAccount?.name ?? "...")"
-        }
-        return category?.name ?? ""
-    }
-}
-
 // MARK: - Currency Formatter
 
 struct CurrencyFormatter {
@@ -190,10 +180,12 @@ struct CurrencyFormatter {
     
     static func formatForEditing(_ amount: Decimal) -> String {
         let formatter = NumberFormatter()
-        formatter.numberStyle = .none
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
         formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 8
+        
         return formatter.string(from: abs(amount) as NSDecimalNumber) ?? ""
     }
     

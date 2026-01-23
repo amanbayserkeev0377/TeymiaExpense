@@ -39,7 +39,13 @@ struct CategoryTransactionsView: View {
     }
     
     private var totalAmount: Decimal {
-        filteredTransactions.reduce(Decimal.zero) { $0 + abs($1.amount) }
+        filteredTransactions.reduce(Decimal.zero) { sum, transaction in
+            sum + CurrencyService.shared.convert(
+                abs(transaction.amount),
+                from: transaction.account?.currencyCode ?? "USD",
+                to: userPreferences.baseCurrencyCode
+            )
+        }
     }
     
     var body: some View {
@@ -99,7 +105,6 @@ struct CategoryTransactionsView: View {
             } else {
                 ForEach(sortedDates, id: \.self) { date in
                     let transactionsForDate = groupedTransactions[date] ?? []
-                    let dailyTotal = transactionsForDate.reduce(Decimal.zero) { $0 + $1.amount }
                     
                     Section {
                         ForEach(transactionsForDate) { transaction in
@@ -122,22 +127,11 @@ struct CategoryTransactionsView: View {
                                 }
                         }
                     } header: {
-                        HStack {
-                            Text(dateHeaderText(for: date))
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.primary)
-                            
-                            Spacer()
-                            
-                            Text(userPreferences.formatAmount(dailyTotal))
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.primary)
-                        }
-                        .padding(4)
-                        .textCase(nil)
+                        DaySectionHeader(
+                            date: date,
+                            transactions: transactionsForDate,
+                            userPreferences: userPreferences
+                        )
                     }
                 }
             }
@@ -145,9 +139,9 @@ struct CategoryTransactionsView: View {
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            BackToolbarButton()
+            CloseToolbarButton()
         }
-        .adaptiveSheet(item: $editingTransaction) { transaction in
+        .sheet(item: $editingTransaction) { transaction in
             AddTransactionView(editingTransaction: transaction)
                 .navigationTransition(.zoom(
                     sourceID: transaction.id,

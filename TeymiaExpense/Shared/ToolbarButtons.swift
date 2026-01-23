@@ -31,26 +31,6 @@ struct CloseToolbarButton: ToolbarContent {
     }
 }
 
-struct BackToolbarButton: ToolbarContent {
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button {
-                dismiss()
-            } label: {
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    Image(systemName: "chevron.left")
-                        .fontWeight(.semibold)
-                } else {
-                    Image(systemName: "xmark")
-                        .fontWeight(.bold)
-                }
-            }
-        }
-    }
-}
-
 struct ConfirmationToolbarButton: ToolbarContent {
     let action: () -> Void
     let isDisabled: Bool
